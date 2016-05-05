@@ -1,0 +1,58 @@
+# This conf file is based on accepting logs for signatures.log from Bro systems
+input {
+  file {
+    type => "bro_signatures"
+    sincedb_path => "/var/tmp/.bro_signatures_sincedb"
+ 
+    #Edit the following path to reflect the location of your log files. You can also change the extension if you use something else
+    path => "/nsm/bro/logs/current/signatures.log"
+  }
+}
+
+filter {
+  if [type] == "bro_signatures" {
+    # This is the initial parsing of the log
+    csv {
+      columns => ["ts","uid","SourceIP","SourcePort","DestinationIP","DestinationPort","Note","SignatureID","EventMessage","SubMessage","SignatureCount","HostCount"]
+      separator => "	"
+    }
+	# Replace the host field with the host found in the bro log
+    if [bro_host] {
+      mutate {
+        replace => [ "host", "%{bro_host}" ]
+      }
+    }
+	mutate {
+      convert => [ "SourcePort", "integer" ]
+	  convert => [ "DestinationPort", "integer" ]
+    }
+    date {
+      match => [ "ts", "UNIX" ]
+    }
+	if [SourceIP] {
+      geoip {
+        source => "SourceIP"
+		target => "SourceGeo"
+        database => "/usr/share/GeoIP/GeoIP.dat"
+      }
+    }
+    if [DestinationIP]{
+      geoip {
+        source => "DestinationIP"
+		target => "DestinationGeo"
+        database => "/usr/share/GeoIP/GeoIP.dat"
+      }
+    }
+  }	
+}
+
+output {
+  if [type] == "bro_signatures" {
+    #stdout { codec => rubydebug }
+    elasticsearch {
+	  # Due to the volume of bro logs I like to save them to a seperate index.  This makes it easy to change retention
+	  # You can uncomment the index line below if you would like all logs to be in the same logstash index
+      index => "logstash-bro-%{+YYYY.MM.dd}"
+    }
+  }
+}
