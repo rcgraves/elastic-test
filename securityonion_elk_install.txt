@@ -1,0 +1,203 @@
+Security Onion with ELK
+
+[Install] - Install Security Onion then proceed with the steps below
+sudo soup -y
+sudo apt-get install open-vm-tools -y (or install vmware tools)
+
+[Setup] - Run Setup (This is a shortcut on the Security Onion desktop)
+- Setup a standalone server before moving on with this guide
+- Do not do the evaluation mode as we want to use suricata instead of snort.
+- The reason for this is Suricata supports native logging to json
+
+RECOMMENDED OPTIONS - not required but this is the settings I recommend
+eth0 as management port
+Static for POC or DHCP for traveling laptops
+Yes, configure monitor interfaces
+Set eth1 as monitor interface
+Yes, make changes
+Yes, reboot!
+
+After reboot, run Setup again
+Yes, continue
+Yes, skip network configuraiton!
+Production Mode
+Standalone
+Custom
+Set username to whatever you would like
+Set password to whatever you would like
+30 days for Sguil database
+7 days for DAYSTOREPAIR
+Suricata for IDS Engine		- IMPORTANT
+Emerging Threats GPL	(or sign up for a Personal Snort VRT license and set to Snort VRT ruleset and Emergeing Threats NoGPL ruleset if doing a POC.  This costs $29.99 a year but is illegal to run in production)
+4096 for PF_RING (if POCing on large network increase this)
+Monitor interface to eth1
+Yes, enable IDS engine
+Yes, enable Bro!
+Yes, enable file extraction!
+No, disable http_agent.
+No, disable argus.
+Your choice on PRADS.  I typically disable.
+Yes, enable full packet capture!
+150 for pcap size
+Yes, enable nmap I/O!
+64 for laptop or 256 for busy network on ring buffer
+Disk percentage 90 unless you are sending tremendous amounts of data in which case might consider 75 or 80
+No, disable salt (enable if you are doing a master with sensor installation)
+No, disable ELSA.
+Yes, proceed with the changes!
+
+END RECOMMEND OPTIONS
+
+sudo add-apt-repository -y ppa:webupd8team/java
+sudo apt-get update
+sudo dpkg-reconfigure debconf 				HUMAN INTERACTION - Set to dialogue
+sudo apt-get -y install oracle-java8-installer		HUMAN INTERACTION - accept license agreement
+
+
+BEGIN HUMAN INTERACTION
+[Add Java to Path]
+sudo vi /etc/profile
+
+Add these lines to the bottom:	
+
+JAVA_HOME=/usr/lib/jvm/java-8-oracle-openjdk-amd64
+PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
+
+Save the file
+END HUMAN INTERACTION
+
+JAVA_HOME=/usr/lib/jvm/java-8-oracle-openjdk-amd64
+PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
+export JAVA_HOME
+export JRE_HOME
+export PATH
+
+wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.3.2/elasticsearch-2.3.2.deb
+wget https://download.elastic.co/logstash/logstash/packages/debian/logstash_2.3.2-1_all.deb
+wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+echo "deb http://packages.elastic.co/kibana/4.5/debian stable main" | sudo tee -a /etc/apt/sources.list
+sudo apt-get update && sudo apt-get install kibana
+
+wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+gunzip *.gz
+
+sudo mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
+sudo mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+sudo mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
+sudo mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoIPCityv6.dat
+
+wget https://nxlog.co/system/files/products/files/1/nxlog-ce_2.9.1504_ubuntu_1404_amd64.deb
+
+sudo dpkg -i elasticsearch-2.3.2.deb
+sudo dpkg -i logstash_2.3.2-1_all.deb
+sudo dpkg -i nxlog-ce_2.9.1504_ubuntu_1404_amd64.deb
+
+sudo apt-get -y install python-pip
+sudo pip install elasticsearch-curator
+
+sudo /usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
+sudo /usr/share/elasticsearch/bin/plugin install license
+sudo /usr/share/elasticsearch/bin/plugin install marvel-agent
+sudo /opt/kibana/bin/kibana plugin --install elastic/sense
+sudo /opt/logstash/bin/plugin install logstash-filter-translate
+sudo /opt/kibana/bin/kibana plugin --install elasticsearch/marvel/latest	HUMAN INTERACTION - enter y
+sudo /usr/share/elasticsearch/bin/plugin install elasticsearch/watcher/latest	HUMAN INTERACTION - enter y
+
+sudo mkdir /opt/freq
+cd /opt/freq
+sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq.py
+sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq_server.py
+sudo chmod +x *.py
+sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_lowercase.freq
+sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_mixedcase.freq
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/freq/dns.freq
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/freq/file.freq
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/freq/uri.freq
+
+
+BEGIN HUMAN INTERACTION
+using sudo gedit or sudo vi edit /etc/nsm/[Hostname-eth[interface#]]/suricata.yaml - NOTE: You cannot use a tab in the configuration file
+
+Set enabled to yes (This is right under eve-log)
+
+[Optional settings for suricata.yaml]
+Set xff enabled to yes
+Set files force-magic and force-md5 to yes
+Uncomment smtp extended to yes
+END HUMAN INTERACTION
+
+sudo nsm --all --restart
+
+sudo vi /etc/elasticsearch/elasticsearch.yaml
+
+Uncomment network.host and set it to:
+network.host 0.0.0.0
+Uncomment cluster.name: and set it to:
+cluster.name: research
+
+If elasticsearch is going to be ran as a single server then add the below line to the bottom of /etc/elasticsearch/elasticsearch.yaml
+index.number_of_replicas: 0
+
+sudo update-rc.d elasticsearch defaults
+sudo update-rc.d logstash defaults
+sudo update-rc.d kibana defaults
+
+[Recommended] - Install logstash configurations
+
+cd /tmp
+wget https://github.com/SMAPPER/Logstash-Configs/raw/master/bro.tar
+tar xvf bro.tar
+rm bro.tar
+
+wget https://github.com/SMAPPER/Logstash-Configs/raw/master/suricata.conf
+
+sudo mv bro* /etc/logstash/conf.d/
+sudo mv suricata.conf /etc/logstash/conf.d/
+
+BEGIN HUMAN INTERACTION
+You will need to modify /etc/logstash/conf.d/suricata.conf to point to the location of eve.json on your system which is /etc/nsm/hostname-interface/eve.json
+You will need to modify /etc/logstash/conf.d/bro_http.conf to point to the bro http file located in /nsm/bro/logs/current.  If you are using a monitor interface of eth1 as this guide uses then change the path => line from http.log to http_eth1.log
+END HUMAN INTERACTION
+
+# Feel free to also look at any other Logstash config files found on https://github.com/SMAPPER/Logstash-Configs 
+# and download them to the /etc/logstash/conf.d directory to make them active
+
+sudo service elasticsearch start
+sudo service kibana start
+sudo service logstash start
+
+
+NEED TO DO:
+
+Write script to replay all samples in /opt/samples/
+
+REMOVE PASSWORD LOGGING
+
+
+If on SSD do this:
+
+Replace sda with the name of your hard drive in the commands below
+
+echo noop > /sys/block/sda/queue/scheduler
+
+edit /etc/rc.local and add this command before exit 0 (echo noop > /sys/block/sda/queue/scheduler)
+
+
+Also run this in Sense:
+
+PUT /_cluster/settings
+{
+    "persistent" : {
+        "indices.store.throttle.max_bytes_per_sec" : "100mb"
+    }
+}
+
+PUT /_cluster/settings
+{
+    "transient" : {
+        "indices.store.throttle.type" : "none" 
+    }
+}
