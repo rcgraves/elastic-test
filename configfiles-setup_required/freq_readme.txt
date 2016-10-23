@@ -5,21 +5,23 @@
 
 #Example:
 
-mkdir /opt/freq
-wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq_server.py
-chmod +x /opt/freq/freq_server.py
-wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/uri.freq
-wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/dns.freq
-wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/file.freq
-wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/pdf.freq
+sudo mkdir /opt/freq
+cd /opt/freq
+sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq.py
+sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq_server.py
+sudo chmod +x /opt/freq/freq_server.py
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/uri.freq
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/dns.freq
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/file.freq
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/pdf.freq
 
 # To make this a service using systemd (assuming Ubuntu 16.04)
 
 cd /etc/systemd/system
-wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/freq-http.service
-wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/freq-dns.service
-systemctl daemon-reload
-systemctl enable freq-http.service
-systemctl enable freq-dns.service
-systemctl start freq-http.service
-systemctl start freq-dns.service
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/freq-http.service
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/freq-dns.service
+sudo systemctl daemon-reload
+sudo systemctl enable freq-http.service
+sudo systemctl enable freq-dns.service
+sudo systemctl start freq-http.service
+sudo systemctl start freq-dns.service
