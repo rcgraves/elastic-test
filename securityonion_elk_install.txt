@@ -208,7 +208,9 @@ Access Elasticsearch from http://[ip_address]:9200    (add /_plugin/kopf to acce
 To manually run Logstash (testing and troubleshooting) run:
 /opt/logstash/bin/logstash -f /etc/logstash/conf.d/
 
-
+# Setup NXLog config file (nxlog feeds data into Logstash)
+sudo cp -f ~/Logstash-Config/nxlog.conf -f /etc/nxlog/nxlog.conf
+sudo service nxlog restart
 
 
 
