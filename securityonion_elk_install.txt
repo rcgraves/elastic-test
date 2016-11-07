@@ -60,7 +60,7 @@ sudo vi /etc/profile
 
 Add these lines to the bottom:	
 
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+JAVA_HOME=/usr/lib/jvm/java-8-open
 PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
 
 Save the file
