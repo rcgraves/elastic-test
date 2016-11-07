@@ -140,10 +140,10 @@ Set enabled to yes (This is right under eve-log)
 
 [Optional settings for suricata.yaml]
 Uncomment payload printable 
-Comment line for Bidirectional Flow
-Uncomment Unidirectional netflow
 Set xff enabled to yes
 Set files force-magic and force-md5 to yes
+Comment line for Bidirectional Flow
+Uncomment Unidirectional netflow
 Uncomment smtp extended to yes
 END HUMAN INTERACTION
 
