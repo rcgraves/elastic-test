@@ -1,8 +1,10 @@
 #!/bin/bash
 cd /tmp
 /usr/bin/wget http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
-/usr/bin/unzip -o top-1m.csv.zip -d /etc/logstash/data
+mkdir /lib/logstash_data
+/usr/bin/unzip -o top-1m.csv.zip -d /lib/logstash_data
 rm /tmp/top-1m.csv.zip
+sleep 60
 curl -XPOST 'http://es01.test.int:9200/_aliases' -d '
 {
     "actions" : [
