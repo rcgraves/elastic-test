@@ -14,6 +14,8 @@ sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-set
 sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/dns.freq
 sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/file.freq
 sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/pdf.freq
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/freq.sh
+sudo chmod +x freq.sh
 
 # To make this a service using systemd (assuming Ubuntu 16.04)
 
@@ -25,3 +27,11 @@ sudo systemctl enable freq-http.service
 sudo systemctl enable freq-dns.service
 sudo systemctl start freq-http.service
 sudo systemctl start freq-dns.service
+
+# To make this a service using init.d (older OSes)
+
+cd /etc/init.d/
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/freq
+sudo chmod +x freq
+sudo service freq start
+

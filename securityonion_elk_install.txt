@@ -78,21 +78,14 @@ wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add 
 echo "deb http://packages.elastic.co/kibana/4.5/debian stable main" | sudo tee -a /etc/apt/sources.list
 wget https://download.elastic.co/kibana/kibana/kibana-4.6.2-amd64.deb
 
-
-wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+sudo mkdir /usr/local/share/GeoIP
+cd /usr/local/share
+sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+sudo wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+sudo wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
 gunzip *.gz
-
-sudo mv GeoLiteCity.dat /usr/local/share/GeoIPCity.dat
-sudo mv GeoIP.dat /usr/local/share/GeoIP/GeoIP.dat
-sudo mv GeoIPv6.dat /usr/local/share/GeoIP/GeoIPv6.dat
-sudo mv GeoLiteCityv6.dat /usr/local/share/GeoIP/GeoIPCityv6.dat
-sudo mv GeoIPASNum.dat /usr/local/share/GeoIP/GeoIPASNum.dat
-
-sed -i 's/GeoLite/GeoIP/g' /etc/logstash/conf.d/*
 
 wget https://nxlog.co/system/files/products/files/1/nxlog-ce_2.9.1716_ubuntu_1404_amd64.deb
 dpkg -i nxlog-ce_2.9.1716_ubuntu_1404_amd64.deb

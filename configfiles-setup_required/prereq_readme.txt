@@ -3,9 +3,14 @@
 
 # Also, you will need to install the logstash translate community plugin.  This can be done
 # by running this command:
+#
+# These have been tested on Logstash 2.4.  Older versions that do not have bin/logstash-plugin and
+# instead use bin/plugin have issues.
 
-/opt/logstash/bin/plugin install logstash-filter-translate
+sudo /opt/logstash/bin/logstash-plugin install logstash-filter-translate
+sudo /opt/logstash/bin/logstash-plugin install logstash-filter-tld
+sudo /opt/logstash/bin/logstash-plugin install logstash-filter-rest
+sudo /opt/logstash/bin/logstash-plugin install logstash-filter-elasticsearch
 
-# You will also need to setup the frequency analysis tools or comment out anything using them (not 
-# recommended).  To do this refer to the freq_readme.txt file found at
-# https://github.com/SMAPPER/Logstash-Configs/blob/master/freq_readme.txt
+# Also follow the readmes for specific things you wish to setup such as frequency_analysis, alexa lookups,
+# message queuing, etc.
