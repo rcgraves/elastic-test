@@ -60,13 +60,13 @@ sudo vi /etc/profile
 
 Add these lines to the bottom:	
 
-JAVA_HOME=/usr/lib/jvm/java-8-open
+JAVA_HOME=/usr/lib/jvm/java-8-oracle
 PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
 
 Save the file
 END HUMAN INTERACTION
 
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+JAVA_HOME=/usr/lib/jvm/java-8-oracle
 PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
 export JAVA_HOME
 export JRE_HOME
@@ -75,7 +75,6 @@ export PATH
 wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.1/elasticsearch-2.4.1.deb
 wget https://download.elastic.co/logstash/logstash/packages/debian/logstash-2.4.0_all.deb
 wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-echo "deb http://packages.elastic.co/kibana/4.5/debian stable main" | sudo tee -a /etc/apt/sources.list
 wget https://download.elastic.co/kibana/kibana/kibana-4.6.2-amd64.deb
 
 sudo mkdir /usr/local/share/GeoIP
@@ -86,7 +85,7 @@ sudo wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
 sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
 sudo wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
 gunzip *.gz
-
+cd ~
 wget https://nxlog.co/system/files/products/files/1/nxlog-ce_2.9.1716_ubuntu_1404_amd64.deb
 dpkg -i nxlog-ce_2.9.1716_ubuntu_1404_amd64.deb
 dpkg -i kibana-4.6.2-amd64.deb
@@ -102,7 +101,6 @@ sudo /opt/logstash/bin/logstash-plugin install logstash-filter-tld
 sudo /opt/logstash/bin/logstash-plugin install logstash-filter-elasticsearch
 sudo /opt/logstash/bin/logstash-plugin install logstash-filter-rest
 sudo /opt/logstash/bin/plugin install logstash-filter-translate
-sudo /opt/kibana/bin/kibana plugin --install elastic/sense
 sudo /opt/kibana/bin/kibana plugin --install elastic/sense
 sudo /opt/kibana/bin/kibana plugin --install prelert_swimlane_vis -u https://github.com/prelert/kibana-swimlane-vis/archive/v0.1.0.tar.gz
 cd ~
@@ -158,21 +156,24 @@ sudo update-rc.d kibana defaults
 
 # Install logstash configurations
 Switch all configs to come from git
+sudo apt-get install git -y
 cd ~
 git clone https://github.com/SMAPPER/Logstash-Configs.git
-sudo cp -rf ~/Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
-sudo cp -rf ~/Logstash-Config/dictionaries /etc/logstash/
-sudo cp -rf ~/Logstash-Config/grok-patterns /etc/logstash/
-sudo cp -rf ~/Logstash-Config/configfiles-setup_required/8*.conf /etc/logstash/conf.d/
+sudo cp -rf Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
+sudo cp -rf Logstash-Configs/dictionaries /lib/
+sudo cp -rf Logstash-Configs/grok-patterns /lib/
+sudo cp -rf Logstash-Configs/configfiles-setup_required/8*.conf /etc/logstash/conf.d/
 
 # Finish setting up frequency analysis service
-sudo cp -rf ~/Logstash-Config/configfiles-setup_required/freq/freq.sh /opt/freq/
+sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq.sh /opt/freq/
 sudo chmod +x /opt/freq/freq.sh
-sudo cp -rf ~/Logstash-Config/configfiles-setup_required/freq/freq /etc/init.d/
+sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq /etc/init.d/
 sudo chmod +x /etc/init.d/freq
 sudo update-rc.d freq defaults
 sudo service freq start
 
+sudo service elasticsearch restart
+sudo service kibana restart
 
 To manually run Logstash (testing and troubleshooting) run:
 /opt/logstash/bin/logstash -f /etc/logstash/conf.d/
