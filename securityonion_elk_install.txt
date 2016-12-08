@@ -78,7 +78,7 @@ wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add 
 wget https://download.elastic.co/kibana/kibana/kibana-4.6.2-amd64.deb
 
 sudo mkdir /usr/local/share/GeoIP
-cd /usr/local/share
+cd /usr/local/share/GeoIP
 sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
 sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 sudo wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
