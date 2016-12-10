@@ -1,5 +1,16 @@
 Security Onion with ELK
 
+# Guide requires Ubuntu 14.04 and Security Onion installed and setup
+# to install Security Onion on a custom Ubuntu 14.04 run these commands
+
+echo "debconf debconf/frontend select noninteractive" | sudo debconf-set-selections
+sudo apt-get -y install software-properties-common
+sudo add-apt-repository -y ppa:securityonion/stable
+sudo apt-get update
+sudo apt-get -y install securityonion-all syslog-ng-core securityonion-onionsalt
+
+# Then you will need to run sosetup twice to setup Security Onion
+
 [Install] - Install Security Onion then proceed with the steps below
 sudo soup -y
 sudo apt-get install open-vm-tools -y (or install vmware tools)
