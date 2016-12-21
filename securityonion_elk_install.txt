@@ -154,7 +154,7 @@ END HUMAN INTERACTION
 
 sudo nsm --all --restart
 
-sudo vi /etc/elasticsearch/elasticsearch.yaml
+sudo vi /etc/elasticsearch/elasticsearch.yml
 
 Uncomment network.host and set it to:
 network.host 0.0.0.0
@@ -189,6 +189,17 @@ sudo service freq start
 sudo service elasticsearch restart
 sudo service kibana restart
 
+sudo iptables -t nat -A PREROUTING -p tcp --dport 514 -j REDIRECT --to-port 1514
+sudo su
+iptables-save > /etc/iptables.rules
+exit
+
+sudo vi /etc/network/interfaces
+
+# MANUAL INTERACTION
+Add the below line to the management NIC
+pre-up iptables-restore < /etc/iptables.rules
+
 To manually run Logstash (testing and troubleshooting) run:
 /opt/logstash/bin/logstash -f /etc/logstash/conf.d/
 
@@ -205,10 +216,10 @@ sudo service kibana start
 sudo service logstash start
 
 # If you rerun security onion setup you will need to rerun these ufw commands as well as renable the suricata.yaml settings
-ufw allow 9200/tcp
-ufw allow 5601/tcp
-ufw allow 15672/tcp
-ufw allow 443/tcp
+sudo ufw allow 9200/tcp
+sudo ufw allow 5601/tcp
+sudo ufw allow 15672/tcp
+sudo ufw allow 443/tcp
 
 Access Kibana from http://[ip_address]:5601
 Access Elasticsearch from http://[ip_address]:9200    (add /_plugin/kopf to access kopf)
@@ -217,7 +228,7 @@ To manually run Logstash (testing and troubleshooting) run:
 /opt/logstash/bin/logstash -f /etc/logstash/conf.d/
 
 # Setup NXLog config file (nxlog feeds data into Logstash)
-sudo cp -f ~/Logstash-Config/nxlog.conf -f /etc/nxlog/nxlog.conf
+sudo cp -f ~/Logstash-Configs/nxlog.conf -f /etc/nxlog/nxlog.conf
 sudo service nxlog restart
 
 
