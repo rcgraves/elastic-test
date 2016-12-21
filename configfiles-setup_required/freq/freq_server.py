@@ -22,26 +22,41 @@ import SocketServer
 import urlparse
 import re
 import argparse
+import os
 
 
 class freqapi(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        (ignore, ignore, ignore, urlparams, ignore) = urlparse.urlsplit(self.path)
-        cmdstr=re.search("cmd=(?:measure|normal)",urlparams)
-        tgtstr =  re.search("tgt=",urlparams)
-        if not cmdstr or not tgtstr:
-            self.wfile.write('<html><body>API Documentation<br> http://%s:%s/?cmd=measure&tgt=&ltstring&gt <br> http://%s:%s/?cmd=normal&tgt=&ltstring&gt <br> http://%s:%s/?cmd=normal&tgt=&ltstring&gt&weight=&ltweight&gt </body></html>' % (self.server.server_address[0], self.server.server_address[1],self.server.server_address[0], self.server.server_address[1],self.server.server_address[0], self.server.server_address[1]))
-            return
-        params={}
-        try:
-            for prm in urlparams.split("&"):
-                key,value = prm.split("=")
-                params[key]=value
-        except:
-            self.wfile.write('<html><body>Unable to parse the url. </body></html>')
-            return
+        (ignore, ignore, urlpath, urlparams, ignore) = urlparse.urlsplit(self.path)
+        cmdstr = tgtstr = None
+        print(urlparams)
+        if re.search("[\/](measure|normal|alexa|domain)[\/].*?", urlpath):
+            print("REST API CALL", urlpath)
+            cmdstr = re.search(r"[\/](measure|normal|alexa|domain)[\/].*$", urlpath)
+            tgtstr = re.search(r"[\/](measure|normal|alexa|domain)[\/](.*)$", urlpath)
+            if not cmdstr or not tgtstr:
+                self.wfile.write('<html><body>API Documentation<br> http://%s:%s/?cmd=measure&tgt=&ltstring&gt <br> http://%s:%s/?cmd=normal&tgt=&ltstring&gt <br> http://%s:%s/?cmd=normal&tgt=&ltstring&gt&weight=&ltweight&gt </body></html>' % (self.server.server_address[0], self.server.server_address[1],self.server.server_address[0], self.server.server_address[1],self.server.server_address[0], self.server.server_address[1]))
+                return
+            params = {}
+            params["cmd"] = cmdstr.group(1)
+            params["tgt"] = tgtstr.group(2)
+            print(params)
+        else:
+            cmdstr=re.search("cmd=(?:measure|normal|alexa|domain)",urlparams)
+            tgtstr =  re.search("tgt=",urlparams)
+            if not cmdstr or not tgtstr:
+                self.wfile.write('<html><body>API Documentation<br> http://%s:%s/?cmd=measure&tgt=&ltstring&gt <br> http://%s:%s/?cmd=normal&tgt=&ltstring&gt <br> http://%s:%s/?cmd=normal&tgt=&ltstring&gt&weight=&ltweight&gt </body></html>' % (self.server.server_address[0], self.server.server_address[1],self.server.server_address[0], self.server.server_address[1],self.server.server_address[0], self.server.server_address[1]))
+                return
+            params={}
+            try:
+                for prm in urlparams.split("&"):
+                    key,value = prm.split("=")
+                    params[key]=value
+            except:
+                self.wfile.write('<html><body>Unable to parse the url. </body></html>')
+                return
         if params["cmd"] == "normal":
             self.server.safe_print("cache cleared")
             try:
@@ -71,7 +86,18 @@ class freqapi(BaseHTTPServer.BaseHTTPRequestHandler):
                     self.server.cache_lock.release()
                 if self.server.verbose>=2: self.server.safe_print ( "Server cache: ", str(self.server.cache))
             self.wfile.write(str(measure))
-            return
+        elif params["cmd"] == "alexa":
+            if self.server.verbose: self.server.safe_print ("Alexa Query:", params["tgt"])
+            if not self.server.alexa:
+                if self.server.verbose: self.server.safe_print ("No Alexa data loaded. Restart program.")
+                self.wfile.write("Alexa not loaded on server. Restart server with -a or --alexa and file path.")
+            else:
+                if self.server.verbose: self.server.safe_print ("Alexa queried for:%s" % (params['tgt']))              
+                self.wfile.write(str(self.server.alexa.get(params["tgt"],"NOT FOUND")))
+        elif params["cmd"] == "domain":
+            self.wfile.write("Not Implemented Yet.")
+        
+        return
     def log_message(self, format, *args):
         return
 
@@ -81,6 +107,7 @@ class ThreadedFreqServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer, Ba
         self.cache = {}
         self.cache_lock = threading.Lock()
         self.screen_lock = threading.Lock()
+        self.alexa = ""
         self.verbose = False
         self.fc_lock = threading.Lock()
         self.dirty_fc = False
@@ -119,6 +146,7 @@ def main():
     parser.add_argument('port',type=int,help='You must provide a TCP Port to bind to')
     parser.add_argument('freq_table',help='You must provide the frequency table name (optionally including the path)')
     parser.add_argument('-v','--verbose',action='count',required=False,help='Print verbose output to the server screen.  -vv is more verbose.')
+    parser.add_argument('-a','--alexa',required=False,help='Optionally provide a local file path to an Alexa top-1m.csv')
 
     #args = parser.parse_args("-s 1 -vv 8081 english_lowercase.freq".split())
     args = parser.parse_args()
@@ -126,6 +154,14 @@ def main():
     #Setup the server.
     server = ThreadedFreqServer((args.address, args.port), freqapi)
     server.fc.load(args.freq_table)
+    if args.alexa:
+        if not os.path.exists(args.alexa):
+            print("Alexa file not found %s" % (args.alexa))
+        else:
+            try:
+                server.alexa = dict([(a,b) for b,a in re.findall(r"^(\d+),(.*)", open(args.alexa).read(), re.MULTILINE)])
+            except Exception as e:
+                print("Unable to parse alexa file:%s" % (str(e)))
     server.verbose = args.verbose
     #Schedule the first save interval unless save_interval was set to 0.
     if args.save_interval:
