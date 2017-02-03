@@ -111,7 +111,6 @@ sudo /opt/logstash/bin/logstash-plugin install logstash-filter-translate
 sudo /opt/logstash/bin/logstash-plugin install logstash-filter-tld
 sudo /opt/logstash/bin/logstash-plugin install logstash-filter-elasticsearch
 sudo /opt/logstash/bin/logstash-plugin install logstash-filter-rest
-sudo /opt/logstash/bin/logstash-plugin install logstash-filter-translate
 sudo /opt/kibana/bin/kibana plugin --install elastic/sense
 sudo /opt/kibana/bin/kibana plugin --install prelert_swimlane_vis -u https://github.com/prelert/kibana-swimlane-vis/archive/v0.1.0.tar.gz
 cd ~
