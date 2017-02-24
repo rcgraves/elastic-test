@@ -1,4 +1,14 @@
-﻿Import-Module Posh-SSH
+﻿#######################
+# CAMTableExport.ps1
+#
+# Version:      1.0
+# Author:       Justin Henderson
+# Requirements: Posh-SSH module installed (https://github.com/darkoperator/Posh-SSH)
+#
+# Description: This script is used to connect to switches and export their CAM table.
+# It is useful for identifying devices plugged into a network.
+
+Import-Module Posh-SSH
 # Modify this array with a list of your switches
 $switches = @("10.0.0.240")
 # Current supported output limited to csv
