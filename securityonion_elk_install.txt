@@ -64,6 +64,9 @@ No, disable ELSA.
 Yes, proceed with the changes!
 END RECOMMEND OPTIONS
 
+# Stop syslog-ng
+sudo service syslog-ng stop
+
 # Install OpenJDK
 sudo apt-get update
 sudo apt-get install openjdk-7-jre
@@ -87,9 +90,6 @@ cd ~
 
 # Download nxlog
 wget https://nxlog.co/system/files/products/files/1/nxlog-ce_2.9.1716_ubuntu_1404_amd64.deb
-
-# Stop syslog-ng
-sudo service syslog-ng stop
 
 # Install nxlog and Elastic packages
 sudo dpkg -i nxlog-ce_*.deb
