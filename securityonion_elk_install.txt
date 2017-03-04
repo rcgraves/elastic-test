@@ -119,17 +119,17 @@ sudo /opt/kibana/bin/kibana plugin -i kibana-slider-plugin -u https://github.com
 sudo /opt/kibana/bin/kibana plugin --install elastic/timelion
 sudo /opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
 
-# Frequency analysis
-sudo mkdir /opt/freq
-cd /opt/freq
-sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq.py
-sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq_server.py
-sudo chmod +x *.py
-sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_lowercase.freq
-sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_mixedcase.freq
-sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/dns.freq
-sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/file.freq
-sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/uri.freq
+# Frequency analysis - disabled for now
+#sudo mkdir /opt/freq
+#cd /opt/freq
+#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq.py
+#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq_server.py
+#sudo chmod +x *.py
+#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_lowercase.freq
+#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_mixedcase.freq
+#sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/dns.freq
+#sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/file.freq
+#sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/uri.freq
 
 
 BEGIN HUMAN INTERACTION
@@ -167,13 +167,13 @@ sudo cp -rf Logstash-Configs/dictionaries /lib/
 sudo cp -rf Logstash-Configs/grok-patterns /lib/
 sudo cp -rf Logstash-Configs/configfiles-setup_required/8*.conf /etc/logstash/conf.d/
 
-# Finish setting up frequency analysis service
-sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq.sh /opt/freq/
-sudo chmod +x /opt/freq/freq.sh
-sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq /etc/init.d/
-sudo chmod +x /etc/init.d/freq
-sudo update-rc.d freq defaults
-sudo service freq start
+# Finish setting up frequency analysis service - disabled for now
+#sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq.sh /opt/freq/
+#sudo chmod +x /opt/freq/freq.sh
+#sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq /etc/init.d/
+#sudo chmod +x /etc/init.d/freq
+#sudo update-rc.d freq defaults
+#sudo service freq start
 
 # Update firewall rules
 sudo iptables -t nat -A PREROUTING -p tcp --dport 514 -j REDIRECT --to-port 1514
@@ -189,6 +189,8 @@ pre-up iptables-restore < /etc/iptables.rules
 # Not using CIF right now
 sudo mv /etc/logstash/conf.d/8900_postprocess_cif_query.conf /etc/logstash/
 
+# Disable alexa for now
+sudo mv /etc/logstash/conf.d/8007_postprocess_dns_alexa_tagging.conf /etc/logstash/
 # Disable frequency analysis for now
 sudo mv /etc/logstash/conf.d/*postprocess_freq_analysis_* /etc/logstash/
 
