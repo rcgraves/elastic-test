@@ -6,9 +6,19 @@
 # 2017-03-04
 # Replaced Oracle Java with OpenJDK
 # Removed CIF and frequency analysis for now
-
+#
+# TODO
+# Remove nxlog and use our existing syslog-ng
+# This requires changing /etc/logstash/conf.d/0000_input_bro.conf to rename MESSAGE to message
 # Guide requires Ubuntu 14.04 and Security Onion installed and setup
 # to install Security Onion on a custom Ubuntu 14.04 run these commands
+# Sample syslog-ng.conf:
+# destination d_bro_conn { tcp("127.0.0.1" port(6050) template("$(format-json type=\"bro_conn\" --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };
+#
+#log {
+#        source(s_bro_conn);
+#        log { destination(d_bro_conn); };
+#};
 
 echo "debconf debconf/frontend select noninteractive" | sudo debconf-set-selections
 sudo apt-get -y install software-properties-common
