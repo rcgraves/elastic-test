@@ -105,8 +105,8 @@ sudo service kibana start
 # Now we need to get logs into ELK, so configure syslog-ng to send logs to ELK
 FILE="/etc/syslog-ng/syslog-ng.conf"
 sudo cp $FILE $FILE.elsa
-sed -i '/^destination d_elsa/a destination d_elk { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
-sed -i 's/log { destination(d_elsa); };/log { destination(d_elk); };/' $FILE
+sudo sed -i '/^destination d_elsa/a destination d_elk { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
+sudo sed -i 's/log { destination(d_elsa); };/log { destination(d_elk); };/' $FILE
 sudo service syslog-ng restart
 
 # Create some logs
