@@ -9,16 +9,15 @@
 #
 # TODO
 # Remove nxlog and use our existing syslog-ng
-# This requires changing /etc/logstash/conf.d/0000_input_bro.conf to rename MESSAGE to message
+# Add new destination to /etc/syslog-ng/syslog-ng.conf:
+# destination d_elk { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };
+# Update logstash 0000-input-bro.conf:
+# rename => { "MESSAGE" => "message" }
+# Update logstash 1100_preprocess_bro*.conf changing type to PROGRAM like this:
+#   if [PROGRAM] == "bro_conn" {
+
 # Guide requires Ubuntu 14.04 and Security Onion installed and setup
 # to install Security Onion on a custom Ubuntu 14.04 run these commands
-# Sample syslog-ng.conf:
-# destination d_bro_conn { tcp("127.0.0.1" port(6050) template("$(format-json type=\"bro_conn\" --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };
-#
-#log {
-#        source(s_bro_conn);
-#        log { destination(d_bro_conn); };
-#};
 
 echo "debconf debconf/frontend select noninteractive" | sudo debconf-set-selections
 sudo apt-get -y install software-properties-common
