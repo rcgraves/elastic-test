@@ -5,10 +5,18 @@
 # This guide assumes that you're running the latest Security Onion 14.04.5.2 ISO image
 # and that you've run through Setup, choosing Evaluation Mode to enable ELSA.
 #
+# WARNING!
+# This is PRE ALPHA and unsupported!
+# Do NOT run this on a production system that you care about!
+# 
+# DISCLAIMER
+# If this script breaks your system, you get to keep both pieces!
+# 
+# THANKS
+# Special thanks to Justin Henderson for his Logstash configs and installation guide!
+#
 # Forked from:
 # https://github.com/SMAPPER/Logstash-Configs/blob/master/securityonion_elk_install.txt
-#
-# Special thanks to Justin Henderson for his Logstash configs and installation guide!
 #
 # 2017-03-04
 # Replaced Oracle Java with OpenJDK
@@ -74,7 +82,7 @@ sudo /opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/r
 FILE="/etc/elasticsearch/elasticsearch.yml"
 echo "network.host 0.0.0.0" | sudo tee -a $FILE
 echo "cluster.name: securityonion" | sudo tee -a $FILE
-echo "index.number_of_replicas: 0" | sudo tee -a FILE
+echo "index.number_of_replicas: 0" | sudo tee -a $FILE
 
 # Install logstash configurations
 # Switch all configs to come from git
