@@ -16,20 +16,26 @@ if [ "$(id -u)" -ne 0 ]; then
 	exit 1
 fi
 
-if [ ! -f /etc/nsm/securityonion.conf ]; then
-	echo "/etc/nsm/securityonion.conf not found!  Exiting!"
-	exit 1
-fi
+for FILE in /etc/nsm/securityonion.conf /etc/nsm/sensortab; do
+	if [ ! -f $FILE ]; then
+		echo "$FILE not found!  Exiting!"
+		exit 1
+	fi
+done
 
 if ! grep -i "ELSA=YES" /etc/nsm/securityonion.conf > /dev/null 2>&1 ; then
-	echo "Looks like ELSA isn't current enabled.  Exiting!"
+	echo "ELSA is not enabled!  Exiting!"
 	exit 1
 fi
 
 if [ -f /root/.ssh/securityonion_ssh.conf ]; then
-	echo "This box appears to be a sensor reporting to a separate master server."
-	echo "However, this script only supports standalone boxes right now."
-	echo "Exiting!"
+	echo "This script can only be executed on boxes running in Evaluation Mode.  Exiting!"
+	exit 1
+fi
+
+SENSOR=`grep -v "^#" /etc/nsm/sensortab | tail -1 | awk '{print $1}'`
+if ! grep 'PCAP_OPTIONS="-c"' /etc/nsm/$SENSOR/sensor.conf > /dev/null 2>&1 ; then
+	echo "This script can only be executed on boxes running in Evaluation Mode.  Exiting!"
 	exit 1
 fi
 
