@@ -78,8 +78,8 @@ mkdir $DIR
 cd $DIR
 
 echo "* Installing OpenJDK..."
-sudo apt-get update
-sudo apt-get install openjdk-7-jre-headless
+sudo apt-get update > /dev/null
+sudo apt-get -y install openjdk-7-jre-headless
 
 echo "* Downloading ELK packages..."
 wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.4/elasticsearch-2.4.4.deb
@@ -95,6 +95,7 @@ sudo dpkg -i /tmp/elk/kibana-*-amd64.deb
 echo "* Downloading GeoIP data..."
 sudo mkdir /usr/local/share/GeoIP
 cd /usr/local/share/GeoIP
+sudo rm Geo*.dat
 sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
 sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 sudo wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
@@ -167,7 +168,7 @@ if [ -f /etc/nsm/sensortab ]; then
 		echo -n "* Replaying pcaps in /opt/samples/ to create logs..."
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
 		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap; do
-		echo "." 
+		echo -n "." 
 		sudo tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
 		done
 	fi
