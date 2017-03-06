@@ -1,28 +1,44 @@
 # Security Onion with ELK
 #
+# This guide will install ELK and configure syslog-ng to send logs to ELK.
+#
+# This guide assumes that you're running the latest Security Onion 14.04.5.2 ISO image
+# and that you've run through Setup, choosing Evaluation Mode to enable ELSA.
+#
 # Forked from:
 # https://github.com/SMAPPER/Logstash-Configs/blob/master/securityonion_elk_install.txt
+#
+# Special thanks to Justin Henderson for his Logstash configs and installation guide!
 #
 # 2017-03-04
 # Replaced Oracle Java with OpenJDK
 # Removed CIF and frequency analysis for now
+# Updated ELK components to latest versions compatible with openjdk-7
 #
 # 2017-03-06
 # Replaced nxlog with our existing syslog-ng
-#
-# This guide assumes that you're running the latest Security Onion 14.04.5.2
-# and that you've run through Setup, choosing Evaluation Mode to enable ELSA.
-# This guide will install ELK and configure syslog-ng to send logs to ELK.
+# Changed openjdk-7-jre to openjdk-7-jre-headless
+# Removed Setup instructions
+# Added note assuming 14.04.5.2 ISO image with Setup run in Evaluation Mode
 
 # Install OpenJDK
 sudo apt-get update
-sudo apt-get install openjdk-7-jre
+sudo apt-get install openjdk-7-jre-headless
+
+# Make a directory to store downloads
+mkdir /tmp/elk
+cd /tmp/elk
 
 # Download Elastic packages
 wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.4/elasticsearch-2.4.4.deb
 wget https://download.elastic.co/logstash/logstash/packages/debian/logstash-2.4.1_all.deb
 wget https://download.elastic.co/kibana/kibana/kibana-4.6.4-amd64.deb
 wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+
+# Install Elastic packages
+sudo dpkg -i /tmp/elk/kibana-*-amd64.deb
+sudo dpkg -i /tmp/elk/elasticsearch-*.deb
+sudo dpkg -i /tmp/elk/logstash-*_all.deb
 
 # Download GeoIP data
 sudo mkdir /usr/local/share/GeoIP
@@ -34,11 +50,6 @@ sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/
 sudo wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
 sudo gunzip *.gz
 cd ~
-
-# Install Elastic packages
-sudo dpkg -i kibana-*-amd64.deb
-sudo dpkg -i elasticsearch-*.deb
-sudo dpkg -i logstash-*_all.deb
 
 # Install plugins
 sudo apt-get -y install python-pip
@@ -72,30 +83,6 @@ sudo /opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/r
 #sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/dns.freq
 #sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/file.freq
 #sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/uri.freq
-
-# Stop sensor processes
-sudo nsm_sensor_ps-stop
-
-# Switch from Snort to Suricata
-sudo sed -i 's/ENGINE=snort/ENGINE=suricata/' /etc/nsm/securityonion.conf
-
-# Update rules for Suricata
-sudo rule-update
-
-# BEGIN HUMAN INTERACTION
-# using sudo gedit or sudo vi edit /etc/nsm/[Hostname-eth[interface#]]/suricata.yaml - NOTE: You cannot use a tab in the configuration file
-# Set enabled to yes (This is right under eve-log)
-# [Optional settings for suricata.yaml]
-# Uncomment payload printable 
-# Set xff enabled to yes
-# Set files force-magic and force-md5 to yes
-# Comment line for Bidirectional Flow
-# Uncomment Unidirectional netflow
-# Uncomment smtp extended to yes
-# END HUMAN INTERACTION
-
-# Start sensor processes
-sudo nsm_sensor_ps-start
 
 # Configure ElasticSearch
 sudo vi /etc/elasticsearch/elasticsearch.yml
@@ -155,22 +142,51 @@ sed -i '/^destination d_elsa/a destination d_elk { tcp("127.0.0.1" port(6050) te
 sed -i 's/log { destination(d_elsa); };/log { destination(d_elk); };/' /etc/syslog-ng/syslog-ng.conf
 sudo service syslog-ng restart
 
+# Create some logs
+sudo tcpreplay -ieth1 -M10 /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap
+
+# Check for logs
+# At this point, you should be able to access Kibana:
+# http://localhost:5601
+# You should see Bro logs and Snort alerts (although the Snort alerts may not be parsed properly right now)
+
+# Switch to Suricata and enable EVE JSON output
+# Stop sensor processes
+sudo nsm_sensor_ps-stop
+
+# Switch from Snort to Suricata
+sudo sed -i 's/ENGINE=snort/ENGINE=suricata/' /etc/nsm/securityonion.conf
+
+# Update rules for Suricata
+sudo rule-update
+
+# BEGIN HUMAN INTERACTION
+# using sudo gedit or sudo vi edit /etc/nsm/[Hostname-eth[interface#]]/suricata.yaml - NOTE: You cannot use a tab in the configuration file
+# Set enabled to yes (This is right under eve-log)
+# [Optional settings for suricata.yaml]
+# Uncomment payload printable 
+# Set xff enabled to yes
+# Set files force-magic and force-md5 to yes
+# Comment line for Bidirectional Flow
+# Uncomment Unidirectional netflow
+# Uncomment smtp extended to yes
+# END HUMAN INTERACTION
+
+# Start sensor processes
+sudo nsm_sensor_ps-start
+
+# TESTING AND TROUBLESHOOTING
+# You should also be able to access Elasticsearch:
+# http://localhost:9200    (add /_plugin/kopf to access kopf)
+# To manually run Logstash (testing and troubleshooting) run:
+/opt/logstash/bin/logstash -f /etc/logstash/conf.d/
+
+# NOTES
 # If you rerun security onion setup you will need to rerun these ufw commands as well as renable the suricata.yaml settings
 sudo ufw allow 9200/tcp
 sudo ufw allow 5601/tcp
 sudo ufw allow 15672/tcp
 sudo ufw allow 443/tcp
-
-# Access
-Access Kibana from http://[ip_address]:5601
-Access Elasticsearch from http://[ip_address]:9200    (add /_plugin/kopf to access kopf)
-
-# Testing and troubleshooting
-To manually run Logstash (testing and troubleshooting) run:
-/opt/logstash/bin/logstash -f /etc/logstash/conf.d/
-
-
-NOTES
 
 NEED TO DO:
 
