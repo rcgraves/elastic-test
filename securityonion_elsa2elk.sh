@@ -178,9 +178,8 @@ if [ -f /etc/nsm/sensortab ]; then
 	fi
 fi
 
+header "All done!"
 cat << EOF
-
-All done!
 
 After a minute or two, you should be able to access Kibana via the following URL:
 http://localhost:5601
