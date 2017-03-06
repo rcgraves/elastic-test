@@ -85,89 +85,90 @@ header() {
 }
 
 header "Installing OpenJDK"
-sudo apt-get update > /dev/null
-sudo apt-get -y install openjdk-7-jre-headless
+apt-get update > /dev/null
+apt-get -y install openjdk-7-jre-headless
 
 header "Downloading ELK packages"
 wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.4/elasticsearch-2.4.4.deb
 wget https://download.elastic.co/logstash/logstash/packages/debian/logstash-2.4.1_all.deb
 wget https://download.elastic.co/kibana/kibana/kibana-4.6.4-amd64.deb
-wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add -
 
 header "Installing ELK packages"
-sudo dpkg -i /tmp/elk/elasticsearch-*.deb
-sudo dpkg -i /tmp/elk/logstash-*_all.deb
-sudo dpkg -i /tmp/elk/kibana-*-amd64.deb
+dpkg -i /tmp/elk/elasticsearch-*.deb
+dpkg -i /tmp/elk/logstash-*_all.deb
+dpkg -i /tmp/elk/kibana-*-amd64.deb
 
 header "Downloading GeoIP data"
-sudo mkdir /usr/local/share/GeoIP
+mkdir /usr/local/share/GeoIP
 cd /usr/local/share/GeoIP
-sudo rm Geo*.dat
-sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-sudo wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-sudo wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
-sudo gunzip *.gz
+rm Geo*.dat
+wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+gunzip *.gz
 cd $DIR
 
 header "Installing ELK plugins"
-sudo apt-get -y install python-pip
-sudo pip install elasticsearch-curator
-sudo /usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
-sudo /opt/logstash/bin/logstash-plugin install logstash-filter-translate
-sudo /opt/logstash/bin/logstash-plugin install logstash-filter-tld
-sudo /opt/logstash/bin/logstash-plugin install logstash-filter-elasticsearch
-sudo /opt/logstash/bin/logstash-plugin install logstash-filter-rest
-sudo /opt/kibana/bin/kibana plugin --install elastic/sense
-sudo /opt/kibana/bin/kibana plugin --install prelert_swimlane_vis -u https://github.com/prelert/kibana-swimlane-vis/archive/v0.1.0.tar.gz
+apt-get -y install python-pip
+pip install elasticsearch-curator
+/usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
+/opt/logstash/bin/logstash-plugin install logstash-filter-translate
+/opt/logstash/bin/logstash-plugin install logstash-filter-tld
+/opt/logstash/bin/logstash-plugin install logstash-filter-elasticsearch
+/opt/logstash/bin/logstash-plugin install logstash-filter-rest
+/opt/kibana/bin/kibana plugin --install elastic/sense
+/opt/kibana/bin/kibana plugin --install prelert_swimlane_vis -u https://github.com/prelert/kibana-swimlane-vis/archive/v0.1.0.tar.gz
 git clone https://github.com/oxalide/kibana_metric_vis_colors.git
-sudo apt-get install zip -y
+apt-get install zip -y
 zip -r kibana_metric_vis_colors kibana_metric_vis_colors
-sudo /opt/kibana/bin/kibana plugin --install metric-vis-colors -u file://$DIR/kibana_metric_vis_colors.zip
-sudo /opt/kibana/bin/kibana plugin -i kibana-slider-plugin -u https://github.com/raystorm-place/kibana-slider-plugin/releases/download/v0.0.2/kibana-slider-plugin-v0.0.2.tar.gz
-sudo /opt/kibana/bin/kibana plugin --install elastic/timelion
-sudo /opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
+/opt/kibana/bin/kibana plugin --install metric-vis-colors -u file://$DIR/kibana_metric_vis_colors.zip
+/opt/kibana/bin/kibana plugin -i kibana-slider-plugin -u https://github.com/raystorm-place/kibana-slider-plugin/releases/download/v0.0.2/kibana-slider-plugin-v0.0.2.tar.gz
+/opt/kibana/bin/kibana plugin --install elastic/timelion
+/opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
 
 header "Configuring ElasticSearch"
 FILE="/etc/elasticsearch/elasticsearch.yml"
-echo "network.host: 127.0.0.1" | sudo tee -a $FILE
-echo "cluster.name: securityonion" | sudo tee -a $FILE
-echo "index.number_of_replicas: 0" | sudo tee -a $FILE
+echo "network.host: 127.0.0.1" >> $FILE
+echo "cluster.name: securityonion" >> $FILE
+echo "index.number_of_replicas: 0" >> $FILE
 
 header "Installing logstash config files"
-sudo apt-get install git -y
+apt-get install git -y
 git clone https://github.com/dougburks/Logstash-Configs.git
-sudo cp -rf Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
-sudo cp -rf Logstash-Configs/dictionaries /lib/
-sudo cp -rf Logstash-Configs/grok-patterns /lib/
+cp -rf Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
+cp -rf Logstash-Configs/dictionaries /lib/
+cp -rf Logstash-Configs/grok-patterns /lib/
 
 header "Enabling ELK"
-sudo update-rc.d elasticsearch defaults
-sudo update-rc.d logstash defaults
-sudo update-rc.d kibana defaults
+update-rc.d elasticsearch defaults
+update-rc.d logstash defaults
+update-rc.d kibana defaults
 
 header "Starting ELK"
-sudo service elasticsearch start
-sudo service logstash start
-sudo service kibana start
+service elasticsearch start
+service logstash start
+service kibana start
 
 header "Reconfiguring syslog-ng to send logs to ELK"
 FILE="/etc/syslog-ng/syslog-ng.conf"
-sudo cp $FILE $FILE.elsa
-sudo sed -i '/^destination d_elsa/a destination d_elk { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
-sudo sed -i 's/log { destination(d_elsa); };/log { destination(d_elk); };/' $FILE
-sudo sed -i '/rewrite(r_host);/d' $FILE
-sudo sed -i '/rewrite(r_cisco_program);/d' $FILE
-sudo sed -i '/rewrite(r_snare);/d' $FILE
-sudo sed -i '/rewrite(r_from_pipes);/d' $FILE
-sudo sed -i '/rewrite(r_pipes);/d' $FILE
-sudo sed -i '/parser(p_db);/d' $FILE
-sudo sed -i '/rewrite(r_extracted_host);/d' $FILE
-sudo service syslog-ng restart
+cp $FILE $FILE.elsa
+sed -i '/^destination d_elsa/a destination d_elk { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
+sed -i 's/log { destination(d_elsa); };/log { destination(d_elk); };/' $FILE
+sed -i '/rewrite(r_host);/d' $FILE
+sed -i '/rewrite(r_cisco_program);/d' $FILE
+sed -i '/rewrite(r_snare);/d' $FILE
+sed -i '/rewrite(r_from_pipes);/d' $FILE
+sed -i '/rewrite(r_pipes);/d' $FILE
+sed -i '/parser(p_db);/d' $FILE
+sed -i '/rewrite(r_extracted_host);/d' $FILE
+service syslog-ng restart
 
-header "Setting ELSA=NO in /etc/nsm/securityonion.conf"
-sudo sed -i 's/ELSA=YES/ELSA=NO/' $FILE
+FILE="/etc/nsm/securityonion.conf"
+header "Setting ELSA=NO in $FILE"
+sed -i 's/ELSA=YES/ELSA=NO/' $FILE
 
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
@@ -176,7 +177,7 @@ if [ -f /etc/nsm/sensortab ]; then
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
 		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap; do
 		echo -n "." 
-		sudo tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
+		tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
 		done
 	fi
 fi
