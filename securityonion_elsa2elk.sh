@@ -3,10 +3,10 @@
 #
 # THANKS
 # Special thanks to Justin Henderson for his Logstash configs and installation guide!
-# Forked from:
-# https://github.com/SMAPPER/Logstash-Configs/blob/master/securityonion_elk_install.txt
+# https://github.com/SMAPPER/Logstash-Configs
 #
 # CHANGELOG
+#
 # 2017-03-04
 # Replaced Oracle Java with OpenJDK
 # Removed CIF and frequency analysis for now
@@ -17,6 +17,8 @@
 # Changed openjdk-7-jre to openjdk-7-jre-headless
 # Removed Setup instructions
 # Added note assuming 14.04.5.2 ISO image with Setup run in Evaluation Mode
+# Converted to automated shell script
+# Added code to disable ELSA and reconfigure syslog-ng to send logs to ELK
 #
 # TODO
 # Add authentication proxy for Kibana
@@ -48,15 +50,19 @@ fi
 
 clear
 cat << EOF 
-This QUICK and DIRTY script is designed to convert your Security Onion box from ELSA to ELK.
+This QUICK and DIRTY script is designed to allow you to quickly and easily experiment
+with ELK on Security Onion.
 
 This script assumes that you're running the latest Security Onion 14.04.5.2 ISO image
 and that you've already run through Setup, choosing Evaluation Mode to enable ELSA.
 
-This script will install and configure ELK and then configure syslog-ng to send logs to ELK.
+This script will do the following:
+- download, install, and configure ELK
+- disable ELSA
+- configure syslog-ng to send logs to ELK
 
 WARNINGS AND DISCLAIMERS
-This script is PRE-ALPHA and UNSUPPORTED!
+This script is PRE-ALPHA and totally UNSUPPORTED!
 If this script breaks your system, you get to keep both pieces!
 Do NOT run this on a production system that you care about!
 Kibana has no authentication by default, so do NOT run this on a system with sensitive data!
