@@ -81,7 +81,8 @@ cd $DIR
 banner="========================================================================="
 
 header() {
-  printf '%s\n' "$banner" "$*" "$banner"
+	echo
+	printf '%s\n' "$banner" "$*" "$banner"
 }
 
 header "Installing OpenJDK"
@@ -152,6 +153,14 @@ service elasticsearch start
 service logstash start
 service kibana start
 
+header "Disabling ELSA"
+FILE="/etc/nsm/securityonion.conf"
+sed -i 's/ELSA=YES/ELSA=NO/' $FILE
+service sphinxsearch stop
+echo "manual" > /etc/init/sphinxsearch.conf.override
+a2dissite elsa
+service apache2 restart
+
 header "Reconfiguring syslog-ng to send logs to ELK"
 FILE="/etc/syslog-ng/syslog-ng.conf"
 cp $FILE $FILE.elsa
@@ -165,10 +174,6 @@ sed -i '/rewrite(r_pipes);/d' $FILE
 sed -i '/parser(p_db);/d' $FILE
 sed -i '/rewrite(r_extracted_host);/d' $FILE
 service syslog-ng restart
-
-FILE="/etc/nsm/securityonion.conf"
-header "Setting ELSA=NO in $FILE"
-sed -i 's/ELSA=YES/ELSA=NO/' $FILE
 
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
@@ -186,7 +191,7 @@ cat << EOF
 
 All done!
 
-At this point, you should be able to access Kibana via the following URL:
+After a minute or two, you should be able to access Kibana via the following URL:
 http://localhost:5601
 
 Kibana should then prompt for an index pattern.  Click the Time-field name drop-down box,
