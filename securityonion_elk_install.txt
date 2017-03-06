@@ -26,19 +26,20 @@ sudo apt-get update
 sudo apt-get install openjdk-7-jre-headless
 
 # Make a directory to store downloads
-mkdir /tmp/elk
-cd /tmp/elk
+DIR="/tmp/elk"
+mkdir $DIR
+cd $DIR
 
-# Download Elastic packages
+# Download ELK packages
 wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.4/elasticsearch-2.4.4.deb
 wget https://download.elastic.co/logstash/logstash/packages/debian/logstash-2.4.1_all.deb
 wget https://download.elastic.co/kibana/kibana/kibana-4.6.4-amd64.deb
 wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 
-# Install Elastic packages
-sudo dpkg -i /tmp/elk/kibana-*-amd64.deb
+# Install ELK packages
 sudo dpkg -i /tmp/elk/elasticsearch-*.deb
 sudo dpkg -i /tmp/elk/logstash-*_all.deb
+sudo dpkg -i /tmp/elk/kibana-*-amd64.deb
 
 # Download GeoIP data
 sudo mkdir /usr/local/share/GeoIP
@@ -49,7 +50,7 @@ sudo wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
 sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
 sudo wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
 sudo gunzip *.gz
-cd ~
+cd $DIR
 
 # Install plugins
 sudo apt-get -y install python-pip
@@ -61,69 +62,27 @@ sudo /opt/logstash/bin/logstash-plugin install logstash-filter-elasticsearch
 sudo /opt/logstash/bin/logstash-plugin install logstash-filter-rest
 sudo /opt/kibana/bin/kibana plugin --install elastic/sense
 sudo /opt/kibana/bin/kibana plugin --install prelert_swimlane_vis -u https://github.com/prelert/kibana-swimlane-vis/archive/v0.1.0.tar.gz
-cd ~
 git clone https://github.com/oxalide/kibana_metric_vis_colors.git
 sudo apt-get install zip -y
 zip -r kibana_metric_vis_colors kibana_metric_vis_colors
-
-# MANUAL INTERACTION -> change /home/user to the path you are currently in
-sudo /opt/kibana/bin/kibana plugin --install metric-vis-colors -u file:///home/user/kibana_metric_vis_colors.zip
+sudo /opt/kibana/bin/kibana plugin --install metric-vis-colors -u file://$DIR/kibana_metric_vis_colors.zip
 sudo /opt/kibana/bin/kibana plugin -i kibana-slider-plugin -u https://github.com/raystorm-place/kibana-slider-plugin/releases/download/v0.0.2/kibana-slider-plugin-v0.0.2.tar.gz
 sudo /opt/kibana/bin/kibana plugin --install elastic/timelion
 sudo /opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
 
-# Frequency analysis - disabled for now
-#sudo mkdir /opt/freq
-#cd /opt/freq
-#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq.py
-#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq_server.py
-#sudo chmod +x *.py
-#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_lowercase.freq
-#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_mixedcase.freq
-#sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/dns.freq
-#sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/file.freq
-#sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/uri.freq
-
 # Configure ElasticSearch
-sudo vi /etc/elasticsearch/elasticsearch.yml
-# Uncomment network.host and set it to:
-# network.host 0.0.0.0
-# Uncomment cluster.name: and set it to:
-# cluster.name: research
-# If elasticsearch is going to be ran as a single server then add the below line to the bottom of /etc/elasticsearch/elasticsearch.yaml
-# index.number_of_replicas: 0
+FILE="/etc/elasticsearch/elasticsearch.yml"
+echo "network.host 0.0.0.0" | sudo tee -a $FILE
+echo "cluster.name: securityonion" | sudo tee -a $FILE
+echo "index.number_of_replicas: 0" | sudo tee -a FILE
 
 # Install logstash configurations
-Switch all configs to come from git
+# Switch all configs to come from git
 sudo apt-get install git -y
-cd ~
 git clone https://github.com/dougburks/Logstash-Configs.git
 sudo cp -rf Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
 sudo cp -rf Logstash-Configs/dictionaries /lib/
 sudo cp -rf Logstash-Configs/grok-patterns /lib/
-#sudo cp -rf Logstash-Configs/configfiles-setup_required/8*.conf /etc/logstash/conf.d/
-
-# Finish setting up frequency analysis service - disabled for now
-#sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq.sh /opt/freq/
-#sudo chmod +x /opt/freq/freq.sh
-#sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq /etc/init.d/
-#sudo chmod +x /etc/init.d/freq
-#sudo update-rc.d freq defaults
-#sudo service freq start
-
-# Disabled for now - Update firewall rules
-#sudo iptables -t nat -A PREROUTING -p tcp --dport 514 -j REDIRECT --to-port 1514
-#sudo rm -f /etc/iptables.rules
-#sudo iptables-save | sudo tee -a /etc/iptables.rules
-
-# Make firewall rules persistent
-#sudo vi /etc/network/interfaces
-# MANUAL INTERACTION
-#Add the below line to the management NIC
-#pre-up iptables-restore < /etc/iptables.rules
-
-# Feel free to also look at any other Logstash config files found on https://github.com/SMAPPER/Logstash-Configs 
-# and download them to the /etc/logstash/conf.d directory to make them active
 
 # Enable ELK
 sudo update-rc.d elasticsearch defaults
@@ -138,8 +97,8 @@ sudo service kibana start
 # Now we need to get logs into ELK, so configure syslog-ng to send logs to ELK
 FILE="/etc/syslog-ng/syslog-ng.conf"
 sudo cp $FILE $FILE.elsa
-sed -i '/^destination d_elsa/a destination d_elk { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' /etc/syslog-ng/syslog-ng.conf
-sed -i 's/log { destination(d_elsa); };/log { destination(d_elk); };/' /etc/syslog-ng/syslog-ng.conf
+sed -i '/^destination d_elsa/a destination d_elk { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
+sed -i 's/log { destination(d_elsa); };/log { destination(d_elk); };/' $FILE
 sudo service syslog-ng restart
 
 # Create some logs
@@ -180,6 +139,44 @@ sudo nsm_sensor_ps-start
 # http://localhost:9200    (add /_plugin/kopf to access kopf)
 # To manually run Logstash (testing and troubleshooting) run:
 /opt/logstash/bin/logstash -f /etc/logstash/conf.d/
+
+# OPTIONAL
+
+# Disabled for now - Update firewall rules
+#sudo iptables -t nat -A PREROUTING -p tcp --dport 514 -j REDIRECT --to-port 1514
+#sudo rm -f /etc/iptables.rules
+#sudo iptables-save | sudo tee -a /etc/iptables.rules
+
+# Disabled for now - Make firewall rules persistent
+#sudo vi /etc/network/interfaces
+
+# MANUAL INTERACTION
+#Add the below line to the management NIC
+#pre-up iptables-restore < /etc/iptables.rules
+
+# Feel free to also look at any other Logstash config files found on https://github.com/SMAPPER/Logstash-Configs 
+# and download them to the /etc/logstash/conf.d directory to make them active
+#sudo cp -rf Logstash-Configs/configfiles-setup_required/8*.conf /etc/logstash/conf.d/
+
+# Frequency analysis - disabled for now
+#sudo mkdir /opt/freq
+#cd /opt/freq
+#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq.py
+#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq_server.py
+#sudo chmod +x *.py
+#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_lowercase.freq
+#sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_mixedcase.freq
+#sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/dns.freq
+#sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/file.freq
+#sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/uri.freq
+
+# Disabled for now - Finish setting up frequency analysis service
+#sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq.sh /opt/freq/
+#sudo chmod +x /opt/freq/freq.sh
+#sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq /etc/init.d/
+#sudo chmod +x /etc/init.d/freq
+#sudo update-rc.d freq defaults
+#sudo service freq start
 
 # NOTES
 # If you rerun security onion setup you will need to rerun these ufw commands as well as renable the suricata.yaml settings
