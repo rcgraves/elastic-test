@@ -80,7 +80,7 @@ sudo /opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/r
 
 # Configure ElasticSearch
 FILE="/etc/elasticsearch/elasticsearch.yml"
-echo "network.host 0.0.0.0" | sudo tee -a $FILE
+echo "network.host: 127.0.0.1" | sudo tee -a $FILE
 echo "cluster.name: securityonion" | sudo tee -a $FILE
 echo "index.number_of_replicas: 0" | sudo tee -a $FILE
 
