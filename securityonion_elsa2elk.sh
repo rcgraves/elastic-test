@@ -24,24 +24,36 @@
 # Add custom visualizations and dashboards
 
 # Check for prerequisites
-[ "$(id -u)" -ne 0 ] && echo "This script must be run using sudo!" && exit 1
+if [ "$(id -u)" -ne 0 ]; then
+	echo "This script must be run using sudo!"
+	exit 1
+fi
 
 if [ ! -f /etc/nsm/securityonion.conf ]; then
 	echo "/etc/nsm/securityonion.conf not found!  Exiting!"
 	exit 1
 fi
 
-if [ ! grep -i "ELSA=YES" /etc/nsm/securityonion.conf > /dev/null 2>&1 ]; then
+if ! grep -i "ELSA=YES" /etc/nsm/securityonion.conf > /dev/null 2>&1 ; then
 	echo "Looks like ELSA isn't current enabled.  Exiting!"
+	exit 1
+fi
+
+if [ -f /root/.ssh/securityonion_ssh.conf ]; then
+	echo "This box appears to be a sensor reporting to a separate master server."
+	echo "However, this script only supports standalone boxes right now."
+	echo "Exiting!"
 	exit 1
 fi
 
 clear
 cat << EOF 
-This script will install ELK and configure syslog-ng to send logs to ELK.
+This QUICK and DIRTY script is designed to convert your Security Onion box from ELSA to ELK.
 
 This script assumes that you're running the latest Security Onion 14.04.5.2 ISO image
 and that you've already run through Setup, choosing Evaluation Mode to enable ELSA.
+
+This script will install and configure ELK and then configure syslog-ng to send logs to ELK.
 
 WARNINGS AND DISCLAIMERS
 This script is PRE-ALPHA and UNSUPPORTED!
@@ -50,6 +62,7 @@ Do NOT run this on a production system that you care about!
 Kibana has no authentication by default, so do NOT run this on a system with sensitive data!
 (We will be adding an authentication proxy in the future.)
 This script should only be run on a TEST box with TEST data!
+This script is only designed for standalone boxes and does NOT support distributed deployments.
  
 HARDWARE REQUIREMENTS
 ELK requires more hardware than ELSA, so for a test VM, you'll probably want at least 4GB of RAM.
@@ -145,11 +158,20 @@ sudo sed -i '/parser(p_db);/d' $FILE
 sudo sed -i '/rewrite(r_extracted_host);/d' $FILE
 sudo service syslog-ng restart
 
-echo "* Replaying pcaps in /opt/samples/ to create logs..."
-for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap; do
-	echo $i
-	sudo tcpreplay -ieth1 -M10 $i >/dev/null 2>&1
-done
+echo "* Setting ELSA=NO in /etc/nsm/securityonion.conf..."
+sudo sed -i 's/ELSA=YES/ELSA=NO/' $FILE
+
+if [ -f /etc/nsm/sensortab ]; then
+	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
+	if [ $NUM_INTERFACES -gt 0 ]; then
+		echo -n "* Replaying pcaps in /opt/samples/ to create logs..."
+		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
+		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap; do
+		echo "." 
+		sudo tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
+		done
+	fi
+fi
 
 cat << EOF
 
