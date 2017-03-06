@@ -8,6 +8,8 @@
 # WARNING!
 # This is PRE ALPHA and unsupported!
 # Do NOT run this on a production system that you care about!
+# Kibana has no authentication by default, so do NOT run this on a system with sensitive data!
+# We will be adding an authentication proxy in the future.
 # 
 # DISCLAIMER
 # If this script breaks your system, you get to keep both pieces!
@@ -28,6 +30,11 @@
 # Changed openjdk-7-jre to openjdk-7-jre-headless
 # Removed Setup instructions
 # Added note assuming 14.04.5.2 ISO image with Setup run in Evaluation Mode
+#
+# TODO
+# Add authentication proxy for Kibana
+# Add Kibana plugin to pivot to CapMe
+# Add custom visualizations and dashboards
 
 # Install OpenJDK
 sudo apt-get update
