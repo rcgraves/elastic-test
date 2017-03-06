@@ -24,16 +24,19 @@
 # Add custom visualizations and dashboards
 
 # Check for prerequisites
+[ "$(id -u)" -ne 0 ] && echo "This script must be run using sudo!" && exit 1
+
 if [ ! -f /etc/nsm/securityonion.conf ]; then
 	echo "/etc/nsm/securityonion.conf not found!  Exiting!"
-	exit 0
+	exit 1
 fi
 
 if [ ! grep -i "ELSA=YES" /etc/nsm/securityonion.conf > /dev/null 2>&1 ]; then
 	echo "Looks like ELSA isn't current enabled.  Exiting!"
-	exit 0
+	exit 1
 fi
 
+clear
 cat << EOF 
 This script will install ELK and configure syslog-ng to send logs to ELK.
 
