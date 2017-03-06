@@ -5,21 +5,6 @@
 # Special thanks to Justin Henderson for his Logstash configs and installation guide!
 # https://github.com/SMAPPER/Logstash-Configs
 #
-# CHANGELOG
-#
-# 2017-03-04
-# Replaced Oracle Java with OpenJDK
-# Removed CIF and frequency analysis for now
-# Updated ELK components to latest versions compatible with openjdk-7
-#
-# 2017-03-06
-# Replaced nxlog with our existing syslog-ng
-# Changed openjdk-7-jre to openjdk-7-jre-headless
-# Removed Setup instructions
-# Added note assuming 14.04.5.2 ISO image with Setup run in Evaluation Mode
-# Converted to automated shell script
-# Added code to disable ELSA and reconfigure syslog-ng to send logs to ELK
-#
 # TODO
 # Add authentication proxy for Kibana
 # Add Kibana plugin to pivot to CapMe
