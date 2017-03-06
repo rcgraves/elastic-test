@@ -69,7 +69,7 @@ ELK requires more hardware than ELSA, so for a test VM, you'll probably want at 
  
 Once you've read all of the WARNINGS and DISCLAIMERS above, please type AGREE to proceed:
 EOF
-read input
+read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
 
 # Make a directory to store downloads
