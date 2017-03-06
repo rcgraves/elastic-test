@@ -10,7 +10,8 @@
 # If this script breaks your system, you get to keep both pieces!
 # Do NOT run this on a production system that you care about!
 # Kibana has no authentication by default, so do NOT run this on a system with sensitive data!
-# We will be adding an authentication proxy in the future.
+# (We will be adding an authentication proxy in the future.)
+# This script should only be run on a test box with test data!
 # 
 # HARDWARE REQUIREMENTS
 # ELK requires more hardware than ELSA, so for a test VM, you'll probably want at least 4GB of RAM.
