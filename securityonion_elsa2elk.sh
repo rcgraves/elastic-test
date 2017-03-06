@@ -77,22 +77,29 @@ DIR="/tmp/elk"
 mkdir $DIR
 cd $DIR
 
-echo "* Installing OpenJDK..."
+# Define a banner to separate sections
+banner="========================================================================="
+
+header() {
+  printf '%s\n' "$banner" "$*" "$banner"
+}
+
+header "Installing OpenJDK"
 sudo apt-get update > /dev/null
 sudo apt-get -y install openjdk-7-jre-headless
 
-echo "* Downloading ELK packages..."
+header "Downloading ELK packages"
 wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.4/elasticsearch-2.4.4.deb
 wget https://download.elastic.co/logstash/logstash/packages/debian/logstash-2.4.1_all.deb
 wget https://download.elastic.co/kibana/kibana/kibana-4.6.4-amd64.deb
 wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 
-echo "* Installing ELK packages..."
+header "Installing ELK packages"
 sudo dpkg -i /tmp/elk/elasticsearch-*.deb
 sudo dpkg -i /tmp/elk/logstash-*_all.deb
 sudo dpkg -i /tmp/elk/kibana-*-amd64.deb
 
-echo "* Downloading GeoIP data..."
+header "Downloading GeoIP data"
 sudo mkdir /usr/local/share/GeoIP
 cd /usr/local/share/GeoIP
 sudo rm Geo*.dat
@@ -104,7 +111,7 @@ sudo wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.d
 sudo gunzip *.gz
 cd $DIR
 
-echo "* Installing ELK plugins..."
+header "Installing ELK plugins"
 sudo apt-get -y install python-pip
 sudo pip install elasticsearch-curator
 sudo /usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
@@ -122,30 +129,30 @@ sudo /opt/kibana/bin/kibana plugin -i kibana-slider-plugin -u https://github.com
 sudo /opt/kibana/bin/kibana plugin --install elastic/timelion
 sudo /opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
 
-echo "* Configuring ElasticSearch..."
+header "Configuring ElasticSearch"
 FILE="/etc/elasticsearch/elasticsearch.yml"
 echo "network.host: 127.0.0.1" | sudo tee -a $FILE
 echo "cluster.name: securityonion" | sudo tee -a $FILE
 echo "index.number_of_replicas: 0" | sudo tee -a $FILE
 
-echo "* Installing logstash config files..."
+header "Installing logstash config files"
 sudo apt-get install git -y
 git clone https://github.com/dougburks/Logstash-Configs.git
 sudo cp -rf Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
 sudo cp -rf Logstash-Configs/dictionaries /lib/
 sudo cp -rf Logstash-Configs/grok-patterns /lib/
 
-echo "* Enabling ELK..."
+header "Enabling ELK"
 sudo update-rc.d elasticsearch defaults
 sudo update-rc.d logstash defaults
 sudo update-rc.d kibana defaults
 
-echo "* Starting ELK..."
+header "Starting ELK"
 sudo service elasticsearch start
 sudo service logstash start
 sudo service kibana start
 
-echo "* Reconfiguring syslog-ng to send logs to ELK..."
+header "Reconfiguring syslog-ng to send logs to ELK"
 FILE="/etc/syslog-ng/syslog-ng.conf"
 sudo cp $FILE $FILE.elsa
 sudo sed -i '/^destination d_elsa/a destination d_elk { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
@@ -159,13 +166,13 @@ sudo sed -i '/parser(p_db);/d' $FILE
 sudo sed -i '/rewrite(r_extracted_host);/d' $FILE
 sudo service syslog-ng restart
 
-echo "* Setting ELSA=NO in /etc/nsm/securityonion.conf..."
+header "Setting ELSA=NO in /etc/nsm/securityonion.conf"
 sudo sed -i 's/ELSA=YES/ELSA=NO/' $FILE
 
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
 	if [ $NUM_INTERFACES -gt 0 ]; then
-		echo -n "* Replaying pcaps in /opt/samples/ to create logs..."
+		header "Replaying pcaps in /opt/samples/ to create logs"
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
 		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap; do
 		echo -n "." 
@@ -178,9 +185,15 @@ cat << EOF
 
 All done!
 
-At this point, you should be able to access Kibana:
+At this point, you should be able to access Kibana via the following URL:
 http://localhost:5601
-You should see Bro logs and Snort alerts (although the Snort alerts may not be parsed properly right now)
+
+Kibana should then prompt for an index pattern.  Click the Time-field name drop-down box,
+select @timestamp, and click the Create button.
+
+Click the Discover tab and start slicing and dicing your logs!
+
+You should see Bro logs, syslog, and Snort alerts.  Most of the parsers are just for Bro logs right now.
 
 For additional (optional) configuration, please see:
 https://github.com/dougburks/Logstash-Configs/blob/master/securityonion_elk_install.txt
