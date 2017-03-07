@@ -1,14 +1,5 @@
 #!/bin/bash
-# Security Onion with ELK
-#
-# THANKS
-# Special thanks to Justin Henderson for his Logstash configs and installation guide!
-# https://github.com/SMAPPER/Logstash-Configs
-#
-# TODO
-# Add authentication proxy for Kibana
-# Add Kibana plugin to pivot to CapMe
-# Add custom visualizations and dashboards
+# Convert Security Onion ELSA to ELK
 
 # Check for prerequisites
 if [ "$(id -u)" -ne 0 ]; then
@@ -42,15 +33,33 @@ fi
 clear
 cat << EOF 
 This QUICK and DIRTY script is designed to allow you to quickly and easily experiment
-with ELK on Security Onion.
+with ELK (Elasticsearch, Logstash, and Kibana) on Security Onion.
 
 This script assumes that you're running the latest Security Onion 14.04.5.2 ISO image
 and that you've already run through Setup, choosing Evaluation Mode to enable ELSA.
 
 This script will do the following:
-- download, install, and configure ELK
+- install OpenJDK 7 from Ubuntu repos (we'll move to OpenJDK 8 when we move to Ubuntu 16.04)
+- download ELK packages from Elastic (in the future, we'll build our own packages)
+- install and configure ELK
 - disable ELSA
 - configure syslog-ng to send logs to ELK
+- configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
+- replay sample pcaps to provide data for testing
+
+TODO
+- Import Kibana index patterns
+- Import Kibana visualizations
+- Import Kibana dashboards
+- Develop Kibana plugin to pivot to CapMe
+- Store Elasticsearch data at /nsm
+
+HARDWARE REQUIREMENTS
+ELK requires more hardware than ELSA, so for a test VM, you'll probably want at least 4GB of RAM.
+
+THANKS
+Special thanks to Justin Henderson for his Logstash configs and installation guide!
+https://github.com/SMAPPER/Logstash-Configs
 
 WARNINGS AND DISCLAIMERS
 This script is PRE-ALPHA and totally UNSUPPORTED!
@@ -61,10 +70,7 @@ Kibana has no authentication by default, so do NOT run this on a system with sen
 This script should only be run on a TEST box with TEST data!
 This script is only designed for standalone boxes and does NOT support distributed deployments.
  
-HARDWARE REQUIREMENTS
-ELK requires more hardware than ELSA, so for a test VM, you'll probably want at least 4GB of RAM.
- 
-Once you've read all of the WARNINGS and DISCLAIMERS above, please type AGREE to proceed:
+Once you've read all of the WARNINGS AND DISCLAIMERS above, please type AGREE to proceed:
 EOF
 read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
@@ -84,7 +90,7 @@ header() {
 
 header "Installing OpenJDK"
 apt-get update > /dev/null
-apt-get -y install openjdk-7-jre-headless
+apt-get install openjdk-7-jre-headless -y
 
 header "Downloading ELK packages"
 wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.4/elasticsearch-2.4.4.deb
@@ -110,7 +116,7 @@ gunzip *.gz
 cd $DIR
 
 header "Installing ELK plugins"
-apt-get -y install python-pip
+apt-get install python-pip -y
 pip install elasticsearch-curator
 /usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
 /opt/logstash/bin/logstash-plugin install logstash-filter-translate
@@ -139,6 +145,11 @@ git clone https://github.com/dougburks/Logstash-Configs.git
 cp -rf Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
 cp -rf Logstash-Configs/dictionaries /lib/
 cp -rf Logstash-Configs/grok-patterns /lib/
+
+header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
+cp Logstash-Configs/proxy/securityonion.conf /etc/apache2/sites-available/
+cp Logstash-Configs/proxy/so-kibana-auth /usr/local/bin/
+apt-get install libapache2-mod-authnz-external -y
 
 header "Enabling ELK"
 update-rc.d elasticsearch defaults
@@ -188,7 +199,7 @@ header "All done!"
 cat << EOF
 
 After a minute or two, you should be able to access Kibana via the following URL:
-http://localhost:5601
+https://localhost/app/kibana
 
 Kibana should then prompt for an index pattern.  Click the Time-field name drop-down box,
 select @timestamp, and click the Create button.
