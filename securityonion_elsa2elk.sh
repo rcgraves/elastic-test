@@ -64,11 +64,11 @@ Special thanks to Justin Henderson for his Logstash configs and installation gui
 https://github.com/SMAPPER/Logstash-Configs
 
 WARNINGS AND DISCLAIMERS
-This script is PRE-ALPHA and totally UNSUPPORTED!
+This script is PRE-ALPHA, BLEEDING EDGE, and totally UNSUPPORTED!
 If this script breaks your system, you get to keep both pieces!
-Do NOT run this on a production system that you care about!
-Kibana has no authentication by default, so do NOT run this on a system with sensitive data!
-(We will be adding an authentication proxy in the future.)
+Use of this script may result in nausea, vomiting, or a burning sensation.
+Do NOT run this on a system that you care about!
+Do NOT run this on a system that has data that you care about!
 This script should only be run on a TEST box with TEST data!
 This script is only designed for standalone boxes and does NOT support distributed deployments.
  
