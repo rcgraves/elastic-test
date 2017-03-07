@@ -51,7 +51,9 @@ TODO
 - Import Kibana index patterns
 - Import Kibana visualizations
 - Import Kibana dashboards
-- Develop Kibana plugin to pivot to CapMe
+- Add code to CapMe to query Elasticsearch
+- Determine method of pivoting from Kibana to CapMe (most likely Bro CID for now)
+- Configure Squert to query ES directly
 - Store Elasticsearch data at /nsm
 
 HARDWARE REQUIREMENTS
