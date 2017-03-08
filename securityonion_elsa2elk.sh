@@ -165,7 +165,7 @@ service logstash start
 service kibana start
 
 header "Updating CapMe to integrate with ELK"
-cp -av Logstash-configs/capme/* /var/www/so/capme/
+cp -av Logstash-configs/capme /var/www/so/
 
 header "Disabling ELSA"
 FILE="/etc/nsm/securityonion.conf"
