@@ -45,14 +45,13 @@ This script will do the following:
 - disable ELSA
 - configure syslog-ng to send logs to ELK
 - configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
+- update CapMe to integrate with ELK
 - replay sample pcaps to provide data for testing
 
 TODO
 - Import Kibana index patterns
 - Import Kibana visualizations
 - Import Kibana dashboards
-- Add code to CapMe to query Elasticsearch
-- Determine method of pivoting from Kibana to CapMe (most likely Bro CID for now)
 - Configure Squert to query ES directly
 - Store Elasticsearch data at /nsm
 
@@ -66,11 +65,15 @@ https://github.com/SMAPPER/Logstash-Configs
 WARNINGS AND DISCLAIMERS
 This script is PRE-ALPHA, BLEEDING EDGE, and totally UNSUPPORTED!
 If this script breaks your system, you get to keep both pieces!
-Use of this script may result in nausea, vomiting, or a burning sensation.
+This script is a work in progress and is in constant flux.
+This script is intended to build a quick prototype proof of concept so you can see what our
+ultimate ELK configuration might look like.  This configuration will change drastically 
+over time leading up to the final release.
 Do NOT run this on a system that you care about!
 Do NOT run this on a system that has data that you care about!
 This script should only be run on a TEST box with TEST data!
 This script is only designed for standalone boxes and does NOT support distributed deployments.
+Use of this script may result in nausea, vomiting, or a burning sensation.
  
 Once you've read all of the WARNINGS AND DISCLAIMERS above, please type AGREE to proceed:
 EOF
@@ -153,15 +156,16 @@ cp Logstash-Configs/proxy/securityonion.conf /etc/apache2/sites-available/
 cp Logstash-Configs/proxy/so-kibana-auth /usr/local/bin/
 apt-get install libapache2-mod-authnz-external -y
 
-header "Enabling ELK"
+header "Enabling and Starting ELK"
 update-rc.d elasticsearch defaults
 update-rc.d logstash defaults
 update-rc.d kibana defaults
-
-header "Starting ELK"
 service elasticsearch start
 service logstash start
 service kibana start
+
+header "Updating CapMe to integrate with ELK"
+cp -av Logstash-configs/capme/* /var/www/so/capme/
 
 header "Disabling ELSA"
 FILE="/etc/nsm/securityonion.conf"
