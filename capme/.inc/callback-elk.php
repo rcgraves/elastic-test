@@ -81,9 +81,9 @@ if (filter_var($maxtranscriptbytes, FILTER_VALIDATE_INT, array("options" => arra
 }
 
 // Validate user input - sidsrc
-// valid values are: sancp, event, and elk
+// elk is the only valid value
 $sidsrc = h2s($d[2]);
-if (!( $sidsrc == 'sancp' || $sidsrc == 'event' || $sidsrc == 'elk' )) {
+if ( $sidsrc != 'elk' ) {
 	invalidCallback("Invalid sidsrc.");
 }
 
@@ -298,65 +298,26 @@ if ($sidsrc == "elk") {
 	// Next, we'll use $sensor to look up the $sid in Sguil's sensor table.
 }
 
-/*
-Query the Sguil database.
-If the user selected sancp or event, query those tables and get
-the 3 pieces of data that we need.
-*/
-$queries = array(
-                 "elk" => "SELECT sid FROM sensor WHERE hostname='$sensor' AND agent_type='pcap' LIMIT 1",
-
-                 "sancp" => "SELECT sancp.start_time, s2.sid, s2.hostname
-                             FROM sancp
-                             LEFT JOIN sensor ON sancp.sid = sensor.sid
-                             LEFT JOIN sensor AS s2 ON sensor.net_name = s2.net_name
-                             WHERE sancp.start_time >=  '$st' AND sancp.end_time <= '$et'
-                             AND ((src_ip = INET_ATON('$sip') AND src_port = $spt AND dst_ip = INET_ATON('$dip') AND dst_port = $dpt) OR 
-			     (src_ip = INET_ATON('$dip') AND src_port = $dpt AND dst_ip = INET_ATON('$sip') AND dst_port = $spt))
-                             AND s2.agent_type = 'pcap' LIMIT 1",
-                 "event" => "SELECT event.timestamp AS start_time, s2.sid, s2.hostname
-                             FROM event
-                             LEFT JOIN sensor ON event.sid = sensor.sid
-                             LEFT JOIN sensor AS s2 ON sensor.net_name = s2.net_name
-                             WHERE timestamp BETWEEN '$st' AND '$et'
-                             AND ((src_ip = INET_ATON('$sip') AND src_port = $spt AND dst_ip = INET_ATON('$dip') AND dst_port = $dpt ) OR (src_ip = INET_ATON('$dip') AND src_port = $dpt AND dst_ip = INET_ATON('$sip') AND dst_port = $spt ))
-                             AND s2.agent_type = 'pcap' LIMIT 1");
-
-$response = mysql_query($queries[$sidsrc]);
-
+// Query the Sguil database.
+$query = "SELECT sid FROM sensor WHERE hostname='$sensor' AND agent_type='pcap' LIMIT 1";
+$response = mysql_query($query);
 if (!$response) {
     $err = 1;
     $errMsg = "Error: The query failed, please verify database connectivity";
-    $debug = $queries[$sidsrc];
+    $debug = $query;
 } else if (mysql_num_rows($response) == 0) {
     $err = 1;
-    $debug = $queries[$sidsrc];
+    $debug = $query;
     $errMsg = "Failed to find a matching sid. " . $errMsgELK;
 
-    // Check for first possible error condition: no pcap_agent.
+    // Check for possible error condition: no pcap_agent.
     $response = mysql_query("select * from sensor where agent_type='pcap' and active='Y';");
     if (mysql_num_rows($response) == 0) {
     $errMsg = "Error: No pcap_agent found";
     }
 
-    // Second possible error condition: event not in event table.
-    if ($sidsrc == "event") {
-            $response = mysql_query("select * from event WHERE timestamp BETWEEN '$st' AND '$et' AND 
-					((src_ip = INET_ATON('$sip') AND src_port = $spt AND dst_ip = INET_ATON('$dip') AND 
-					dst_port = $dpt ) OR (src_ip = INET_ATON('$dip') AND 
-					src_port = $dpt AND dst_ip = INET_ATON('$sip') AND dst_port = $spt ));");
-            if (mysql_num_rows($response) == 0) {
-                $errMsg = "Failed to find event in event table.";
-            }
-    }
-	
 } else {
     $row = mysql_fetch_assoc($response);
-    // If using ELK, we already set $st and $sensor above so don't overwrite that here.
-    if ($sidsrc != "elk") {
-        $st = $row["start_time"];
-    	$sensor = $row["hostname"]; 
-    }
     $sid    = $row["sid"];
 }
 
@@ -378,19 +339,8 @@ if ($err == 1) {
     $proto=6;
     $cmd = "../.scripts/$script \"$usr\" \"$sensor\" \"$st\" $sid $sip $dip $spt $dpt";
 
-    // If the request came from Squert, check to see if the event is UDP.
-    if ($sidsrc == "event") {
-            $response = mysql_query("select * from event WHERE timestamp BETWEEN '$st' AND '$et' AND 
-					((src_ip = INET_ATON('$sip') AND src_port = $spt AND dst_ip = INET_ATON('$dip') AND 
-					dst_port = $dpt AND ip_proto=17) OR (src_ip = INET_ATON('$dip') AND src_port = $dpt AND 
-					dst_ip = INET_ATON('$sip') AND dst_port = $spt AND ip_proto=17));"); 
-	   if (mysql_num_rows($response) > 0) {
-		$proto=17;
-           }
-    }
-
     // If the request came from ELK, check to see if the event is UDP.
-    if ($sidsrc == "elk" && $elk_response_object["hits"]["hits"][0]["_source"]["protocol"] == "udp") {
+    if ($elk_response_object["hits"]["hits"][0]["_source"]["protocol"] == "udp") {
 	$proto=17;
     }
 
@@ -511,7 +461,7 @@ if ($err == 1) {
 
     // Add query and timer information to debug section.
     $debug = "<br>" . $debug;
-    $debug .= "<span class=txtext_qry>QUERY: " . $queries[$sidsrc] . "</span>";
+    $debug .= "<span class=txtext_qry>QUERY: " . $query . "</span>";
     $time5 = microtime(true);
     $alltimes  = number_format(($time1 - $time0), 2) . " ";
     $alltimes .= number_format(($time2 - $time1), 2) . " ";

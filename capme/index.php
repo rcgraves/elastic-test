@@ -4,15 +4,6 @@ require_once '.inc/functions.php';
 require_once '.inc/session.php';
 require_once '.inc/config.php';
 
-// If we see a filename parameter, we know the request came from Snorby/Squert
-// and if so we can just query the event table since they just have NIDS alerts.
-// Otherwise, query elk by default.
-if (isset($_REQUEST['filename'])) { 
-    $event = " checked";
-} else {
-    $elk  = " checked";
-}
-
 // Default to the "auto" tcpflow/bro transcript option
 $auto = " checked";
 
@@ -73,15 +64,6 @@ capME!
 <tr>
 <td class=capme_left>Max Xscript Bytes:</td>
 <td class=capme_right><input type=text maxlength=32 id=maxtx class=capme_selb value="<?php echo $maxtx;?>" />
-</td>
-</tr>
-
-<tr>
-<td class=capme_left>Sid Source:</td>
-<td class=capme_right>
-<input type=radio name=sidsrc class=capme_rad value="sancp"<?php echo $sancp;?>>sancp
-<input type=radio name=sidsrc class=capme_rad value="event"<?php echo $event;?>>event
-<input type=radio name=sidsrc class=capme_rad value="elk"<?php echo $elk;?>>elk
 </td>
 </tr>
 

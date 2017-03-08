@@ -39,7 +39,7 @@ $(document).ready(function(){
     $(".capme_submit").click(function() {
 
        frmArgs = $('input[value!=""]').length;
-       if (frmArgs == 10) {
+       if (frmArgs == 7) {
             reqCap("usefrm");
         } else {
             theMsg("Please complete all form fields");
@@ -61,7 +61,7 @@ $(document).ready(function(){
             var xscript = s2h($('input:radio[name=xscript]:checked').val());
 
             // SID Source
-            var sidsrc = s2h($('input:radio[name=sidsrc]:checked').val());
+            var sidsrc = s2h("elk");
 
 	    // Max TX
             var maxtx = s2h(chkMaxTX($("#maxtx").val()));
