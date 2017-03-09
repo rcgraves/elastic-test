@@ -198,7 +198,7 @@ es_port=9200
 kibana_index=.kibana
 kibana_version=$( jq -r '.version' < /opt/kibana/package.json )
 kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
-max_wait=60
+max_wait=120
 wait_step=0
 until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; do
     wait_step=$(( ${wait_step} + 1 ))
