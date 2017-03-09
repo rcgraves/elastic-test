@@ -207,6 +207,9 @@ cat << EOF
 After a minute or two, you should be able to access Kibana via the following URL:
 https://localhost/app/kibana
 
+When prompted for username and password, use the same credentials that you use
+to login to Sguil and Squert.
+
 Kibana should then prompt for an index pattern.  Click the Time-field name drop-down box,
 select @timestamp, and click the Create button.
 
