@@ -186,10 +186,10 @@ if ($sidsrc == "elk") {
 		if (filter_var($timestamp_epoch, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$mintime, "max_range"=>$maxtime))) === false) {
 		        $errMsgELK = "Invalid start time.";
 		}
-		// Set start time to one hour before timestamp
-		$st = $timestamp_epoch - 3600;
-		// Set end time to one hour after timestamp
-		$et = $timestamp_epoch + 3600;
+		// Set start time to one minute before timestamp
+		$st = $timestamp_epoch - 60;
+		// Set end time to one minute after timestamp
+		$et = $timestamp_epoch + 60;
 		// ES expects timestamps with millisecond precision
 		$st_es = $st * 1000;
 		$et_es = $et * 1000;
