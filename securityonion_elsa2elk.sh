@@ -62,6 +62,9 @@ THANKS
 Special thanks to Justin Henderson for his Logstash configs and installation guide!
 https://github.com/SMAPPER/Logstash-Configs
 
+Special thanks to Phil Hagen for all his work on SOF-ELK!
+https://github.com/philhagen/sof-elk
+
 WARNINGS AND DISCLAIMERS
 This script is PRE-ALPHA, BLEEDING EDGE, and totally UNSUPPORTED!
 If this script breaks your system, you get to keep both pieces!
@@ -153,7 +156,7 @@ cp -rf Logstash-Configs/grok-patterns /lib/
 
 header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
 cp Logstash-Configs/proxy/securityonion.conf /etc/apache2/sites-available/
-cp Logstash-Configs/proxy/so-kibana-auth /usr/local/bin/
+cp Logstash-Configs/proxy/so-apache-auth-sguil /usr/local/bin/
 apt-get install libapache2-mod-authnz-external -y
 
 header "Enabling and Starting ELK"
@@ -166,6 +169,18 @@ service kibana start
 
 header "Updating CapMe to integrate with ELK"
 cp -av Logstash-configs/capme /var/www/so/
+
+header "Update Kibana to pivot to CapMe on _id field"
+es_host=localhost
+es_port=9200
+kibana_index=.kibana
+kibana_version=$( jq -r '.version' < /opt/kibana/package.json )
+kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
+curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
+curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d '{"title" : "logstash-*",  "timeFieldName": "@timestamp", "fieldFormatMap": "{\"_id\":{\"id\":\"url\",\"params\":{\"urlTemplate\":\"/capme/elk.php?esid={{value}}\",\"labelTemplate\":\"{{value}}\"}}}"}'
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d '{"defaultIndex" : "logstash-*"}'
+
 
 header "Disabling ELSA"
 FILE="/etc/nsm/securityonion.conf"
