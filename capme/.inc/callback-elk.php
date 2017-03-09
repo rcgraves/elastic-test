@@ -237,8 +237,6 @@ if ($sidsrc == "elk") {
   }
 }' 2>/dev/null";
 			$elk_response = shell_exec($elk_command);
-			error_log($elk_command);
-			error_log($elk_response);
 
 			// Try to decode the response as JSON.
 			$elk_response_object = json_decode($elk_response, true);

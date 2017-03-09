@@ -53,7 +53,6 @@ This script will do the following:
 
 TODO
 * Fix Kibana schema
-* Have CapMe search for IP addresses and ports regardless of src/dst (sometimes snort rules look for return traffic)
 * Import Kibana index patterns
 * Import Kibana visualizations
 * Import Kibana dashboards
@@ -255,9 +254,11 @@ https://localhost/app/kibana
 When prompted for username and password, use the same credentials that you use
 to login to Sguil and Squert.
 
+If you login and then get an error message, try refreshing the page (we need to update some database schema).
+
 Click the Discover tab and start slicing and dicing your logs!
 
-You should see Bro logs, syslog, and Snort alerts.  Most of the parsers are just for Bro logs right now.
+You should see Bro logs, syslog, and Snort alerts.  Most Bro logs and Snort alerts should be parsed out by Logstash.
 
 Notice that the _id field is hyperlinked.  If you click the hyperlink, you will pivot to CapMe.
 This should allow you to request full packet capture for any arbitrary log type!  This assumes that it's
