@@ -66,8 +66,8 @@ Special thanks to Phil Hagen for all his work on SOF-ELK!
 https://github.com/philhagen/sof-elk
 
 WARNINGS AND DISCLAIMERS
-This script is PRE-ALPHA, BLEEDING EDGE, and totally UNSUPPORTED!
-If this script breaks your system, you get to keep both pieces!
+This technology PREVIEW is PRE-ALPHA, BLEEDING EDGE, and TOTALLY UNSUPPORTED!
+If this breaks your system, you get to keep both pieces!
 This script is a work in progress and is in constant flux.
 This script is intended to build a quick prototype proof of concept so you can see what our
 ultimate ELK configuration might look like.  This configuration will change drastically 
@@ -168,18 +168,7 @@ service logstash start
 service kibana start
 
 header "Updating CapMe to integrate with ELK"
-cp -av Logstash-configs/capme /var/www/so/
-
-header "Update Kibana to pivot to CapMe on _id field"
-es_host=localhost
-es_port=9200
-kibana_index=.kibana
-kibana_version=$( jq -r '.version' < /opt/kibana/package.json )
-kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
-curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
-curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d '{"title" : "logstash-*",  "timeFieldName": "@timestamp", "fieldFormatMap": "{\"_id\":{\"id\":\"url\",\"params\":{\"urlTemplate\":\"/capme/elk.php?esid={{value}}\",\"labelTemplate\":\"{{value}}\"}}}"}'
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d '{"defaultIndex" : "logstash-*"}'
+cp -av Logstash-Configs/capme /var/www/so/
 
 header "Disabling ELSA"
 FILE="/etc/nsm/securityonion.conf"
@@ -214,6 +203,18 @@ if [ -f /etc/nsm/sensortab ]; then
 		done
 	fi
 fi
+
+header "Updating Kibana to pivot to CapMe on _id field"
+# TODO: add check to see if ES is ready
+es_host=localhost
+es_port=9200
+kibana_index=.kibana
+kibana_version=$( jq -r '.version' < /opt/kibana/package.json )
+kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
+curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
+curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d '{"title" : "logstash-*",  "timeFieldName": "@timestamp", "fieldFormatMap": "{\"_id\":{\"id\":\"url\",\"params\":{\"urlTemplate\":\"/capme/elk.php?esid={{value}}\",\"labelTemplate\":\"{{value}}\"}}}"}'
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d '{"defaultIndex" : "logstash-*"}'
 
 header "All done!"
 cat << EOF
