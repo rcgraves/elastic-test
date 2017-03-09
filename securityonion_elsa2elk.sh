@@ -35,25 +35,29 @@ cat << EOF
 This QUICK and DIRTY script is designed to allow you to quickly and easily experiment
 with ELK (Elasticsearch, Logstash, and Kibana) on Security Onion.
 
-This script assumes that you're running the latest Security Onion 14.04.5.2 ISO image
-and that you've already run through Setup, choosing Evaluation Mode to enable ELSA.
+This script assumes that you've already installed and configured
+the latest Security Onion 14.04.5.2 ISO image as follows:
+* eth0 - management interface
+* eth1 - sniffing interface
+* Setup run in Evaluation Mode to enable ELSA
 
 This script will do the following:
-- install OpenJDK 7 from Ubuntu repos (we'll move to OpenJDK 8 when we move to Ubuntu 16.04)
-- download ELK packages from Elastic (in the future, we'll build our own packages)
-- install and configure ELK
-- disable ELSA
-- configure syslog-ng to send logs to ELK
-- configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
-- update CapMe to integrate with ELK
-- replay sample pcaps to provide data for testing
+* install OpenJDK 7 from Ubuntu repos (we'll move to OpenJDK 8 when we move to Ubuntu 16.04)
+* download ELK packages from Elastic
+* install and configure ELK
+* disable ELSA
+* configure syslog-ng to send logs to Logstash on port 6050
+* configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
+* update CapMe to integrate with ELK
+* replay sample pcaps to provide data for testing
 
 TODO
-- Import Kibana index patterns
-- Import Kibana visualizations
-- Import Kibana dashboards
-- Configure Squert to query ES directly
-- Store Elasticsearch data at /nsm
+* Import Kibana index patterns
+* Import Kibana visualizations
+* Import Kibana dashboards
+* Configure Squert to query ES directly
+* Store Elasticsearch data at /nsm
+* build our own ELK packages hosted in our own PPA
 
 HARDWARE REQUIREMENTS
 ELK requires more hardware than ELSA, so for a test VM, you'll probably want at least 4GB of RAM.
@@ -168,6 +172,8 @@ service logstash start
 service kibana start
 
 header "Waiting for Logstash to initialize"
+max_wait=120
+wait_step=0
 until nc -vz localhost 6050 > /dev/null 2>&1 ; do
 	wait_step=$(( ${wait_step} + 1 ))
 	if [ ${wait_step} -gt ${max_wait} ]; then
@@ -209,8 +215,6 @@ es_port=9200
 kibana_index=.kibana
 kibana_version=$( jq -r '.version' < /opt/kibana/package.json )
 kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
-max_wait=120
-wait_step=0
 until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; do
     wait_step=$(( ${wait_step} + 1 ))
     if [ ${wait_step} -gt ${max_wait} ]; then
