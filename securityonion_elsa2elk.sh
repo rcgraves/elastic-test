@@ -167,6 +167,17 @@ service elasticsearch start
 service logstash start
 service kibana start
 
+header "Waiting for Logstash to initialize"
+until nc -vz localhost 6050 > /dev/null 2>&1 ; do
+	wait_step=$(( ${wait_step} + 1 ))
+	if [ ${wait_step} -gt ${max_wait} ]; then
+		echo "ERROR: logstash not available for more than ${max_wait} seconds."
+		exit 5
+	fi
+	sleep 1;
+	echo -n "."
+done
+
 header "Updating CapMe to integrate with ELK"
 cp -av Logstash-Configs/capme /var/www/so/
 
@@ -181,8 +192,8 @@ service apache2 restart
 header "Reconfiguring syslog-ng to send logs to ELK"
 FILE="/etc/syslog-ng/syslog-ng.conf"
 cp $FILE $FILE.elsa
-sed -i '/^destination d_elsa/a destination d_elk { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
-sed -i 's/log { destination(d_elsa); };/log { destination(d_elk); };/' $FILE
+sed -i '/^destination d_elsa/a destination d_logstash_bro { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
+sed -i 's/log { destination(d_elsa); };/log { destination(d_logstash_bro); };/' $FILE
 sed -i '/rewrite(r_host);/d' $FILE
 sed -i '/rewrite(r_cisco_program);/d' $FILE
 sed -i '/rewrite(r_snare);/d' $FILE
@@ -216,14 +227,6 @@ curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
 	if [ $NUM_INTERFACES -gt 0 ]; then
-		until nc -vz localhost 6050 > /dev/null ; do
-			wait_step=$(( ${wait_step} + 1 ))
-			if [ ${wait_step} -gt ${max_wait} ]; then
-				echo "ERROR: logstash not available for more than ${max_wait} seconds."
-				exit 5
-			fi
-			sleep 1;
-		done
 		header "Replaying pcaps in /opt/samples/ to create logs"
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
 		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap; do
