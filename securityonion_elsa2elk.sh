@@ -183,6 +183,7 @@ until nc -vz localhost 6050 > /dev/null 2>&1 ; do
 	sleep 1;
 	echo -n "."
 done
+echo
 
 header "Updating CapMe to integrate with ELK"
 cp -av Logstash-Configs/capme /var/www/so/
@@ -227,6 +228,7 @@ curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_ve
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d '{"title" : "logstash-*",  "timeFieldName": "@timestamp", "fieldFormatMap": "{\"_id\":{\"id\":\"url\",\"params\":{\"urlTemplate\":\"/capme/elk.php?esid={{value}}\",\"labelTemplate\":\"{{value}}\"}}}"}'
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d '{"defaultIndex" : "logstash-*"}'
+echo
 
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
