@@ -37,8 +37,8 @@ with ELK (Elasticsearch, Logstash, and Kibana) on Security Onion.
 
 This script assumes that you've already installed and configured
 the latest Security Onion 14.04.5.2 ISO image as follows:
-* eth0 - management interface
-* eth1 - sniffing interface
+* (1) management interface
+* (1) sniffing interface (separate from management interface)
 * Setup run in Evaluation Mode to enable ELSA
 
 This script will do the following:
@@ -60,7 +60,8 @@ TODO
 * build our own ELK packages hosted in our own PPA
 
 HARDWARE REQUIREMENTS
-ELK requires more hardware than ELSA, so for a test VM, you'll probably want at least 4GB of RAM.
+ELK requires more hardware than ELSA, so for a test VM, you'll probably want at LEAST
+2 CPU cores and 4GB of RAM.
 
 THANKS
 Special thanks to Justin Henderson for his Logstash configs and installation guide!

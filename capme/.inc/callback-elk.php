@@ -134,7 +134,7 @@ if ($sidsrc == "elk") {
 	} elseif ( $elk_response_object["hits"]["total"] == "0") {
 		$errMsgELK = "Initial ES query couldn't find this ID.";
 	} elseif ( $elk_response_object["hits"]["total"] != "1") {
-		$errMsgELK = "Invalid results from initial ES query.";
+		$errMsgELK = "Initial ES query returned multiple results.";
 	} else { 
 
 		// Looks good so far, so let's try to parse out the connection details.
@@ -186,16 +186,15 @@ if ($sidsrc == "elk") {
 		if (filter_var($timestamp_epoch, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$mintime, "max_range"=>$maxtime))) === false) {
 		        $errMsgELK = "Invalid start time.";
 		}
-		// Set start time to one minute before timestamp
-		$st = $timestamp_epoch - 60;
-		// Set end time to one minute after timestamp
-		$et = $timestamp_epoch + 60;
+		// Set a start time and end time for the search to allow for a little bit of clock drift amongst different log sources
+		// TODO: Consider increasing this window and handling multiple results when necessary
+		$st = $timestamp_epoch - 300;
+		$et = $timestamp_epoch + 300;
 		// ES expects timestamps with millisecond precision
 		$st_es = $st * 1000;
 		$et_es = $et * 1000;
 
 		// Now we to send those parameters back to ELK to see if we can find a matching bro_conn log
-		// TODO: Search around timestamp in a one hour window
 		if ($errMsgELK == "") {
 			//$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"bool\": {\"must\" : [{\"term\": {\"PROGRAM\": \"bro_conn\"}},{\"term\": {\"source_ip\": \"$sip\"}},{\"term\": {\"source_port\": \"$spt\"}},{\"term\": {\"destination_ip\": \"$dip\"}},{\"term\": {\"destination_port\": \"$dpt\"}}]}}}}' 2>/dev/null";
 			$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'{ 
@@ -282,7 +281,7 @@ if ($sidsrc == "elk") {
 			} elseif ( $elk_response_object["hits"]["total"] == "0") {
 				$errMsgELK = "Second ES query couldn't find this ID.";
 			} elseif ( $elk_response_object["hits"]["total"] != "1") {
-				$errMsgELK = "Invalid results from second ES query.";
+				$errMsgELK = "Second ES query returned multiple matches.";
 			} elseif ( ! isset($elk_response_object["hits"]["hits"][0]["_source"]["protocol"]) ) {
 				$errMsgELK = "Second ES query didn't return a protocol field.";
 			} elseif ( !in_array($elk_response_object["hits"]["hits"][0]["_source"]["protocol"], array('tcp','udp'), TRUE)) {
