@@ -181,7 +181,6 @@ curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d '{"title" : "logstash-*",  "timeFieldName": "@timestamp", "fieldFormatMap": "{\"_id\":{\"id\":\"url\",\"params\":{\"urlTemplate\":\"/capme/elk.php?esid={{value}}\",\"labelTemplate\":\"{{value}}\"}}}"}'
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d '{"defaultIndex" : "logstash-*"}'
 
-
 header "Disabling ELSA"
 FILE="/etc/nsm/securityonion.conf"
 sed -i 's/ELSA=YES/ELSA=NO/' $FILE
@@ -225,12 +224,20 @@ https://localhost/app/kibana
 When prompted for username and password, use the same credentials that you use
 to login to Sguil and Squert.
 
-Kibana should then prompt for an index pattern.  Click the Time-field name drop-down box,
-select @timestamp, and click the Create button.
-
 Click the Discover tab and start slicing and dicing your logs!
 
 You should see Bro logs, syslog, and Snort alerts.  Most of the parsers are just for Bro logs right now.
+
+Notice that the _id field is hyperlinked.  If you click the hyperlink, you will pivot to CapMe.
+This should allow you to request full packet capture for any arbitrary log type!  This assumes that it's
+tcp or udp traffic that was seen by Bro and recorded in the conn.log.
+
+CapMe should try to do the following:
+- retrieve the _id from Elasticsearch
+- parse out timestamp, source IP, source port, destination IP, and destination port
+- query Elasticsearch for those terms and try to find the corresponding bro_conn log
+- parse out sensor name (hostname-interface)
+- send a request to sguild to request pcap from that sensor name
 
 For additional (optional) configuration, please see:
 https://github.com/dougburks/Logstash-Configs/blob/master/securityonion_elk_install.txt
