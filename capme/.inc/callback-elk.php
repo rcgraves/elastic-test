@@ -133,8 +133,8 @@ if ($sidsrc == "elk") {
 		$errMsgELK = "Initial ES query didn't return a total number of hits.";
 	} elseif ( $elk_response_object["hits"]["total"] == "0") {
 		$errMsgELK = "Initial ES query couldn't find this ID.";
-	} elseif ( $elk_response_object["hits"]["total"] != "1") {
-		$errMsgELK = "Initial ES query returned multiple results.";
+	/*} elseif ( $elk_response_object["hits"]["total"] != "1") {
+		$errMsgELK = "Initial ES query returned multiple results.";*/
 	} else { 
 
 		// Looks good so far, so let's try to parse out the connection details.
@@ -196,7 +196,7 @@ if ($sidsrc == "elk") {
 
 		// Now we to send those parameters back to ELK to see if we can find a matching bro_conn log
 		if ($errMsgELK == "") {
-			//$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"bool\": {\"must\" : [{\"term\": {\"type\": \"bro_conn\"}},{\"term\": {\"source_ip\": \"$sip\"}},{\"term\": {\"source_port\": \"$spt\"}},{\"term\": {\"destination_ip\": \"$dip\"}},{\"term\": {\"destination_port\": \"$dpt\"}}]}}}}' 2>/dev/null";
+			// TODO: have PHP query ES directly without shell_exec and curl
 			$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'{ 
   \"query\": {
     \"filtered\": {
@@ -248,8 +248,8 @@ if ($sidsrc == "elk") {
 				$errMsgELK = "Second ES query didn't return a total number of hits.";
 			} elseif ( $elk_response_object["hits"]["total"] == "0") {
 				$errMsgELK = "Second ES query couldn't find this ID.";
-			} elseif ( $elk_response_object["hits"]["total"] != "1") {
-				$errMsgELK = "Second ES query returned multiple matches.";
+			/*} elseif ( $elk_response_object["hits"]["total"] != "1") {
+				$errMsgELK = "Second ES query returned multiple matches.";*/
 			} elseif ( ! isset($elk_response_object["hits"]["hits"][0]["_source"]["protocol"]) ) {
 				$errMsgELK = "Second ES query didn't return a protocol field.";
 			} elseif ( !in_array($elk_response_object["hits"]["hits"][0]["_source"]["protocol"], array('tcp','udp'), TRUE)) {

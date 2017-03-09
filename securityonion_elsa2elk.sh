@@ -254,15 +254,16 @@ https://localhost/app/kibana
 When prompted for username and password, use the same credentials that you use
 to login to Sguil and Squert.
 
-If you login and then get an error message, try refreshing the page (we need to update some database schema).
+If you login and then get "Shard Failures" error message, try refreshing the page.
+(We need to update some database schema.)
 
 Click the Discover tab and start slicing and dicing your logs!
 
 You should see Bro logs, syslog, and Snort alerts.  Most Bro logs and Snort alerts should be parsed out by Logstash.
 
-Notice that the _id field is hyperlinked.  If you click the hyperlink, you will pivot to CapMe.
-This should allow you to request full packet capture for any arbitrary log type!  This assumes that it's
-tcp or udp traffic that was seen by Bro and recorded in the conn.log.
+Notice that the _id field of each log entry is hyperlinked.  This hyperlink will take you to CapMe,
+allowing you to request full packet capture for any arbitrary log type!  This assumes that the log is for
+tcp or udp traffic that was seen by Bro and Bro recorded it correctly in its conn.log.
 
 CapMe should try to do the following:
 - retrieve the _id from Elasticsearch
