@@ -53,6 +53,9 @@ This script will do the following:
 
 TODO
 * Fix Kibana schema
+* Configure CapMe to detect BRO_FILES and pivot to BRO_CONN via CID
+* Configure CapMe to detect BRO_PE and pivot to BRO_FILES via FID and then to BRO_CONN via CID
+* Configure CapMe to detect BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
 * Import Kibana index patterns
 * Import Kibana visualizations
 * Import Kibana dashboards
@@ -152,6 +155,8 @@ FILE="/etc/elasticsearch/elasticsearch.yml"
 echo "network.host: 127.0.0.1" >> $FILE
 echo "cluster.name: securityonion" >> $FILE
 echo "index.number_of_replicas: 0" >> $FILE
+# TODO: Store ES at /nsm
+echo "Done!"
 
 header "Installing logstash config files"
 apt-get install git -y
@@ -254,8 +259,8 @@ https://localhost/app/kibana
 When prompted for username and password, use the same credentials that you use
 to login to Sguil and Squert.
 
-If you login and then get "Shard Failures" error message, try refreshing the page.
-(We need to update some database schema.)
+If you're able to login successfully, but then get an error message regarding "Shard Failures",
+try refreshing the page.  (We need to update some database schema.)
 
 Click the Discover tab and start slicing and dicing your logs!
 
