@@ -192,6 +192,27 @@ sed -i '/parser(p_db);/d' $FILE
 sed -i '/rewrite(r_extracted_host);/d' $FILE
 service syslog-ng restart
 
+header "Updating Kibana to pivot to CapMe on _id field"
+es_host=localhost
+es_port=9200
+kibana_index=.kibana
+kibana_version=$( jq -r '.version' < /opt/kibana/package.json )
+kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
+max_wait=60
+wait_step=0
+until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; do
+    wait_step=$(( ${wait_step} + 1 ))
+    if [ ${wait_step} -gt ${max_wait} ]; then
+        echo "ERROR: elasticsearch server not available for more than ${max_wait} seconds."
+        exit 5
+    fi
+    sleep 1;
+done
+curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
+curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d '{"title" : "logstash-*",  "timeFieldName": "@timestamp", "fieldFormatMap": "{\"_id\":{\"id\":\"url\",\"params\":{\"urlTemplate\":\"/capme/elk.php?esid={{value}}\",\"labelTemplate\":\"{{value}}\"}}}"}'
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d '{"defaultIndex" : "logstash-*"}'
+
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
 	if [ $NUM_INTERFACES -gt 0 ]; then
@@ -203,18 +224,6 @@ if [ -f /etc/nsm/sensortab ]; then
 		done
 	fi
 fi
-
-header "Updating Kibana to pivot to CapMe on _id field"
-# TODO: add check to see if ES is ready
-es_host=localhost
-es_port=9200
-kibana_index=.kibana
-kibana_version=$( jq -r '.version' < /opt/kibana/package.json )
-kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
-curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
-curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d '{"title" : "logstash-*",  "timeFieldName": "@timestamp", "fieldFormatMap": "{\"_id\":{\"id\":\"url\",\"params\":{\"urlTemplate\":\"/capme/elk.php?esid={{value}}\",\"labelTemplate\":\"{{value}}\"}}}"}'
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d '{"defaultIndex" : "logstash-*"}'
 
 header "All done!"
 cat << EOF
