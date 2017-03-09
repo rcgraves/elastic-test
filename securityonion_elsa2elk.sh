@@ -52,6 +52,8 @@ This script will do the following:
 * replay sample pcaps to provide data for testing
 
 TODO
+* Fix Kibana schema
+* Have CapMe search for IP addresses and ports regardless of src/dst (sometimes snort rules look for return traffic)
 * Import Kibana index patterns
 * Import Kibana visualizations
 * Import Kibana dashboards

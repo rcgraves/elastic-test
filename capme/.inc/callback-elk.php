@@ -196,7 +196,7 @@ if ($sidsrc == "elk") {
 
 		// Now we to send those parameters back to ELK to see if we can find a matching bro_conn log
 		if ($errMsgELK == "") {
-			//$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"bool\": {\"must\" : [{\"term\": {\"PROGRAM\": \"bro_conn\"}},{\"term\": {\"source_ip\": \"$sip\"}},{\"term\": {\"source_port\": \"$spt\"}},{\"term\": {\"destination_ip\": \"$dip\"}},{\"term\": {\"destination_port\": \"$dpt\"}}]}}}}' 2>/dev/null";
+			//$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"bool\": {\"must\" : [{\"term\": {\"type\": \"bro_conn\"}},{\"term\": {\"source_ip\": \"$sip\"}},{\"term\": {\"source_port\": \"$spt\"}},{\"term\": {\"destination_ip\": \"$dip\"}},{\"term\": {\"destination_port\": \"$dpt\"}}]}}}}' 2>/dev/null";
 			$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'{ 
   \"query\": {
     \"filtered\": {
@@ -206,7 +206,7 @@ if ($sidsrc == "elk") {
             {
               \"query\": {
                 \"match\": {
-                  \"PROGRAM\": {
+                  \"type\": {
                     \"query\": \"bro_conn\",
                     \"type\": \"phrase\"
                   }
@@ -215,41 +215,9 @@ if ($sidsrc == "elk") {
             },
             {
               \"query\": {
-                \"match\": {
-                  \"source_ip\": {
-                    \"query\": \"$sip\",
-                    \"type\": \"phrase\"
-                  }
-                }
-              }
-            },
-            {
-              \"query\": {
-                \"match\": {
-                  \"destination_ip\": {
-                    \"query\": \"$dip\",
-                    \"type\": \"phrase\"
-                  }
-                }
-              }
-            },
-            {
-              \"query\": {
-                \"match\": {
-                  \"destination_port\": {
-                    \"query\": $dpt,
-                    \"type\": \"phrase\"
-                  }
-                }
-              }
-            },
-            {
-              \"query\": {
-                \"match\": {
-                  \"source_port\": {
-                    \"query\": $spt,
-                    \"type\": \"phrase\"
-                  }
+                \"query_string\": {
+                    \"query\": \"$sip AND $spt AND $dip AND $dpt\",
+                    \"analyze_wildcard\": \"true\"
                 }
               }
             },
@@ -269,6 +237,8 @@ if ($sidsrc == "elk") {
   }
 }' 2>/dev/null";
 			$elk_response = shell_exec($elk_command);
+			error_log($elk_command);
+			error_log($elk_response);
 
 			// Try to decode the response as JSON.
 			$elk_response_object = json_decode($elk_response, true);
