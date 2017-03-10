@@ -233,8 +233,8 @@ until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; d
 done
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d '{"title" : "logstash-*",  "timeFieldName": "@timestamp", "fieldFormatMap": "{\"_id\":{\"id\":\"url\",\"params\":{\"urlTemplate\":\"/capme/elk.php?esid={{value}}\",\"labelTemplate\":\"{{value}}\"}}}"}'
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d '{"defaultIndex" : "logstash-*"}'
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@Logstash-Configs/kibana/index-pattern.json; echo; echo
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@Logstash-Configs/kibana/config.json; echo; echo
 echo
 
 if [ -f /etc/nsm/sensortab ]; then
@@ -258,9 +258,6 @@ https://localhost/app/kibana
 
 When prompted for username and password, use the same credentials that you use
 to login to Sguil and Squert.
-
-If you're able to login successfully, but then get an error message regarding "Shard Failures",
-try refreshing the page.  (We need to update some database schema.)
 
 Click the Discover tab and start slicing and dicing your logs!
 
