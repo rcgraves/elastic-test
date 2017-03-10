@@ -270,12 +270,12 @@ allowing you to request full packet capture for any arbitrary log type!  This as
 tcp or udp traffic that was seen by Bro and Bro recorded it correctly in its conn.log.
 
 CapMe should try to do the following:
-- retrieve the _id from Elasticsearch
-- parse out timestamp, source IP, source port, destination IP, and destination port
-- query Elasticsearch for those terms and try to find the corresponding bro_conn log
-- parse out sensor name (hostname-interface)
-- send a request to sguild to request pcap from that sensor name
+* retrieve the _id from Elasticsearch
+* parse out timestamp
+* if Bro log, parse out the CID, otherwise parse out src IP, src port, dst IP, and dst port
+* query Elasticsearch for those terms and try to find the corresponding bro_conn log
+* parse out sensor name (hostname-interface)
+* send a request to sguild to request pcap from that sensor name
 
-For additional (optional) configuration, please see:
-https://github.com/dougburks/Logstash-Configs/blob/master/securityonion_elk_install.txt
+Happy Hunting!
 EOF
