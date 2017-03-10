@@ -96,7 +96,7 @@ if (!( $xscript == 'auto' || $xscript == 'tcpflow' || $xscript == 'bro' || $xscr
 
 // Defaults
 $err = 0;
-$st = $et = $fmtd = $debug = $errMsg = $errMsgELK = '';
+$bro_conn_query = $st = $et = $fmtd = $debug = $errMsg = $errMsgELK = '';
 
 /*
 We need to determine 3 pieces of data:
@@ -138,47 +138,64 @@ if ($sidsrc == "elk") {
 	} else { 
 
 		// Looks good so far, so let's try to parse out the connection details.
-
-		// source_ip
-		if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
-			$sip = $elk_response_object["hits"]["hits"][0]["_source"]["source_ip"];
-			if (!filter_var($sip, FILTER_VALIDATE_IP)) {
-        			$errMsgELK = "Invalid source IP.";
+		// Let's first check to see if it's a Bro log that has a CID in the uid field.
+		if (isset($elk_response_object["hits"]["hits"][0]["_source"]["uid"]) ) {
+			$uid = $elk_response_object["hits"]["hits"][0]["_source"]["uid"];
+			// A Bro CID should be alphanumeric and begin with the letter C
+			if (ctype_alnum($uid)) {
+				if (substr($uid,0,1)=="C") {
+					$bro_conn_query = $uid;
+				}
 			}
-		} else {
-			$errMsgELK = "Missing source IP.";
-		}
-
-		// source_port
-		if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_port"])) {
-			$spt = $elk_response_object["hits"]["hits"][0]["_source"]["source_port"];
-			if (filter_var($spt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
-			        $errMsgELK = "Invalid source port.";
+		} 
+		// If it wasn't a Bro log with CID, then let's manually parse out
+		// source_ip, source_port, destination_ip, and destination_port
+		if ( $bro_conn_query == "" ) {
+			// source_ip
+			if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
+				$sip = $elk_response_object["hits"]["hits"][0]["_source"]["source_ip"];
+				if (!filter_var($sip, FILTER_VALIDATE_IP)) {
+        				$errMsgELK = "Invalid source IP.";
+				}
+			} else {
+				$errMsgELK = "Missing source IP.";
 			}
-		} else {
-			$errMsgELK = "Missing source port.";
-		}
 
-		// destination_ip
-		if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
-			$dip = $elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
-			if (!filter_var($dip, FILTER_VALIDATE_IP)) {
-        			$errMsgELK = "Invalid source IP.";
+			// source_port
+			if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_port"])) {
+				$spt = $elk_response_object["hits"]["hits"][0]["_source"]["source_port"];
+				if (filter_var($spt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
+				        $errMsgELK = "Invalid source port.";
+				}
+			} else {
+				$errMsgELK = "Missing source port.";
 			}
-		} else {
-			$errMsgELK = "Missing destination IP.";
-		}
 
-		// destination_port
-		if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_port"])) {
-			$dpt = $elk_response_object["hits"]["hits"][0]["_source"]["destination_port"];
-			if (filter_var($dpt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
-			        $errMsgELK = "Invalid source port.";
+			// destination_ip
+			if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
+				$dip = $elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
+				if (!filter_var($dip, FILTER_VALIDATE_IP)) {
+        				$errMsgELK = "Invalid source IP.";
+				}
+			} else {
+				$errMsgELK = "Missing destination IP.";
 			}
-		} else {
-			$errMsgELK = "Missing destination port.";
-		}
 
+			// destination_port
+			if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_port"])) {
+				$dpt = $elk_response_object["hits"]["hits"][0]["_source"]["destination_port"];
+				if (filter_var($dpt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
+				        $errMsgELK = "Invalid source port.";
+				}
+			} else {
+				$errMsgELK = "Missing destination port.";
+			}
+
+			// If all four of those fields looked OK, then build a query to send to Elasticsearch
+			if ($errMsgELK == "") {
+				$bro_conn_query = "$sip AND $spt AND $dip AND $dpt";
+			}
+		}
 		$timestamp = $elk_response_object["hits"]["hits"][0]["_source"]["@timestamp"];
 		$timestamp_epoch = strtotime($timestamp);
 		$mintime=time() - 5 * 365 * 24 * 60 * 60;
@@ -216,7 +233,7 @@ if ($sidsrc == "elk") {
             {
               \"query\": {
                 \"query_string\": {
-                    \"query\": \"$sip AND $spt AND $dip AND $dpt\",
+                    \"query\": \"$bro_conn_query\",
                     \"analyze_wildcard\": \"true\"
                 }
               }
@@ -255,6 +272,47 @@ if ($sidsrc == "elk") {
 			} elseif ( !in_array($elk_response_object["hits"]["hits"][0]["_source"]["protocol"], array('tcp','udp'), TRUE)) {
                 		$errMsgELK = "CapMe currently only supports TCP and UDP.";
 			} else { 
+				// In case we didn't parse out IP addresses and ports above, let's do that now
+				// source_ip
+				if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
+					$sip = $elk_response_object["hits"]["hits"][0]["_source"]["source_ip"];
+					if (!filter_var($sip, FILTER_VALIDATE_IP)) {
+	        				$errMsgELK = "Invalid source IP.";
+					}
+				} else {
+					$errMsgELK = "Missing source IP.";
+				}
+
+				// source_port
+				if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_port"])) {
+					$spt = $elk_response_object["hits"]["hits"][0]["_source"]["source_port"];
+					if (filter_var($spt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
+					        $errMsgELK = "Invalid source port.";
+					}
+				} else {
+					$errMsgELK = "Missing source port.";
+				}
+
+				// destination_ip
+				if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
+					$dip = $elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
+					if (!filter_var($dip, FILTER_VALIDATE_IP)) {
+        					$errMsgELK = "Invalid source IP.";
+					}
+				} else {
+					$errMsgELK = "Missing destination IP.";
+				}
+	
+				// destination_port
+				if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_port"])) {
+					$dpt = $elk_response_object["hits"]["hits"][0]["_source"]["destination_port"];
+					if (filter_var($dpt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
+					        $errMsgELK = "Invalid source port.";
+					}
+				} else {
+					$errMsgELK = "Missing destination port.";
+				}
+
 				$sensor = $elk_response_object["hits"]["hits"][0]["_source"]["sensor_name"];
 				$timestamp = str_replace("T", " ", $timestamp);
 				$st = substr($timestamp, 0, -5);

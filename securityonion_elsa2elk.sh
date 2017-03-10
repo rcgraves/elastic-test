@@ -217,7 +217,7 @@ sed -i '/parser(p_db);/d' $FILE
 sed -i '/rewrite(r_extracted_host);/d' $FILE
 service syslog-ng restart
 
-header "Updating Kibana to pivot to CapMe on _id field"
+header "Configuring Kibana"
 es_host=localhost
 es_port=9200
 kibana_index=.kibana
@@ -235,7 +235,6 @@ curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_ve
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@Logstash-Configs/kibana/index-pattern.json; echo; echo
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@Logstash-Configs/kibana/config.json; echo; echo
-echo
 
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
@@ -263,7 +262,10 @@ Click the Discover tab and start slicing and dicing your logs!
 
 You should see Bro logs, syslog, and Snort alerts.  Most Bro logs and Snort alerts should be parsed out by Logstash.
 
-Notice that the _id field of each log entry is hyperlinked.  This hyperlink will take you to CapMe,
+Notice that the source_ip, destination_ip, and UID fields are hyperlinked.  These hyperlinks will start a new Kibana
+search for that particular IP or UID.
+
+Also notice that the _id field of each log entry is hyperlinked.  This hyperlink will take you to CapMe,
 allowing you to request full packet capture for any arbitrary log type!  This assumes that the log is for
 tcp or udp traffic that was seen by Bro and Bro recorded it correctly in its conn.log.
 
