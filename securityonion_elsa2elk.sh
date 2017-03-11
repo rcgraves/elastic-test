@@ -56,6 +56,9 @@ TODO
 * Import Kibana visualizations and dashboards
 * Configure Squert to query ES directly
 * Store Elasticsearch data at /nsm
+* Update Apache auth config with HTML login form
+* Add Logout link to Kibana
+* Consider replacing CapMe auth with the Apache auth config
 * build our own ELK packages hosted in our own PPA
 
 HARDWARE REQUIREMENTS
