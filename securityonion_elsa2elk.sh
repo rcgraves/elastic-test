@@ -214,6 +214,8 @@ service syslog-ng restart
 
 header "Updating OSSEC rules"
 cp Logstash-Configs/ossec/securityonion_rules.xml /var/ossec/rules/
+chown root:ossec /var/ossec/rules/securityonion_rules.xml
+chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
 
 header "Configuring Kibana"
