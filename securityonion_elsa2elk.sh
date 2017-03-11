@@ -52,13 +52,8 @@ This script will do the following:
 * replay sample pcaps to provide data for testing
 
 TODO
-* Fix Kibana schema
-* Configure CapMe to detect BRO_FILES and pivot to BRO_CONN via CID
-* Configure CapMe to detect BRO_PE and pivot to BRO_FILES via FID and then to BRO_CONN via CID
-* Configure CapMe to detect BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
-* Import Kibana index patterns
-* Import Kibana visualizations
-* Import Kibana dashboards
+* Configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
+* Import Kibana visualizations and dashboards
 * Configure Squert to query ES directly
 * Store Elasticsearch data at /nsm
 * build our own ELK packages hosted in our own PPA
@@ -216,6 +211,10 @@ sed -i '/rewrite(r_pipes);/d' $FILE
 sed -i '/parser(p_db);/d' $FILE
 sed -i '/rewrite(r_extracted_host);/d' $FILE
 service syslog-ng restart
+
+header "Updating OSSEC rules"
+cp Logstash-Configs/ossec/securityonion_rules.xml /var/ossec/rules/
+service ossec-hids-server restart
 
 header "Configuring Kibana"
 es_host=localhost
