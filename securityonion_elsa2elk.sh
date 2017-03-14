@@ -151,6 +151,7 @@ header "Configuring ElasticSearch"
 FILE="/etc/elasticsearch/elasticsearch.yml"
 cp $FILE $FILE.bak
 cp Logstash-Configs/elasticsearch/elasticsearch.yml $FILE
+mkdir -p /nsm/es
 #echo "network.host: 127.0.0.1" >> $FILE
 #echo "cluster.name: securityonion" >> $FILE
 #echo "index.number_of_replicas: 0" >> $FILE
