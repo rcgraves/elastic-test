@@ -32,8 +32,7 @@ fi
 
 clear
 cat << EOF 
-This QUICK and DIRTY script is designed to allow you to quickly and easily experiment
-with ELK (Elasticsearch, Logstash, and Kibana) on Security Onion.
+This QUICK and DIRTY script is designed to allow you to quickly and easily experiment with ELK (Elasticsearch, Logstash, and Kibana) on Security Onion.
 
 This script assumes that you've already installed and configured
 the latest Security Onion 14.04.5.2 ISO image as follows:
@@ -61,8 +60,7 @@ TODO
 * build our own ELK packages hosted in our own PPA
 
 HARDWARE REQUIREMENTS
-ELK requires more hardware than ELSA, so for a test VM, you'll probably want at LEAST
-2 CPU cores and 4GB of RAM.
+ELK requires more hardware than ELSA, so for a test VM, you'll probably want at LEAST 2 CPU cores and 4GB of RAM.
 
 THANKS
 Special thanks to Justin Henderson for his Logstash configs and installation guide!
@@ -72,17 +70,15 @@ Special thanks to Phil Hagen for all his work on SOF-ELK!
 https://github.com/philhagen/sof-elk
 
 WARNINGS AND DISCLAIMERS
-This technology PREVIEW is PRE-ALPHA, BLEEDING EDGE, and TOTALLY UNSUPPORTED!
-If this breaks your system, you get to keep both pieces!
-This script is a work in progress and is in constant flux.
-This script is intended to build a quick prototype proof of concept so you can see what our
-ultimate ELK configuration might look like.  This configuration will change drastically 
-over time leading up to the final release.
-Do NOT run this on a system that you care about!
-Do NOT run this on a system that has data that you care about!
-This script should only be run on a TEST box with TEST data!
-This script is only designed for standalone boxes and does NOT support distributed deployments.
-Use of this script may result in nausea, vomiting, or a burning sensation.
+* This technology PREVIEW is PRE-ALPHA, BLEEDING EDGE, and TOTALLY UNSUPPORTED!
+* If this breaks your system, you get to keep both pieces!
+* This script is a work in progress and is in constant flux.
+* This script is intended to build a quick prototype proof of concept so you can see what our ultimate ELK configuration might look like.  This configuration will change drastically over time leading up to the final release.
+* Do NOT run this on a system that you care about!
+* Do NOT run this on a system that has data that you care about!
+* This script should only be run on a TEST box with TEST data!
+* This script is only designed for standalone boxes and does NOT support distributed deployments.
+* Use of this script may result in nausea, vomiting, or a burning sensation.
  
 Once you've read all of the WARNINGS AND DISCLAIMERS above, please type AGREE to proceed:
 EOF
@@ -245,7 +241,7 @@ until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; d
 done
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@Logstash-Configs/kibana/index-pattern.json; echo; echo
+#curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@Logstash-Configs/kibana/index-pattern.json; echo; echo
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@Logstash-Configs/kibana/config.json; echo; echo
 cd $DIR/Logstash-Configs/kibana/dashboards/
 sh load.sh
@@ -272,13 +268,15 @@ https://localhost/app/kibana
 
 When prompted for username and password, use the same credentials that you use to login to Sguil and Squert.
 
-Click the Discover tab and start slicing and dicing your logs!
+You should automatically start out on our Overview dashboard and you should see links to other dashboards as well.
 
 You should see Bro logs, syslog, and Snort alerts.  Most Bro logs and Snort alerts should be parsed out by Logstash.
 
-Notice that the source_ip, destination_ip, and UID fields are hyperlinked.  These hyperlinks will start a new Kibana search for that particular IP or UID.
+Notice that the source_ip and destination_ip fields are hyperlinked.  These hyperlinks will take you to a dashboard that will help you analyze the traffic relating to that IP address.
 
-Also notice that the _id field of each log entry is hyperlinked.  This hyperlink will take you to CapMe, allowing you to request full packet capture for any arbitrary log type!  This assumes that the log is for tcp or udp traffic that was seen by Bro and Bro recorded it correctly in its conn.log.
+UID fields are also hyperlinked.  This hyperlink will start a new Kibana search for that particular UID.  In the case of Bro UIDs this will show you all Bro logs related to that particular connection.
+
+Each log entry also has an _id field that is hyperlinked.  This hyperlink will take you to CapMe, allowing you to request full packet capture for any arbitrary log type!  This assumes that the log is for tcp or udp traffic that was seen by Bro and Bro recorded it correctly in its conn.log.
 
 CapMe should try to do the following:
 * retrieve the _id from Elasticsearch
