@@ -202,6 +202,13 @@ sed -i 's/ELSA=YES/ELSA=NO/' $FILE
 service sphinxsearch stop
 echo "manual" > /etc/init/sphinxsearch.conf.override
 a2dissite elsa
+# Remove ELSA link from Squert
+mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e 'delete from filters where alias="ELSA";'
+# Add ELK link to Squert
+MYSQL="mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e"
+URL="/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-7d,mode:quick,to:now))&_a=(columns:!(_source),index:'logstash-*',interval:auto,query:'\${var}',sort:!('@timestamp',desc))"
+HEXVAL=$(xxd -pu -c 256 <<< "$URL")
+$MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','454C4B','','ELK','$HEXVAL');"
 service apache2 restart
 
 header "Reconfiguring syslog-ng to send logs to ELK"
@@ -267,7 +274,7 @@ https://localhost/app/kibana
 
 When prompted for username and password, use the same credentials that you use to login to Sguil and Squert.
 
-You should automatically start out on our Overview dashboard and you should see links to other dashboards as well.
+You will automatically start on our Overview dashboard and you will see links to other dashboards as well.
 
 You should see Bro logs, syslog, and Snort alerts.  Most Bro logs and Snort alerts should be parsed out by Logstash.
 
@@ -284,6 +291,8 @@ CapMe should try to do the following:
 * query Elasticsearch for those terms and try to find the corresponding bro_conn log
 * parse out sensor name (hostname-interface)
 * send a request to sguild to request pcap from that sensor name
+
+Previously, in Squert, you could pivot from an IP address to ELSA.  That pivot has been removed and replaced with a pivot to ELK.
 
 Happy Hunting!
 EOF
