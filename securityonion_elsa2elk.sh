@@ -48,18 +48,16 @@ This script will do the following:
 * disable ELSA
 * configure syslog-ng to send logs to Logstash on port 6050
 * configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
+* import Kibana visualizations and dashboards
 * update CapMe to integrate with ELK
 * replay sample pcaps to provide data for testing
 
 TODO
-* Configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
-* Import Kibana visualizations and dashboards
-* Set kibana.defaultAppId to "dashboard/Overview" in kibana.yml
-* Store Elasticsearch data at /nsm
-* Configure Squert to query ES directly
-* Update Apache auth config with HTML login form
-* Add Logout link to Kibana
-* Consider replacing CapMe auth with the Apache auth config
+* configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
+* configure Squert to query ES directly
+* update Apache auth config with HTML login form
+* add Logout link to Kibana
+* consider replacing CapMe auth with the Apache auth config
 * build our own ELK packages hosted in our own PPA
 
 HARDWARE REQUIREMENTS
@@ -151,18 +149,25 @@ zip -r kibana_metric_vis_colors kibana_metric_vis_colors
 
 header "Configuring ElasticSearch"
 FILE="/etc/elasticsearch/elasticsearch.yml"
-echo "network.host: 127.0.0.1" >> $FILE
-echo "cluster.name: securityonion" >> $FILE
-echo "index.number_of_replicas: 0" >> $FILE
-# TODO: Store ES at /nsm
+cp $FILE $FILE.bak
+cp Logstash-Configs/elasticsearch/elasticsearch.yml $FILE
+#echo "network.host: 127.0.0.1" >> $FILE
+#echo "cluster.name: securityonion" >> $FILE
+#echo "index.number_of_replicas: 0" >> $FILE
 echo "Done!"
 
-header "Installing logstash config files"
+header "Configuring Logstash"
 apt-get install git -y
 git clone https://github.com/dougburks/Logstash-Configs.git
 cp -rf Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
 cp -rf Logstash-Configs/dictionaries /lib/
 cp -rf Logstash-Configs/grok-patterns /lib/
+
+header "Configuring Kibana"
+FILE="/opt/kibana/config/kibana.yml"
+cp $FILE $FILE.bak
+cp Logstash-Configs/kibana/kibana.yml $FILE
+echo "Done!"
 
 header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
 cp Logstash-Configs/proxy/securityonion.conf /etc/apache2/sites-available/
@@ -244,7 +249,6 @@ cd $DIR/Logstash-Configs/kibana/dashboards/
 sh load.sh
 cd $DIR
 
-
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
 	if [ $NUM_INTERFACES -gt 0 ]; then
@@ -264,19 +268,15 @@ cat << EOF
 After a minute or two, you should be able to access Kibana via the following URL:
 https://localhost/app/kibana
 
-When prompted for username and password, use the same credentials that you use
-to login to Sguil and Squert.
+When prompted for username and password, use the same credentials that you use to login to Sguil and Squert.
 
 Click the Discover tab and start slicing and dicing your logs!
 
 You should see Bro logs, syslog, and Snort alerts.  Most Bro logs and Snort alerts should be parsed out by Logstash.
 
-Notice that the source_ip, destination_ip, and UID fields are hyperlinked.  These hyperlinks will start a new Kibana
-search for that particular IP or UID.
+Notice that the source_ip, destination_ip, and UID fields are hyperlinked.  These hyperlinks will start a new Kibana search for that particular IP or UID.
 
-Also notice that the _id field of each log entry is hyperlinked.  This hyperlink will take you to CapMe,
-allowing you to request full packet capture for any arbitrary log type!  This assumes that the log is for
-tcp or udp traffic that was seen by Bro and Bro recorded it correctly in its conn.log.
+Also notice that the _id field of each log entry is hyperlinked.  This hyperlink will take you to CapMe, allowing you to request full packet capture for any arbitrary log type!  This assumes that the log is for tcp or udp traffic that was seen by Bro and Bro recorded it correctly in its conn.log.
 
 CapMe should try to do the following:
 * retrieve the _id from Elasticsearch
