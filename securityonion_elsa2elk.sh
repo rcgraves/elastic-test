@@ -34,8 +34,7 @@ clear
 cat << EOF 
 This QUICK and DIRTY script is designed to allow you to quickly and easily experiment with ELK (Elasticsearch, Logstash, and Kibana) on Security Onion.
 
-This script assumes that you've already installed and configured
-the latest Security Onion 14.04.5.2 ISO image as follows:
+This script assumes that you've already installed and configured the latest Security Onion 14.04.5.2 ISO image as follows:
 * (1) management interface
 * (1) sniffing interface (separate from management interface)
 * Setup run in Evaluation Mode to enable ELSA
