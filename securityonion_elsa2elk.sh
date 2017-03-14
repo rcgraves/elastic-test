@@ -54,8 +54,9 @@ This script will do the following:
 TODO
 * Configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
 * Import Kibana visualizations and dashboards
-* Configure Squert to query ES directly
+* Set kibana.defaultAppId to "dashboard/Overview" in kibana.yml
 * Store Elasticsearch data at /nsm
+* Configure Squert to query ES directly
 * Update Apache auth config with HTML login form
 * Add Logout link to Kibana
 * Consider replacing CapMe auth with the Apache auth config
@@ -239,6 +240,10 @@ curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_ve
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@Logstash-Configs/kibana/index-pattern.json; echo; echo
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@Logstash-Configs/kibana/config.json; echo; echo
+cd $DIR/Logstash-Configs/kibana/dashboards/
+sh load.sh
+cd $DIR
+
 
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
