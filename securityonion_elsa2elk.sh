@@ -147,6 +147,10 @@ zip -r kibana_metric_vis_colors kibana_metric_vis_colors
 /opt/kibana/bin/kibana plugin --install elastic/timelion
 /opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
 
+header "Downloading Config Files"
+apt-get install git -y
+git clone https://github.com/dougburks/Logstash-Configs.git
+
 header "Configuring ElasticSearch"
 FILE="/etc/elasticsearch/elasticsearch.yml"
 cp $FILE $FILE.bak
@@ -158,8 +162,6 @@ mkdir -p /nsm/es
 echo "Done!"
 
 header "Configuring Logstash"
-apt-get install git -y
-git clone https://github.com/dougburks/Logstash-Configs.git
 cp -rf Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
 cp -rf Logstash-Configs/dictionaries /lib/
 cp -rf Logstash-Configs/grok-patterns /lib/
