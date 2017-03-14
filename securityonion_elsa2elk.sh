@@ -181,7 +181,7 @@ service logstash start
 service kibana start
 
 header "Waiting for Logstash to initialize"
-max_wait=120
+max_wait=240
 wait_step=0
 until nc -vz localhost 6050 > /dev/null 2>&1 ; do
 	wait_step=$(( ${wait_step} + 1 ))
