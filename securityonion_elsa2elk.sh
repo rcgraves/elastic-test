@@ -174,6 +174,9 @@ apt-get install libapache2-mod-authnz-external -y
 a2enmod auth_form
 a2enmod request
 a2enmod session_cookie
+a2enmod session_crypto
+RANDOMSTRING=`< /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-32}`
+sed -i "s|InsertRandomStringHere|$RANDOMSTRING|g" /etc/apache2/sites-available/securityonion.conf
 
 header "Enabling and Starting ELK"
 update-rc.d elasticsearch defaults
