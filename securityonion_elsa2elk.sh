@@ -175,7 +175,12 @@ a2enmod auth_form
 a2enmod request
 a2enmod session_cookie
 a2enmod session_crypto
-< /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-32} >> /etc/apache2/session
+FILE="/etc/apache2/session"
+< /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-32} >> $FILE
+chown www-data:www-data $FILE
+chmod 660 $FILE
+ln -s ssl-cert-snakeoil.pem /etc/ssl/certs/securityonion.pem
+ln -s ssl-cert-snakeoil.key /etc/ssl/private/securityonion.key
 
 header "Enabling and Starting ELK"
 update-rc.d elasticsearch defaults
