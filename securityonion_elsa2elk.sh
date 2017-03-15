@@ -54,7 +54,6 @@ TODO
 * update logstash patterns for Bro 2.5 (ssh, smtp, intel, and http) and convert from grok to csv where possible
 * configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
 * configure Squert to query ES directly
-* add Logout link to Kibana
 * consider replacing CapMe auth with the Apache auth config
 * build our own ELK packages hosted in our own PPA
 
