@@ -46,11 +46,12 @@ This script will do the following:
 * disable ELSA
 * configure syslog-ng to send logs to Logstash on port 6050
 * configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
-* import Kibana visualizations and dashboards
+* import our custom visualizations and dashboards
 * update CapMe to integrate with ELK
 * replay sample pcaps to provide data for testing
 
 TODO
+* update logstash patterns for Bro 2.5 (ssh, smtp, intel, and http) and convert from grok to csv where possible
 * configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
 * configure Squert to query ES directly
 * update Apache auth config with HTML login form
@@ -168,6 +169,7 @@ echo "Done!"
 
 header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
 cp Logstash-Configs/proxy/securityonion.conf /etc/apache2/sites-available/
+cp Logstash-Configs/proxy/login.html /var/www/so/login.html
 cp Logstash-Configs/proxy/so-apache-auth-sguil /usr/local/bin/
 apt-get install libapache2-mod-authnz-external -y
 
@@ -274,17 +276,15 @@ https://localhost/app/kibana
 
 When prompted for username and password, use the same credentials that you use to login to Sguil and Squert.
 
-You will automatically start on our Overview dashboard and you will see links to other dashboards as well.
+You will automatically start on our Overview dashboard and you will see links to other dashboards as well.  These dashboards are designed to work at 1024x768 screen resolution in order to maximize compatibility.
 
-You should see Bro logs, syslog, and Snort alerts.  Most Bro logs and Snort alerts should be parsed out by Logstash.
+As you search through the data in Kibana, you should see Bro logs, syslog, and Snort alerts.  Logstash should have parsed out most fields in most Bro logs and Snort alerts.
 
-Notice that the source_ip and destination_ip fields are hyperlinked.  These hyperlinks will take you to a dashboard that will help you analyze the traffic relating to that IP address.
+Notice that the source_ip and destination_ip fields are hyperlinked.  These hyperlinks will take you to a dashboard that will help you analyze the traffic relating to that particular IP address.
 
 UID fields are also hyperlinked.  This hyperlink will start a new Kibana search for that particular UID.  In the case of Bro UIDs this will show you all Bro logs related to that particular connection.
 
-Each log entry also has an _id field that is hyperlinked.  This hyperlink will take you to CapMe, allowing you to request full packet capture for any arbitrary log type!  This assumes that the log is for tcp or udp traffic that was seen by Bro and Bro recorded it correctly in its conn.log.
-
-CapMe should try to do the following:
+Each log entry also has an _id field that is hyperlinked.  This hyperlink will take you to CapMe, allowing you to request full packet capture for any arbitrary log type!  This assumes that the log is for tcp or udp traffic that was seen by Bro and Bro recorded it correctly in its conn.log.  CapMe should try to do the following:
 * retrieve the _id from Elasticsearch
 * parse out timestamp
 * if Bro log, parse out the CID, otherwise parse out src IP, src port, dst IP, and dst port
@@ -295,4 +295,5 @@ CapMe should try to do the following:
 Previously, in Squert, you could pivot from an IP address to ELSA.  That pivot has been removed and replaced with a pivot to ELK.
 
 Happy Hunting!
+
 EOF
