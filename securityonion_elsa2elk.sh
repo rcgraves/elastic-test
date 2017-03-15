@@ -54,7 +54,6 @@ TODO
 * update logstash patterns for Bro 2.5 (ssh, smtp, intel, and http) and convert from grok to csv where possible
 * configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
 * configure Squert to query ES directly
-* update Apache auth config with HTML login form
 * add Logout link to Kibana
 * consider replacing CapMe auth with the Apache auth config
 * build our own ELK packages hosted in our own PPA
@@ -172,6 +171,9 @@ cp Logstash-Configs/proxy/securityonion.conf /etc/apache2/sites-available/
 cp Logstash-Configs/proxy/login.html /var/www/so/login.html
 cp Logstash-Configs/proxy/so-apache-auth-sguil /usr/local/bin/
 apt-get install libapache2-mod-authnz-external -y
+a2enmod auth_form
+a2enmod request
+a2enmod session_cookie
 
 header "Enabling and Starting ELK"
 update-rc.d elasticsearch defaults
