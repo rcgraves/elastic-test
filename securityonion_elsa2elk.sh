@@ -63,7 +63,7 @@ ELK requires more hardware than ELSA, so for a test VM, you'll probably want at 
 
 THANKS
 Special thanks to Justin Henderson for his Logstash configs and installation guide!
-https://github.com/SMAPPER/Logstash-Configs
+https://github.com/SMAPPER/elk-test
 
 Special thanks to Phil Hagen for all his work on SOF-ELK!
 https://github.com/philhagen/sof-elk
@@ -145,7 +145,7 @@ zip -r kibana_metric_vis_colors kibana_metric_vis_colors
 header "Downloading Config Files"
 apt-get install git -y
 if [ "$1" == "dev" ]; then
-	URL="https://github.com/dougburks/Logstash-Configs.git"
+	URL="https://github.com/dougburks/elk-test.git"
 else
 	URL="https://github.com/Security-Onion-Solutions/elk-test.git"
 fi
@@ -154,27 +154,27 @@ git clone $URL
 header "Configuring ElasticSearch"
 FILE="/etc/elasticsearch/elasticsearch.yml"
 cp $FILE $FILE.bak
-cp Logstash-Configs/elasticsearch/elasticsearch.yml $FILE
+cp elk-test/elasticsearch/elasticsearch.yml $FILE
 mkdir -p /nsm/es/securityonion
 chown -R elasticsearch:elasticsearch /nsm/es
 echo "Done!"
 
 header "Configuring Logstash"
-cp -rf Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
-cp -rf Logstash-Configs/dictionaries /lib/
-cp -rf Logstash-Configs/grok-patterns /lib/
+cp -rf elk-test/configfiles/*.conf /etc/logstash/conf.d/
+cp -rf elk-test/dictionaries /lib/
+cp -rf elk-test/grok-patterns /lib/
 echo "Done!"
 
 header "Configuring Kibana"
 FILE="/opt/kibana/config/kibana.yml"
 cp $FILE $FILE.bak
-cp Logstash-Configs/kibana/kibana.yml $FILE
+cp elk-test/kibana/kibana.yml $FILE
 echo "Done!"
 
 header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
-cp Logstash-Configs/proxy/securityonion.conf /etc/apache2/sites-available/
-cp Logstash-Configs/proxy/so-apache-auth-sguil /usr/local/bin/
-cp -av Logstash-Configs/proxy/so/* /var/www/so/
+cp elk-test/proxy/securityonion.conf /etc/apache2/sites-available/
+cp elk-test/proxy/so-apache-auth-sguil /usr/local/bin/
+cp -av elk-test/proxy/so/* /var/www/so/
 apt-get install libapache2-mod-authnz-external -y
 a2enmod auth_form
 a2enmod request
@@ -210,7 +210,7 @@ done
 echo
 
 header "Updating CapMe to integrate with ELK"
-cp -av Logstash-Configs/capme /var/www/so/
+cp -av elk-test/capme /var/www/so/
 
 header "Disabling ELSA"
 FILE="/etc/nsm/securityonion.conf"
@@ -242,7 +242,7 @@ sed -i '/rewrite(r_extracted_host);/d' $FILE
 service syslog-ng restart
 
 header "Updating OSSEC rules"
-cp Logstash-Configs/ossec/securityonion_rules.xml /var/ossec/rules/
+cp elk-test/ossec/securityonion_rules.xml /var/ossec/rules/
 chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
@@ -263,9 +263,9 @@ until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; d
 done
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
-#curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@Logstash-Configs/kibana/index-pattern.json; echo; echo
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@Logstash-Configs/kibana/config.json; echo; echo
-cd $DIR/Logstash-Configs/kibana/dashboards/
+#curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@elk-test/kibana/index-pattern.json; echo; echo
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@elk-test/kibana/config.json; echo; echo
+cd $DIR/elk-test/kibana/dashboards/
 sh load.sh
 cd $DIR
 
