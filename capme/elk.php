@@ -22,7 +22,7 @@ capME!
 </head>
 <body class=capme_body>
 <div class=top>
-<div id=t_usr class=user><span id=logout class=logout>LOGOUT</span></div>
+<a href="/logout.html">Logout</a>
 <br>
 
 <table class=capme_div align=center cellpadding=0 cellspacing=0>
