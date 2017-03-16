@@ -43,18 +43,17 @@ This script will do the following:
 * install OpenJDK 7 from Ubuntu repos (we'll move to OpenJDK 8 when we move to Ubuntu 16.04)
 * download ELK packages from Elastic
 * install and configure ELK
+* import our custom visualizations and dashboards
 * disable ELSA
 * configure syslog-ng to send logs to Logstash on port 6050
 * configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
-* import our custom visualizations and dashboards
-* update CapMe to integrate with ELK
+* update CapMe to leverage that single sign on and integrate with ELK
 * replay sample pcaps to provide data for testing
 
 TODO
 * update logstash patterns for Bro 2.5 (ssh, smtp, intel, and http) and convert from grok to csv where possible
 * configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
 * configure Squert to query ES directly
-* consider replacing CapMe auth with the Apache auth config
 * build our own ELK packages hosted in our own PPA
 
 HARDWARE REQUIREMENTS
