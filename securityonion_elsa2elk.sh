@@ -35,7 +35,7 @@ cat << EOF
 This QUICK and DIRTY script is designed to allow you to quickly and easily experiment with ELK (Elasticsearch, Logstash, and Kibana) on Security Onion.
 
 This script assumes that you've already installed and configured the latest Security Onion 14.04.5.2 ISO image as follows:
-* (1) management interface
+* (1) management interface with full Internet access
 * (1) sniffing interface (separate from management interface)
 * Setup run in Evaluation Mode to enable ELSA
 
@@ -49,6 +49,8 @@ This script will do the following:
 * configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
 * update CapMe to leverage that single sign on and integrate with ELK
 * replay sample pcaps to provide data for testing
+
+Depending on the speed of your hardware and Internet connection, this process will take at least 10 minutes.
 
 TODO
 * update logstash patterns for Bro 2.5 (ssh, smtp, intel, and http) and convert from grok to csv where possible
