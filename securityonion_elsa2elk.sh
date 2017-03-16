@@ -63,7 +63,7 @@ ELK requires more hardware than ELSA, so for a test VM, you'll probably want at 
 
 THANKS
 Special thanks to Justin Henderson for his Logstash configs and installation guide!
-https://github.com/SMAPPER/elk-test
+https://github.com/SMAPPER/Logstash-Configs
 
 Special thanks to Phil Hagen for all his work on SOF-ELK!
 https://github.com/philhagen/sof-elk
