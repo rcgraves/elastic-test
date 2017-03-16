@@ -144,7 +144,12 @@ zip -r kibana_metric_vis_colors kibana_metric_vis_colors
 
 header "Downloading Config Files"
 apt-get install git -y
-git clone https://github.com/dougburks/Logstash-Configs.git
+if [ "$1" == "dev" ]; then
+	URL="https://github.com/dougburks/Logstash-Configs.git"
+else
+	URL="https://github.com/Security-Onion-Solutions/elk-test.git"
+fi
+git clone $URL
 
 header "Configuring ElasticSearch"
 FILE="/etc/elasticsearch/elasticsearch.yml"
