@@ -167,8 +167,8 @@ echo "Done!"
 
 header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
 cp Logstash-Configs/proxy/securityonion.conf /etc/apache2/sites-available/
-cp Logstash-Configs/proxy/login.html /var/www/so/login.html
 cp Logstash-Configs/proxy/so-apache-auth-sguil /usr/local/bin/
+cp -av Logstash-Configs/proxy/so/* /var/www/so/
 apt-get install libapache2-mod-authnz-external -y
 a2enmod auth_form
 a2enmod request

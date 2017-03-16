@@ -3,13 +3,14 @@
 // Increase memory limit to allow for large streams
 ini_set('memory_limit', '350M');
 
+/*
 // Terminate if this launches without a valid session
 session_start();
 if (!(isset($_SESSION['sLogin']) && $_SESSION['sLogin'] != '')) {
     header ("Location: session.php?id=0");
     exit();
 }
-
+*/
 
 require_once 'functions.php';
 
@@ -217,8 +218,8 @@ if ($err == 1) {
 
     // We passed all error checks, so let's get ready to request the transcript.
 
-    $usr     = $_SESSION['sUser'];
-    $pwd     = $_SESSION['sPass'];
+    $usr     = $_SERVER['PHP_AUTH_USER'];
+    $pwd     = $_SERVER['PHP_AUTH_PW'];
 
     $time1 = microtime(true);
 

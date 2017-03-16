@@ -2,7 +2,7 @@ $(document).ready(function(){
 
   // Logout
   $("#logout").click(function(event) {
-    $.get("logout.php?id=0", function(){location.reload()});
+    $.get("/logout.html", function(){location.reload()});
   });
 
     // Force form submit on enter

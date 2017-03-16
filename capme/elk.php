@@ -1,7 +1,7 @@
 <?php
 
 require_once '.inc/functions.php';
-require_once '.inc/session.php';
+//require_once '.inc/session.php';
 require_once '.inc/config.php';
 
 // Default to the "auto" tcpflow/bro transcript option
@@ -22,7 +22,7 @@ capME!
 </head>
 <body class=capme_body>
 <div class=top>
-<div id=t_usr class=user data-c_usr=<?php echo $sUser;?>>WELCOME&nbsp;&nbsp;<b><?php echo $sUser;?></b>&nbsp;&nbsp;|<span id=logout class=logout>LOGOUT</span></div>
+<div id=t_usr class=user><span id=logout class=logout>LOGOUT</span></div>
 <br>
 
 <table class=capme_div align=center cellpadding=0 cellspacing=0>
