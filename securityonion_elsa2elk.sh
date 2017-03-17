@@ -55,7 +55,8 @@ Depending on the speed of your hardware and Internet connection, this process wi
 TODO
 * update logstash patterns for Bro 2.5 (ssh, smtp, intel, and http) and convert from grok to csv where possible
 * configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
-* configure Squert to query ES directly
+* configure Sguil client to pivot from IP address to Kibana search for that IP
+* configure Squert and Sguil to query ES directly
 * build our own ELK packages hosted in our own PPA
 
 HARDWARE REQUIREMENTS
@@ -125,7 +126,7 @@ gunzip *.gz
 cd $DIR
 
 header "Installing ELK plugins"
-apt-get install python-pip -y
+apt-get install git python-pip -y
 pip install elasticsearch-curator
 /usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
 /opt/logstash/bin/logstash-plugin install logstash-filter-translate
@@ -143,7 +144,6 @@ zip -r kibana_metric_vis_colors kibana_metric_vis_colors
 /opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
 
 header "Downloading Config Files"
-apt-get install git -y
 if [ "$1" == "dev" ]; then
 	URL="https://github.com/dougburks/elk-test.git"
 else
