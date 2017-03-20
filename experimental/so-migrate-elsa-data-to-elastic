@@ -36,7 +36,7 @@ read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
 
 MYSQL="mysql --defaults-file=/etc/mysql/debian.cnf -sN"
-DIR="/tmp/elsa"
+DIR="/nsm/import"
 mkdir -p $DIR
 cd $DIR
 
