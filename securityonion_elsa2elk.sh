@@ -53,6 +53,8 @@ This script will do the following:
 Depending on the speed of your hardware and Internet connection, this process will take at least 10 minutes.
 
 TODO
+* remove ELSA cron job /etc/cron.d/elsa
+* tag snort logs correctly
 * update logstash patterns for Bro 2.5 (ssh, smtp, intel, and http) and convert from grok to csv where possible
 * configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
 * configure Sguil client to pivot from IP address to Kibana search for that IP
