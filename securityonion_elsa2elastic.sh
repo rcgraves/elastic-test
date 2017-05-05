@@ -184,6 +184,7 @@ chown -R 1000:1000 /nsm/es
 echo "Done!"
 
 header "Configuring Logstash"
+mkdir -p /etc/logstash/conf.d/
 cp -rf elk-test/configfiles/*.conf /etc/logstash/conf.d/
 cp -rf elk-test/dictionaries /lib/
 cp -rf elk-test/grok-patterns /lib/
@@ -205,7 +206,7 @@ a2enmod request
 a2enmod session_cookie
 a2enmod session_crypto
 FILE="/etc/apache2/session"
-< /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-32} >> $FILE
+cat /dev/urandom | tr -dc A-Za-z0-9 | head -c${1:-32} >> $FILE
 chown www-data:www-data $FILE
 chmod 660 $FILE
 ln -s ssl-cert-snakeoil.pem /etc/ssl/certs/securityonion.pem
