@@ -40,9 +40,7 @@ This script assumes that you've already installed and configured the latest Secu
 * Setup run in Evaluation Mode to enable ELSA
 
 This script will do the following:
-* install OpenJDK 7 from Ubuntu repos (we'll move to OpenJDK 8 when we move to Ubuntu 16.04)
-* download ELK packages from Elastic
-* install and configure ELK
+* build Docker containers for Elasticsearch, Logstash, and Kibana
 * import our custom visualizations and dashboards
 * disable ELSA
 * configure syslog-ng to send logs to Logstash on port 6050
@@ -102,20 +100,40 @@ header() {
 	printf '%s\n' "$banner" "$*" "$banner"
 }
 
-header "Installing OpenJDK"
+header "Installing Docker"
 apt-get update > /dev/null
-apt-get install openjdk-7-jre-headless -y
+apt-get install -y docker.io git
 
-header "Downloading ELK packages"
-wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.4/elasticsearch-2.4.4.deb
-wget https://download.elastic.co/logstash/logstash/packages/debian/logstash-2.4.1_all.deb
-wget https://download.elastic.co/kibana/kibana/kibana-4.6.4-amd64.deb
-wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-
-header "Installing ELK packages"
-dpkg -i /tmp/elk/elasticsearch-*.deb
-dpkg -i /tmp/elk/logstash-*_all.deb
-dpkg -i /tmp/elk/kibana-*-amd64.deb
+header "Building Docker containers"
+# Create Dockerfile for Elasticsearch
+cat << EOF > Dockerfile
+FROM docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+RUN for PLUGIN_TO_INST in x-pack ingest-user-agent ingest-geoip; do elasticsearch-plugin remove "$PLUGIN_TO_INST"; done
+EOF
+# Build Elasticsearch
+docker build -t so-elasticsearch .
+# Create Dockerfile for Kibana
+cat << EOF > Dockerfile
+FROM docker.elastic.co/kibana/kibana:5.4.0
+RUN bin/kibana-plugin remove x-pack && \
+    kibana 2>&1 | grep -m 1 "Optimization of .* complete"
+EOF
+# Build Kibana
+docker build -t so-kibana .
+# Create Dockerfile for Logstash
+cat << EOF > Dockerfile
+FROM docker.elastic.co/logstash/logstash:5.4.0
+RUN cd /usr/share/logstash && logstash-plugin remove x-pack
+RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-translate
+RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-tld
+RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-elasticsearch
+RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-rest
+RUN sed -i '/xpack.monitoring.elasticsearch/d' /usr/share/logstash/config/logstash.yml
+EOF
+# Build Logstash
+docker build -t so-logstash .
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+sysctl -w vm.max_map_count=262144
 
 header "Downloading GeoIP data"
 mkdir /usr/local/share/GeoIP
@@ -129,23 +147,23 @@ wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
 gunzip *.gz
 cd $DIR
 
-header "Installing ELK plugins"
-apt-get install git python-pip -y
-pip install elasticsearch-curator
-/usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
-/opt/logstash/bin/logstash-plugin install logstash-filter-translate
-/opt/logstash/bin/logstash-plugin install logstash-filter-tld
-/opt/logstash/bin/logstash-plugin install logstash-filter-elasticsearch
-/opt/logstash/bin/logstash-plugin install logstash-filter-rest
-/opt/kibana/bin/kibana plugin --install elastic/sense
-/opt/kibana/bin/kibana plugin --install prelert_swimlane_vis -u https://github.com/prelert/kibana-swimlane-vis/archive/v0.1.0.tar.gz
-git clone https://github.com/oxalide/kibana_metric_vis_colors.git
-apt-get install zip -y
-zip -r kibana_metric_vis_colors kibana_metric_vis_colors
-/opt/kibana/bin/kibana plugin --install metric-vis-colors -u file://$DIR/kibana_metric_vis_colors.zip
-/opt/kibana/bin/kibana plugin -i kibana-slider-plugin -u https://github.com/raystorm-place/kibana-slider-plugin/releases/download/v0.0.2/kibana-slider-plugin-v0.0.2.tar.gz
-/opt/kibana/bin/kibana plugin --install elastic/timelion
-/opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
+#header "Installing ELK plugins"
+#apt-get install git python-pip -y
+#pip install elasticsearch-curator
+#/usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
+#/opt/logstash/bin/logstash-plugin install logstash-filter-translate
+#/opt/logstash/bin/logstash-plugin install logstash-filter-tld
+#/opt/logstash/bin/logstash-plugin install logstash-filter-elasticsearch
+#/opt/logstash/bin/logstash-plugin install logstash-filter-rest
+#/opt/kibana/bin/kibana plugin --install elastic/sense
+#/opt/kibana/bin/kibana plugin --install prelert_swimlane_vis -u https://github.com/prelert/kibana-swimlane-vis/archive/v0.1.0.tar.gz
+#git clone https://github.com/oxalide/kibana_metric_vis_colors.git
+#apt-get install zip -y
+#zip -r kibana_metric_vis_colors kibana_metric_vis_colors
+#/opt/kibana/bin/kibana plugin --install metric-vis-colors -u file://$DIR/kibana_metric_vis_colors.zip
+#/opt/kibana/bin/kibana plugin -i kibana-slider-plugin -u https://github.com/raystorm-place/kibana-slider-plugin/releases/download/v0.0.2/kibana-slider-plugin-v0.0.2.tar.gz
+#/opt/kibana/bin/kibana plugin --install elastic/timelion
+#/opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
 
 header "Downloading Config Files"
 if [ "$1" == "dev" ]; then
@@ -160,7 +178,7 @@ FILE="/etc/elasticsearch/elasticsearch.yml"
 cp $FILE $FILE.bak
 cp elk-test/elasticsearch/elasticsearch.yml $FILE
 mkdir -p /nsm/es/securityonion
-chown -R elasticsearch:elasticsearch /nsm/es
+chown -R 1000:1000 /nsm/es
 echo "Done!"
 
 header "Configuring Logstash"
@@ -191,13 +209,10 @@ chmod 660 $FILE
 ln -s ssl-cert-snakeoil.pem /etc/ssl/certs/securityonion.pem
 ln -s ssl-cert-snakeoil.key /etc/ssl/private/securityonion.key
 
-header "Enabling and Starting ELK"
-update-rc.d elasticsearch defaults
-update-rc.d logstash defaults
-update-rc.d kibana defaults
-service elasticsearch start
-service logstash start
-service kibana start
+header "Starting Elastic Stack"
+docker run --rm --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data so-elasticsearch
+docker run --rm --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 so-logstash
+docker run --rm --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch so-kibana
 
 header "Waiting for Logstash to initialize"
 max_wait=240
@@ -251,27 +266,26 @@ chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
 
-header "Configuring Kibana"
-es_host=localhost
-es_port=9200
-kibana_index=.kibana
-kibana_version=$( jq -r '.version' < /opt/kibana/package.json )
-kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
-until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; do
-    wait_step=$(( ${wait_step} + 1 ))
-    if [ ${wait_step} -gt ${max_wait} ]; then
-        echo "ERROR: elasticsearch server not available for more than ${max_wait} seconds."
-        exit 5
-    fi
-    sleep 1;
-done
-curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
-curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
-#curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@elk-test/kibana/index-pattern.json; echo; echo
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@elk-test/kibana/config.json; echo; echo
-cd $DIR/elk-test/kibana/dashboards/
-sh load.sh
-cd $DIR
+#header "Configuring Kibana"
+#es_host=localhost
+#es_port=9200
+#kibana_index=.kibana
+#kibana_version=$( jq -r '.version' < /opt/kibana/package.json )
+#kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
+#until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; do
+#    wait_step=$(( ${wait_step} + 1 ))
+#    if [ ${wait_step} -gt ${max_wait} ]; then
+#        echo "ERROR: elasticsearch server not available for more than ${max_wait} seconds."
+#        exit 5
+#    fi
+#    sleep 1;
+#done
+#curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
+#curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
+#curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@elk-test/kibana/config.json; echo; echo
+#cd $DIR/elk-test/kibana/dashboards/
+#sh load.sh
+#cd $DIR
 
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
