@@ -108,7 +108,9 @@ header "Building Docker containers"
 # Create Dockerfile for Elasticsearch
 cat << EOF > Dockerfile
 FROM docker.elastic.co/elasticsearch/elasticsearch:5.4.0
-RUN for PLUGIN_TO_INST in x-pack ingest-user-agent ingest-geoip; do elasticsearch-plugin remove "$PLUGIN_TO_INST"; done
+RUN elasticsearch-plugin remove x-pack
+RUN elasticsearch-plugin remove ingest-user-agent
+RUN elasticsearch-plugin remove ingest-geoip
 EOF
 # Build Elasticsearch
 docker build -t so-elasticsearch .
