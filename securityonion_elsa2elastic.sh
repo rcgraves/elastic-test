@@ -212,9 +212,9 @@ ln -s ssl-cert-snakeoil.pem /etc/ssl/certs/securityonion.pem
 ln -s ssl-cert-snakeoil.key /etc/ssl/private/securityonion.key
 
 header "Starting Elastic Stack"
-docker run --rm --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data so-elasticsearch >> /var/log/so-elasticsearch.log
-docker run --rm --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 so-logstash >> /var/log/so-logstash.log
-docker run --rm --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch so-kibana >> /var/log/so-kibana.log
+docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data so-elasticsearch >> /var/log/so-elasticsearch.log
+docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 so-logstash >> /var/log/so-logstash.log
+docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch so-kibana >> /var/log/so-kibana.log
 
 header "Waiting for Logstash to initialize"
 max_wait=240
