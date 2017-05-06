@@ -215,42 +215,27 @@ if ($sidsrc == "elk") {
 		// Now we to send those parameters back to ELK to see if we can find a matching bro_conn log
 		if ($errMsgELK == "") {
 			// TODO: have PHP query ES directly without shell_exec and curl
-			$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'{ 
+			$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'
+{
   \"query\": {
-    \"filtered\": {
-      \"filter\": {
-        \"bool\": {
-          \"must\": [
-            {
-              \"query\": {
-                \"match\": {
-                  \"type\": {
-                    \"query\": \"bro_conn\",
-                    \"type\": \"phrase\"
-                  }
-                }
-              }
-            },
-            {
-              \"query\": {
-                \"query_string\": {
-                    \"query\": \"$bro_conn_query\",
-                    \"analyze_wildcard\": \"true\"
-                }
-              }
-            },
-            {
-              \"range\": {
-                \"@timestamp\": {
-                  \"gte\": $st_es,
-                  \"lte\": $et_es,
-                  \"format\": \"epoch_millis\"
-                }
-              }
+    \"bool\": {
+      \"must\": [
+        {
+          \"query_string\": {
+            \"query\": \"type:bro_conn AND $bro_conn_query\",
+            \"analyze_wildcard\": true
+          }
+        },
+        {
+          \"range\": {
+            \"@timestamp\": {
+              \"gte\": $st_es,
+              \"lte\": $et_es,
+              \"format\": \"epoch_millis\"
             }
-          ]
+          }
         }
-      }
+      ]
     }
   }
 }' 2>/dev/null";

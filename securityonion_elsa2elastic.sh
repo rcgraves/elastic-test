@@ -275,23 +275,23 @@ chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
 
-#header "Configuring Kibana"
-#es_host=localhost
-#es_port=9200
-#kibana_index=.kibana
-#kibana_version=$( jq -r '.version' < /opt/kibana/package.json )
+header "Configuring Kibana"
+es_host=localhost
+es_port=9200
+kibana_index=.kibana
+kibana_version=5.4.0
 #kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
-#until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; do
-#    wait_step=$(( ${wait_step} + 1 ))
-#    if [ ${wait_step} -gt ${max_wait} ]; then
-#        echo "ERROR: elasticsearch server not available for more than ${max_wait} seconds."
-#        exit 5
-#    fi
-#    sleep 1;
-#done
-#curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
-#curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
-#curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@elk-test/kibana/config.json; echo; echo
+until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; do
+    wait_step=$(( ${wait_step} + 1 ))
+    if [ ${wait_step} -gt ${max_wait} ]; then
+        echo "ERROR: elasticsearch server not available for more than ${max_wait} seconds."
+        exit 5
+    fi
+    sleep 1;
+done
+curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
+curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@elk-test/kibana/config.json; echo; echo
 #cd $DIR/elk-test/kibana/dashboards/
 #sh load.sh
 #cd $DIR
