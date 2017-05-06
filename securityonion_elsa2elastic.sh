@@ -100,9 +100,43 @@ header() {
 	printf '%s\n' "$banner" "$*" "$banner"
 }
 
-header "Installing Docker"
+header "Performing apt-get update"
 apt-get update > /dev/null
-apt-get install -y docker.io git
+echo "Done!"
+
+header "Installing git"
+apt-get install -y git > /dev/null
+echo "Done!"
+
+header "Downloading Config Files"
+if [ "$1" == "dev" ]; then
+	URL="https://github.com/dougburks/elk-test.git"
+else
+	URL="https://github.com/Security-Onion-Solutions/elk-test.git"
+fi
+git clone $URL
+echo "Done!"
+
+header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
+cp elk-test/proxy/securityonion.conf /etc/apache2/sites-available/
+cp elk-test/proxy/so-apache-auth-sguil /usr/local/bin/
+cp -av elk-test/proxy/so/* /var/www/so/
+apt-get install libapache2-mod-authnz-external -y
+a2enmod auth_form
+a2enmod request
+a2enmod session_cookie
+a2enmod session_crypto
+FILE="/etc/apache2/session"
+LC_ALL=C </dev/urandom tr -dc '[:alnum:]' | head -c 64 >> $FILE
+chown www-data:www-data $FILE
+chmod 660 $FILE
+ln -s ssl-cert-snakeoil.pem /etc/ssl/certs/securityonion.pem
+ln -s ssl-cert-snakeoil.key /etc/ssl/private/securityonion.key
+echo "Done!"
+
+header "Installing Docker"
+apt-get install -y docker.io
+echo "Done!"
 
 header "Building Docker containers"
 # Create Dockerfile for Elasticsearch
@@ -136,6 +170,7 @@ EOF
 docker build -t so-logstash .
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
 sysctl -w vm.max_map_count=262144
+echo "Done!"
 
 header "Downloading GeoIP data"
 mkdir /usr/local/share/GeoIP
@@ -148,6 +183,7 @@ wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLi
 wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
 gunzip *.gz
 cd $DIR
+echo "Done!"
 
 #header "Installing ELK plugins"
 #apt-get install git python-pip -y
@@ -166,14 +202,6 @@ cd $DIR
 #/opt/kibana/bin/kibana plugin -i kibana-slider-plugin -u https://github.com/raystorm-place/kibana-slider-plugin/releases/download/v0.0.2/kibana-slider-plugin-v0.0.2.tar.gz
 #/opt/kibana/bin/kibana plugin --install elastic/timelion
 #/opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
-
-header "Downloading Config Files"
-if [ "$1" == "dev" ]; then
-	URL="https://github.com/dougburks/elk-test.git"
-else
-	URL="https://github.com/Security-Onion-Solutions/elk-test.git"
-fi
-git clone $URL
 
 header "Configuring ElasticSearch"
 FILE="/etc/elasticsearch/elasticsearch.yml"
@@ -196,26 +224,11 @@ cp $FILE $FILE.bak
 cp elk-test/kibana/kibana.yml $FILE
 echo "Done!"
 
-header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
-cp elk-test/proxy/securityonion.conf /etc/apache2/sites-available/
-cp elk-test/proxy/so-apache-auth-sguil /usr/local/bin/
-cp -av elk-test/proxy/so/* /var/www/so/
-apt-get install libapache2-mod-authnz-external -y
-a2enmod auth_form
-a2enmod request
-a2enmod session_cookie
-a2enmod session_crypto
-FILE="/etc/apache2/session"
-cat /dev/urandom | tr -dc A-Za-z0-9 | head -c${1:-32} >> $FILE
-chown www-data:www-data $FILE
-chmod 660 $FILE
-ln -s ssl-cert-snakeoil.pem /etc/ssl/certs/securityonion.pem
-ln -s ssl-cert-snakeoil.key /etc/ssl/private/securityonion.key
-
 header "Starting Elastic Stack"
-docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data so-elasticsearch >> /var/log/so-elasticsearch.log
-docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 so-logstash >> /var/log/so-logstash.log
-docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch so-kibana >> /var/log/so-kibana.log
+docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data so-elasticsearch
+docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 so-logstash
+docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch so-kibana
+echo "Done!"
 
 header "Waiting for Logstash to initialize"
 max_wait=240
