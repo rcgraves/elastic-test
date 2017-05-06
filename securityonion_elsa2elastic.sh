@@ -172,9 +172,9 @@ docker build -t so-logstash .
 sysctl -w vm.max_map_count=262144
 echo "Done!"
 
-header "Downloading GeoIP data"
-mkdir /usr/local/share/GeoIP
-cd /usr/local/share/GeoIP
+#header "Downloading GeoIP data"
+#mkdir /usr/local/share/GeoIP
+#cd /usr/local/share/GeoIP
 #rm Geo*.dat
 #wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
 #wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
@@ -182,15 +182,15 @@ cd /usr/local/share/GeoIP
 #wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
 #wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
 #gunzip *.gz
-wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
-wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz
-wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-ASN.tar.gz
-for i in *.tar.gz; do sudo tar zxvf $i ; done
-mv GeoLite2-ASN_???????? GeoLite2-ASN
-mv GeoLite2-City_???????? GeoLite2-City
-mv GeoLite2-Country_???????? GeoLite2-Country
-cd $DIR
-echo "Done!"
+#wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
+#wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz
+#wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-ASN.tar.gz
+#for i in *.tar.gz; do sudo tar zxvf $i ; done
+#mv GeoLite2-ASN_???????? GeoLite2-ASN
+#mv GeoLite2-City_???????? GeoLite2-City
+#mv GeoLite2-Country_???????? GeoLite2-Country
+#cd $DIR
+#echo "Done!"
 
 #header "Installing ELK plugins"
 #apt-get install git python-pip -y
@@ -233,7 +233,7 @@ echo "Done!"
 
 header "Starting Elastic Stack"
 docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data so-elasticsearch
-docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /usr/local/share/GeoIP:/usr/local/share/GeoIP:ro -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 so-logstash
+docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 so-logstash
 docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch so-kibana
 echo "Done!"
 
