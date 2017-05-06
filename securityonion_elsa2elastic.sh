@@ -211,9 +211,9 @@ echo "Done!"
 #/opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
 
 header "Configuring ElasticSearch"
-FILE="/etc/elasticsearch/elasticsearch.yml"
-cp $FILE $FILE.bak
-cp elk-test/elasticsearch/elasticsearch.yml $FILE
+#FILE="/etc/elasticsearch/elasticsearch.yml"
+#cp $FILE $FILE.bak
+#cp elk-test/elasticsearch/elasticsearch.yml $FILE
 mkdir -p /nsm/es/securityonion
 chown -R 1000:1000 /nsm/es
 echo "Done!"
@@ -225,11 +225,11 @@ cp -rf elk-test/dictionaries /lib/
 cp -rf elk-test/grok-patterns /lib/
 echo "Done!"
 
-header "Configuring Kibana"
-FILE="/opt/kibana/config/kibana.yml"
-cp $FILE $FILE.bak
-cp elk-test/kibana/kibana.yml $FILE
-echo "Done!"
+#header "Configuring Kibana"
+#FILE="/opt/kibana/config/kibana.yml"
+#cp $FILE $FILE.bak
+#cp elk-test/kibana/kibana.yml $FILE
+#echo "Done!"
 
 header "Starting Elastic Stack"
 docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data so-elasticsearch
