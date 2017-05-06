@@ -276,6 +276,7 @@ chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
 
 header "Configuring Kibana"
+max_wait=240
 es_host=localhost
 es_port=9200
 kibana_index=.kibana
@@ -287,7 +288,7 @@ until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; d
         echo "ERROR: elasticsearch server not available for more than ${max_wait} seconds."
         exit 5
     fi
-    sleep 1;
+    sleep 1s;
 done
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
