@@ -214,7 +214,7 @@ header "Configuring ElasticSearch"
 #FILE="/etc/elasticsearch/elasticsearch.yml"
 #cp $FILE $FILE.bak
 #cp elk-test/elasticsearch/elasticsearch.yml $FILE
-mkdir -p /nsm/es/securityonion
+mkdir -p /nsm/es
 chown -R 1000:1000 /nsm/es
 echo "Done!"
 
@@ -293,6 +293,7 @@ done
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@elk-test/kibana/config.json; echo; echo
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@elk-test/kibana/index-pattern.json; echo; echo
 #cd $DIR/elk-test/kibana/dashboards/
 #sh load.sh
 #cd $DIR
