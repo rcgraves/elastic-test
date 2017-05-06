@@ -237,20 +237,6 @@ docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/l
 docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch so-kibana
 echo "Done!"
 
-header "Waiting for Logstash to initialize"
-max_wait=240
-wait_step=0
-until nc -vz localhost 6050 > /dev/null 2>&1 ; do
-	wait_step=$(( ${wait_step} + 1 ))
-	if [ ${wait_step} -gt ${max_wait} ]; then
-		echo "ERROR: logstash not available for more than ${max_wait} seconds."
-		exit 5
-	fi
-	sleep 1;
-	echo -n "."
-done
-echo
-
 header "Updating CapMe to integrate with ELK"
 cp -av elk-test/capme /var/www/so/
 
@@ -313,6 +299,28 @@ service ossec-hids-server restart
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
 	if [ $NUM_INTERFACES -gt 0 ]; then
+
+		header "Giving Logstash a minute to initialize"
+		# This check for logstash isn't working correctly right now.
+		# I think docker-proxy is completing the 3WHS and making nc think that logstash is up before it actually is.
+		#max_wait=240
+		#wait_step=0
+		#until nc -vz localhost 6050 > /dev/null 2>&1 ; do
+		#	wait_step=$(( ${wait_step} + 1 ))
+		#	if [ ${wait_step} -gt ${max_wait} ]; then
+		#		echo "ERROR: logstash not available for more than ${max_wait} seconds."
+		#		exit 5
+		#	fi
+		#	sleep 1;
+		#	echo -n "."
+		#done
+		#echo
+		for i in `seq 1 60`; do
+			sleep 1s
+			echo -n "."
+		done
+		echo
+
 		header "Replaying pcaps in /opt/samples/ to create logs"
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
 		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap; do
