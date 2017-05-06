@@ -175,13 +175,20 @@ echo "Done!"
 header "Downloading GeoIP data"
 mkdir /usr/local/share/GeoIP
 cd /usr/local/share/GeoIP
-rm Geo*.dat
-wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
-gunzip *.gz
+#rm Geo*.dat
+#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+#wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+#wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+#gunzip *.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-ASN.tar.gz
+for i in *.tar.gz; do sudo tar zxvf $i ; done
+mv GeoLite2-ASN_???????? GeoLite2-ASN
+mv GeoLite2-City_???????? GeoLite2-City
+mv GeoLite2-Country_???????? GeoLite2-Country
 cd $DIR
 echo "Done!"
 
