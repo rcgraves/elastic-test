@@ -135,7 +135,14 @@ ln -s ssl-cert-snakeoil.key /etc/ssl/private/securityonion.key
 echo "Done!"
 
 header "Installing Docker"
-apt-get install -y docker.io
+cp elk-test/docker/securityonion-docker /etc/apt/preferences.d/
+apt-get -y install apt-transport-https ca-certificates curl > /dev/null
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+       $(lsb_release -cs) \
+       stable"
+apt-get update > /dev/null
+apt-get -y install docker-ce > /dev/null
 echo "Done!"
 
 header "Building Docker containers"
