@@ -51,7 +51,6 @@ This script will do the following:
 Depending on the speed of your hardware and Internet connection, this process will take at least 10 minutes.
 
 TODO
-* remove ELSA cron job /etc/cron.d/elsa
 * tag snort logs correctly
 * control ES disk usage
 * add script to wipe ES
@@ -239,15 +238,24 @@ echo "Done!"
 #echo "Done!"
 
 header "Starting Elastic Stack"
+FILE="/usr/sbin/so-elastic-start"
+cat << EOF > $FILE
+#!/bin/bash
 docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data so-elasticsearch
 docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 so-logstash
 docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch so-kibana
+EOF
+chmod +x $FILE
+$FILE
+sed -i "s|^exit 0$|$FILE" /etc/rc.local
+echo "exit 0" >> /etc/rc.local
 echo "Done!"
 
 header "Updating CapMe to integrate with ELK"
 cp -av elk-test/capme /var/www/so/
 
 header "Disabling ELSA"
+rm -f /etc/cron.d/elsa
 FILE="/etc/nsm/securityonion.conf"
 sed -i 's/ELSA=YES/ELSA=NO/' $FILE
 service sphinxsearch stop
