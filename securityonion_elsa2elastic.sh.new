@@ -1,5 +1,5 @@
 #!/bin/bash
-# Convert Security Onion ELSA to ELK
+# Convert Security Onion ELSA to Elastic
 
 # Check for prerequisites
 if [ "$(id -u)" -ne 0 ]; then
@@ -32,7 +32,7 @@ fi
 
 clear
 cat << EOF 
-This QUICK and DIRTY script is designed to allow you to quickly and easily experiment with ELK (Elasticsearch, Logstash, and Kibana) on Security Onion.
+This QUICK and DIRTY script is designed to allow you to quickly and easily experiment with the Elastic stack (Elasticsearch, Logstash, and Kibana) on Security Onion.
 
 This script assumes that you've already installed and configured the latest Security Onion 14.04.5.2 ISO image as follows:
 * (1) management interface with full Internet access
@@ -45,7 +45,7 @@ This script will do the following:
 * disable ELSA
 * configure syslog-ng to send logs to Logstash on port 6050
 * configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
-* update CapMe to leverage that single sign on and integrate with ELK
+* update CapMe to leverage that single sign on and integrate with Elasticsearch
 * replay sample pcaps to provide data for testing
 
 Depending on the speed of your hardware and Internet connection, this process will take at least 10 minutes.
@@ -60,7 +60,7 @@ TODO
 * configure Squert and Sguil to query ES directly
 
 HARDWARE REQUIREMENTS
-ELK requires more hardware than ELSA, so for a test VM, you'll probably want at LEAST 2 CPU cores and 4GB of RAM.
+The Elastic stack requires more hardware than ELSA, so for a test VM, you'll probably want at LEAST 2 CPU cores and 4GB of RAM.
 
 THANKS
 Special thanks to Justin Henderson for his Logstash configs and installation guide!
@@ -73,7 +73,7 @@ WARNINGS AND DISCLAIMERS
 * This technology PREVIEW is PRE-ALPHA, BLEEDING EDGE, and TOTALLY UNSUPPORTED!
 * If this breaks your system, you get to keep both pieces!
 * This script is a work in progress and is in constant flux.
-* This script is intended to build a quick prototype proof of concept so you can see what our ultimate ELK configuration might look like.  This configuration will change drastically over time leading up to the final release.
+* This script is intended to build a quick prototype proof of concept so you can see what our ultimate Elastic configuration might look like.  This configuration will change drastically over time leading up to the final release.
 * Do NOT run this on a system that you care about!
 * Do NOT run this on a system that has data that you care about!
 * This script should only be run on a TEST box with TEST data!
@@ -197,7 +197,7 @@ echo "Done!"
 #cd $DIR
 #echo "Done!"
 
-#header "Installing ELK plugins"
+#header "Installing Elastic plugins"
 #apt-get install git python-pip -y
 #pip install elasticsearch-curator
 #/usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
@@ -250,7 +250,7 @@ sed -i 's|^exit 0$|/usr/sbin/so-elastic-start|' /etc/rc.local
 echo "exit 0" >> /etc/rc.local
 echo "Done!"
 
-header "Updating CapMe to integrate with ELK"
+header "Updating CapMe to integrate with Elasticsearch"
 cp -av elk-test/capme /var/www/so/
 
 header "Disabling ELSA"
@@ -262,14 +262,14 @@ echo "manual" > /etc/init/sphinxsearch.conf.override
 a2dissite elsa
 # Remove ELSA link from Squert
 mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e 'delete from filters where alias="ELSA";'
-# Add ELK link to Squert
+# Add Elastic link to Squert
 MYSQL="mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e"
 URL="/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-7d,mode:quick,to:now))&_a=(columns:!(_source),index:'logstash-*',interval:auto,query:'\${var}',sort:!('@timestamp',desc))"
 HEXVAL=$(xxd -pu -c 256 <<< "$URL")
-$MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','454C4B','','ELK','$HEXVAL');"
+$MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','454C4B','','Elastic','$HEXVAL');"
 service apache2 restart
 
-header "Reconfiguring syslog-ng to send logs to ELK"
+header "Reconfiguring syslog-ng to send logs to Elastic"
 FILE="/etc/syslog-ng/syslog-ng.conf"
 cp $FILE $FILE.elsa
 sed -i '/^destination d_elsa/a destination d_logstash_bro { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
@@ -371,7 +371,7 @@ Each log entry also has an _id field that is hyperlinked.  This hyperlink will t
 * parse out sensor name (hostname-interface)
 * send a request to sguild to request pcap from that sensor name
 
-Previously, in Squert, you could pivot from an IP address to ELSA.  That pivot has been removed and replaced with a pivot to ELK.
+Previously, in Squert, you could pivot from an IP address to ELSA.  That pivot has been removed and replaced with a pivot to Elastic.
 
 Happy Hunting!
 
