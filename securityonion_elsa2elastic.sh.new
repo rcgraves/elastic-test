@@ -58,7 +58,6 @@ TODO
 * configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
 * configure Sguil client to pivot from IP address to Kibana search for that IP
 * configure Squert and Sguil to query ES directly
-* build our own ELK packages hosted in our own PPA
 
 HARDWARE REQUIREMENTS
 ELK requires more hardware than ELSA, so for a test VM, you'll probably want at LEAST 2 CPU cores and 4GB of RAM.
@@ -247,7 +246,7 @@ docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearc
 EOF
 chmod +x $FILE
 $FILE
-sed -i "s|^exit 0$|$FILE" /etc/rc.local
+sed -i 's|^exit 0$|/usr/sbin/so-elastic-start|' /etc/rc.local
 echo "exit 0" >> /etc/rc.local
 echo "Done!"
 
