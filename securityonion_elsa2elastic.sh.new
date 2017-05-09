@@ -144,15 +144,16 @@ apt-get -y install docker-ce > /dev/null
 echo "Done!"
 
 header "Building Docker containers"
+docker pull dougburks/so-elasticsearch
 # Create Dockerfile for Elasticsearch
-cat << EOF > Dockerfile
-FROM docker.elastic.co/elasticsearch/elasticsearch:5.4.0
-RUN elasticsearch-plugin remove x-pack
-RUN elasticsearch-plugin remove ingest-user-agent
-RUN elasticsearch-plugin remove ingest-geoip
-EOF
+#cat << EOF > Dockerfile
+#FROM docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+#RUN elasticsearch-plugin remove x-pack
+#RUN elasticsearch-plugin remove ingest-user-agent
+#RUN elasticsearch-plugin remove ingest-geoip
+#EOF
 # Build Elasticsearch
-docker build -t so-elasticsearch .
+#docker build -t so-elasticsearch .
 # Create Dockerfile for Kibana
 cat << EOF > Dockerfile
 FROM docker.elastic.co/kibana/kibana:5.4.0
@@ -237,7 +238,7 @@ echo "Done!"
 #echo "Done!"
 
 header "Starting Elastic Stack"
-docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data so-elasticsearch
+docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data dougburks/so-elasticsearch
 docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 so-logstash
 docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch so-kibana
 echo "Done!"
