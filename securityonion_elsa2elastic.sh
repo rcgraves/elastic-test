@@ -1,5 +1,5 @@
 #!/bin/bash
-# Convert Security Onion ELSA to ELK
+# Convert Security Onion ELSA to Elastic
 
 # Check for prerequisites
 if [ "$(id -u)" -ne 0 ]; then
@@ -32,7 +32,7 @@ fi
 
 clear
 cat << EOF 
-This QUICK and DIRTY script is designed to allow you to quickly and easily experiment with ELK (Elasticsearch, Logstash, and Kibana) on Security Onion.
+This QUICK and DIRTY script is designed to allow you to quickly and easily experiment with the Elastic stack (Elasticsearch, Logstash, and Kibana) on Security Onion.
 
 This script assumes that you've already installed and configured the latest Security Onion 14.04.5.2 ISO image as follows:
 * (1) management interface with full Internet access
@@ -45,13 +45,12 @@ This script will do the following:
 * disable ELSA
 * configure syslog-ng to send logs to Logstash on port 6050
 * configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
-* update CapMe to leverage that single sign on and integrate with ELK
+* update CapMe to leverage that single sign on and integrate with Elasticsearch
 * replay sample pcaps to provide data for testing
 
 Depending on the speed of your hardware and Internet connection, this process will take at least 10 minutes.
 
 TODO
-* remove ELSA cron job /etc/cron.d/elsa
 * tag snort logs correctly
 * control ES disk usage
 * add script to wipe ES
@@ -59,10 +58,9 @@ TODO
 * configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
 * configure Sguil client to pivot from IP address to Kibana search for that IP
 * configure Squert and Sguil to query ES directly
-* build our own ELK packages hosted in our own PPA
 
 HARDWARE REQUIREMENTS
-ELK requires more hardware than ELSA, so for a test VM, you'll probably want at LEAST 2 CPU cores and 4GB of RAM.
+The Elastic stack requires more hardware than ELSA, so for a test VM, you'll probably want at LEAST 2 CPU cores and 4GB of RAM.
 
 THANKS
 Special thanks to Justin Henderson for his Logstash configs and installation guide!
@@ -75,7 +73,7 @@ WARNINGS AND DISCLAIMERS
 * This technology PREVIEW is PRE-ALPHA, BLEEDING EDGE, and TOTALLY UNSUPPORTED!
 * If this breaks your system, you get to keep both pieces!
 * This script is a work in progress and is in constant flux.
-* This script is intended to build a quick prototype proof of concept so you can see what our ultimate ELK configuration might look like.  This configuration will change drastically over time leading up to the final release.
+* This script is intended to build a quick prototype proof of concept so you can see what our ultimate Elastic configuration might look like.  This configuration will change drastically over time leading up to the final release.
 * Do NOT run this on a system that you care about!
 * Do NOT run this on a system that has data that you care about!
 * This script should only be run on a TEST box with TEST data!
@@ -100,6 +98,14 @@ header() {
 	printf '%s\n' "$banner" "$*" "$banner"
 }
 
+if [ "$1" == "dev" ]; then
+	URL="https://github.com/dougburks/elk-test.git"
+	DOCKERHUB="dougburks"
+else
+	URL="https://github.com/Security-Onion-Solutions/elk-test.git"
+	# TODO: change this to prod
+	DOCKERHUB="dougburks"
+fi
 header "Performing apt-get update"
 apt-get update > /dev/null
 echo "Done!"
@@ -109,11 +115,6 @@ apt-get install -y git > /dev/null
 echo "Done!"
 
 header "Downloading Config Files"
-if [ "$1" == "dev" ]; then
-	URL="https://github.com/dougburks/elk-test.git"
-else
-	URL="https://github.com/Security-Onion-Solutions/elk-test.git"
-fi
 git clone $URL
 echo "Done!"
 
@@ -145,61 +146,14 @@ apt-get update > /dev/null
 apt-get -y install docker-ce > /dev/null
 echo "Done!"
 
-header "Building Docker containers"
-# Create Dockerfile for Elasticsearch
-cat << EOF > Dockerfile
-FROM docker.elastic.co/elasticsearch/elasticsearch:5.4.0
-RUN elasticsearch-plugin remove x-pack
-RUN elasticsearch-plugin remove ingest-user-agent
-RUN elasticsearch-plugin remove ingest-geoip
-EOF
-# Build Elasticsearch
-docker build -t so-elasticsearch .
-# Create Dockerfile for Kibana
-cat << EOF > Dockerfile
-FROM docker.elastic.co/kibana/kibana:5.4.0
-RUN bin/kibana-plugin remove x-pack && \
-    kibana 2>&1 | grep -m 1 "Optimization of .* complete"
-EOF
-# Build Kibana
-docker build -t so-kibana .
-# Create Dockerfile for Logstash
-cat << EOF > Dockerfile
-FROM docker.elastic.co/logstash/logstash:5.4.0
-RUN cd /usr/share/logstash && logstash-plugin remove x-pack
-RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-translate
-RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-tld
-RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-elasticsearch
-RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-rest
-RUN sed -i '/xpack.monitoring.elasticsearch/d' /usr/share/logstash/config/logstash.yml
-EOF
-# Build Logstash
-docker build -t so-logstash .
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+header "Downloading Docker containers"
+docker pull $DOCKERHUB/so-elasticsearch
+docker pull $DOCKERHUB/so-kibana
+docker pull $DOCKERHUB/so-logstash
 sysctl -w vm.max_map_count=262144
 echo "Done!"
 
-#header "Downloading GeoIP data"
-#mkdir /usr/local/share/GeoIP
-#cd /usr/local/share/GeoIP
-#rm Geo*.dat
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-#wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
-#gunzip *.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-ASN.tar.gz
-#for i in *.tar.gz; do sudo tar zxvf $i ; done
-#mv GeoLite2-ASN_???????? GeoLite2-ASN
-#mv GeoLite2-City_???????? GeoLite2-City
-#mv GeoLite2-Country_???????? GeoLite2-Country
-#cd $DIR
-#echo "Done!"
-
-#header "Installing ELK plugins"
+#header "Installing Elastic plugins"
 #apt-get install git python-pip -y
 #pip install elasticsearch-curator
 #/usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
@@ -239,15 +193,29 @@ echo "Done!"
 #echo "Done!"
 
 header "Starting Elastic Stack"
-docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data so-elasticsearch
-docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 so-logstash
-docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch so-kibana
+docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data $DOCKERHUB/so-elasticsearch
+docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 $DOCKERHUB/so-logstash
+docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch $DOCKERHUB/so-kibana
 echo "Done!"
 
-header "Updating CapMe to integrate with ELK"
+header "Configuring Elastic Stack to start on boot"
+FILE="/usr/sbin/so-elastic-start"
+cat << EOF > $FILE
+#!/bin/bash
+docker start so-elasticsearch
+docker start so-logstash
+docker start so-kibana
+EOF
+chmod +x $FILE
+sed -i 's|^exit 0$|/usr/sbin/so-elastic-start|' /etc/rc.local
+echo "exit 0" >> /etc/rc.local
+echo "Done!"
+
+header "Updating CapMe to integrate with Elasticsearch"
 cp -av elk-test/capme /var/www/so/
 
 header "Disabling ELSA"
+rm -f /etc/cron.d/elsa
 FILE="/etc/nsm/securityonion.conf"
 sed -i 's/ELSA=YES/ELSA=NO/' $FILE
 service sphinxsearch stop
@@ -255,14 +223,16 @@ echo "manual" > /etc/init/sphinxsearch.conf.override
 a2dissite elsa
 # Remove ELSA link from Squert
 mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e 'delete from filters where alias="ELSA";'
-# Add ELK link to Squert
+# Add Elastic link to Squert
 MYSQL="mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e"
+ALIAS="Kibana"
+HEXALIAS=$(xxd -pu -c 256 <<< "$ALIAS")
 URL="/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-7d,mode:quick,to:now))&_a=(columns:!(_source),index:'logstash-*',interval:auto,query:'\${var}',sort:!('@timestamp',desc))"
-HEXVAL=$(xxd -pu -c 256 <<< "$URL")
-$MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','454C4B','','ELK','$HEXVAL');"
+HEXURL=$(xxd -pu -c 256 <<< "$URL")
+$MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','$HEXALIAS','','$ALIAS','$HEXURL');"
 service apache2 restart
 
-header "Reconfiguring syslog-ng to send logs to ELK"
+header "Reconfiguring syslog-ng to send logs to Elastic"
 FILE="/etc/syslog-ng/syslog-ng.conf"
 cp $FILE $FILE.elsa
 sed -i '/^destination d_elsa/a destination d_logstash_bro { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
@@ -364,7 +334,7 @@ Each log entry also has an _id field that is hyperlinked.  This hyperlink will t
 * parse out sensor name (hostname-interface)
 * send a request to sguild to request pcap from that sensor name
 
-Previously, in Squert, you could pivot from an IP address to ELSA.  That pivot has been removed and replaced with a pivot to ELK.
+Previously, in Squert, you could pivot from an IP address to ELSA.  That pivot has been removed and replaced with a pivot to Kibana.
 
 Happy Hunting!
 
