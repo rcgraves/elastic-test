@@ -98,6 +98,14 @@ header() {
 	printf '%s\n' "$banner" "$*" "$banner"
 }
 
+if [ "$1" == "dev" ]; then
+	URL="https://github.com/dougburks/elk-test.git"
+	DOCKERHUB="dougburks"
+else
+	URL="https://github.com/Security-Onion-Solutions/elk-test.git"
+	# TODO: change this to prod
+	DOCKERHUB="dougburks"
+fi
 header "Performing apt-get update"
 apt-get update > /dev/null
 echo "Done!"
@@ -107,11 +115,6 @@ apt-get install -y git > /dev/null
 echo "Done!"
 
 header "Downloading Config Files"
-if [ "$1" == "dev" ]; then
-	URL="https://github.com/dougburks/elk-test.git"
-else
-	URL="https://github.com/Security-Onion-Solutions/elk-test.git"
-fi
 git clone $URL
 echo "Done!"
 
@@ -143,62 +146,12 @@ apt-get update > /dev/null
 apt-get -y install docker-ce > /dev/null
 echo "Done!"
 
-header "Building Docker containers"
-docker pull dougburks/so-elasticsearch
-docker pull dougburks/so-kibana
-docker pull dougburks/so-logstash
-# Create Dockerfile for Elasticsearch
-#cat << EOF > Dockerfile
-#FROM docker.elastic.co/elasticsearch/elasticsearch:5.4.0
-#RUN elasticsearch-plugin remove x-pack
-#RUN elasticsearch-plugin remove ingest-user-agent
-#RUN elasticsearch-plugin remove ingest-geoip
-#EOF
-# Build Elasticsearch
-#docker build -t so-elasticsearch .
-# Create Dockerfile for Kibana
-#cat << EOF > Dockerfile
-#FROM docker.elastic.co/kibana/kibana:5.4.0
-#RUN bin/kibana-plugin remove x-pack && \
-#    kibana 2>&1 | grep -m 1 "Optimization of .* complete"
-#EOF
-# Build Kibana
-#docker build -t so-kibana .
-# Create Dockerfile for Logstash
-#cat << EOF > Dockerfile
-#FROM docker.elastic.co/logstash/logstash:5.4.0
-#RUN cd /usr/share/logstash && logstash-plugin remove x-pack
-#RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-translate
-#RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-tld
-#RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-elasticsearch
-#RUN cd /usr/share/logstash && logstash-plugin install logstash-filter-rest
-#RUN sed -i '/xpack.monitoring.elasticsearch/d' /usr/share/logstash/config/logstash.yml
-#EOF
-# Build Logstash
-#docker build -t so-logstash .
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+header "Downloading Docker containers"
+docker pull $DOCKERHUB/so-elasticsearch
+docker pull $DOCKERHUB/so-kibana
+docker pull $DOCKERHUB/so-logstash
 sysctl -w vm.max_map_count=262144
 echo "Done!"
-
-#header "Downloading GeoIP data"
-#mkdir /usr/local/share/GeoIP
-#cd /usr/local/share/GeoIP
-#rm Geo*.dat
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-#wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
-#gunzip *.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-ASN.tar.gz
-#for i in *.tar.gz; do sudo tar zxvf $i ; done
-#mv GeoLite2-ASN_???????? GeoLite2-ASN
-#mv GeoLite2-City_???????? GeoLite2-City
-#mv GeoLite2-Country_???????? GeoLite2-Country
-#cd $DIR
-#echo "Done!"
 
 #header "Installing Elastic plugins"
 #apt-get install git python-pip -y
@@ -240,9 +193,9 @@ echo "Done!"
 #echo "Done!"
 
 header "Starting Elastic Stack"
-docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data dougburks/so-elasticsearch
-docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 dougburks/so-logstash
-docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch dougburks/so-kibana
+docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data $DOCKERHUB/so-elasticsearch
+docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 $DOCKERHUB/so-logstash
+docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch $DOCKERHUB/so-kibana
 echo "Done!"
 
 header "Configuring Elastic Stack to start on boot"
