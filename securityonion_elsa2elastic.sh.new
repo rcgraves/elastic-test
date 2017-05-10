@@ -334,7 +334,7 @@ Each log entry also has an _id field that is hyperlinked.  This hyperlink will t
 * parse out sensor name (hostname-interface)
 * send a request to sguild to request pcap from that sensor name
 
-Previously, in Squert, you could pivot from an IP address to ELSA.  That pivot has been removed and replaced with a pivot to Elastic.
+Previously, in Squert, you could pivot from an IP address to ELSA.  That pivot has been removed and replaced with a pivot to Kibana.
 
 Happy Hunting!
 
