@@ -272,9 +272,11 @@ a2dissite elsa
 mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e 'delete from filters where alias="ELSA";'
 # Add Elastic link to Squert
 MYSQL="mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e"
+ALIAS="Kibana"
+HEXALIAS=$(xxd -pu -c 256 <<< "$ALIAS")
 URL="/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-7d,mode:quick,to:now))&_a=(columns:!(_source),index:'logstash-*',interval:auto,query:'\${var}',sort:!('@timestamp',desc))"
-HEXVAL=$(xxd -pu -c 256 <<< "$URL")
-$MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','454C4B','','Elastic','$HEXVAL');"
+HEXURL=$(xxd -pu -c 256 <<< "$URL")
+$MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','$HEXALIAS','','$ALIAS','$HEXURL');"
 service apache2 restart
 
 header "Reconfiguring syslog-ng to send logs to Elastic"
