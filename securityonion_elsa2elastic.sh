@@ -147,6 +147,8 @@ apt-get -y install docker-ce > /dev/null
 echo "Done!"
 
 header "Downloading Docker containers"
+echo "export DOCKER_CONTENT_TRUST=1" >> /etc/profile.d/securityonion-docker.sh
+export DOCKER_CONTENT_TRUST=1
 docker pull $DOCKERHUB/so-elasticsearch
 docker pull $DOCKERHUB/so-kibana
 docker pull $DOCKERHUB/so-logstash
