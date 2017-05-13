@@ -304,7 +304,14 @@ if [ -f /etc/nsm/sensortab ]; then
 
 		header "Replaying pcaps in /opt/samples/ to create logs"
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
-		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap; do
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/dnp3/dnp3.trace
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/modbus/modbus.trace
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/radius/radius.trace
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rfb/vnc-mac-to-linux.pcap
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rfb/vncmac.pcap
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/sip/wireshark.trace
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/tunnels/gre-within-gre.pcap
+		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap *.trace *.pcap; do
 		echo -n "." 
 		tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
 		done
