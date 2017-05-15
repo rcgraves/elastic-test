@@ -302,8 +302,12 @@ if [ -f /etc/nsm/sensortab ]; then
 		done
 		echo
 
-		header "Replaying pcaps in /opt/samples/ to create logs"
+		header "Downloading and replaying pcaps to create logs for testing"
+		sed -i 's|#66.32.119.38|66.32.119.38|' /opt/bro/share/bro/intel/intel.dat
+		sed -i 's|#www.honeynet.org|www.honeynet.org|' /opt/bro/share/bro/intel/intel.dat
+		sed -i 's|#4285358dd748ef74cb8161108e11cb73|4285358dd748ef74cb8161108e11cb73|' /opt/bro/share/bro/intel/intel.dat
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/ssh/ssh.trace
 		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/dnp3/dnp3.trace
 		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/modbus/modbus.trace
 		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/radius/radius.trace
