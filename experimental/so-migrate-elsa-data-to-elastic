@@ -36,15 +36,22 @@ read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
 
 MYSQL="mysql --defaults-file=/etc/mysql/debian.cnf -sN"
-DIR="/nsm/import"
+DIR="/nsm/import/bro"
 mkdir -p $DIR
-cd $DIR
+cd /nsm/import
 
 for table_name in `$MYSQL -Dsyslog_data -e 'show tables where Tables_in_syslog_data like "syslogs_index_%";'`; do
 	echo "Processing table $table_name"
 	for class_id in `$MYSQL -Dsyslog_data -e "select class_id from $table_name group by class_id;"`; do
-		class_name=`$MYSQL -Dsyslog -e "select class from classes where id = $class_id;" | sed 's|BRO_||g' | tr '[:upper:]' '[:lower:]'`
+		#class_name=`$MYSQL -Dsyslog -e "select class from classes where id = $class_id;" | sed 's|BRO_||g' | tr '[:upper:]' '[:lower:]'`
+		class_name=`$MYSQL -Dsyslog -e "select class from classes where id = $class_id;" | tr '[:upper:]' '[:lower:]'`
 		echo "Processing class $class_name"
 		$MYSQL -Dsyslog_data -e "select msg from syslogs_index_1 where class_id = $class_id;" | sed 's/|/\t/g' >> $class_name.log
 	done
+done
+
+for bro_log in bro_*; do
+	log=$(echo $bro_log | cut -d_ -f2)
+	echo "Moving $bro_log to bro/$log"
+	mv $bro_log bro/$log
 done
