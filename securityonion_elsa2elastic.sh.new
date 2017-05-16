@@ -329,7 +329,7 @@ if [ -f /etc/nsm/sensortab ]; then
 		echo
 
 		header "Running experimental ELSA migration script"
-		bash $DIR/elk-test/experimental/so-migrate-elsa-data-to-elastic
+		bash $DIR/elk-test/experimental/so-migrate-elsa-data-to-elastic -y
 
 		header "Replaying pcaps to create new logs for testing"
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
