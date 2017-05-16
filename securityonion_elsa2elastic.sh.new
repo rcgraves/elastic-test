@@ -120,6 +120,11 @@ if [ -f /etc/nsm/sensortab ]; then
 		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rfb/vncmac.pcap
 		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/sip/wireshark.trace
 		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/tunnels/gre-within-gre.pcap
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/tunnels/Teredo.pcap
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rdp/rdp-proprietary-encryption.pcap
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/snmp/snmpv1_get.pcap
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/mysql/mysql.trace
+		
 		sed -i 's|#66.32.119.38|66.32.119.38|' /opt/bro/share/bro/intel/intel.dat
 		sed -i 's|#www.honeynet.org|www.honeynet.org|' /opt/bro/share/bro/intel/intel.dat
 		sed -i 's|#4285358dd748ef74cb8161108e11cb73|4285358dd748ef74cb8161108e11cb73|' /opt/bro/share/bro/intel/intel.dat
