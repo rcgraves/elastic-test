@@ -106,6 +106,32 @@ else
 	# TODO: change this to prod
 	DOCKERHUB="dougburks"
 fi
+
+if [ -f /etc/nsm/sensortab ]; then
+	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
+	if [ $NUM_INTERFACES -gt 0 ]; then
+
+		header "Downloading and replaying pcaps to create logs in ELSA for testing"
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/ssh/ssh.trace
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/dnp3/dnp3.trace
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/modbus/modbus.trace
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/radius/radius.trace
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rfb/vnc-mac-to-linux.pcap
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rfb/vncmac.pcap
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/sip/wireshark.trace
+		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/tunnels/gre-within-gre.pcap
+		sed -i 's|#66.32.119.38|66.32.119.38|' /opt/bro/share/bro/intel/intel.dat
+		sed -i 's|#www.honeynet.org|www.honeynet.org|' /opt/bro/share/bro/intel/intel.dat
+		sed -i 's|#4285358dd748ef74cb8161108e11cb73|4285358dd748ef74cb8161108e11cb73|' /opt/bro/share/bro/intel/intel.dat
+		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
+		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap *.trace *.pcap; do
+			echo -n "." 
+			tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
+		done
+		echo
+	fi
+fi
+
 header "Performing apt-get update"
 apt-get update > /dev/null
 echo "Done!"
@@ -196,7 +222,7 @@ echo "Done!"
 
 header "Starting Elastic Stack"
 docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data $DOCKERHUB/so-elasticsearch
-docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 $DOCKERHUB/so-logstash
+docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -v /nsm/import:/nsm/import:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 $DOCKERHUB/so-logstash
 docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch $DOCKERHUB/so-kibana
 echo "Done!"
 
@@ -273,15 +299,15 @@ curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_ve
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@elk-test/kibana/config.json; echo; echo
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@elk-test/kibana/index-pattern.json; echo; echo
-#cd $DIR/elk-test/kibana/dashboards/
-#sh load.sh
-#cd $DIR
+cd $DIR/elk-test/kibana/dashboards/
+sh load.sh
+cd $DIR
 
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
 	if [ $NUM_INTERFACES -gt 0 ]; then
-
-		header "Giving Logstash a minute to initialize"
+		SECONDS=120
+		header "Waiting $SECONDS seconds to allow Logstash to initialize"
 		# This check for logstash isn't working correctly right now.
 		# I think docker-proxy is completing the 3WHS and making nc think that logstash is up before it actually is.
 		#max_wait=240
@@ -296,28 +322,20 @@ if [ -f /etc/nsm/sensortab ]; then
 		#	echo -n "."
 		#done
 		#echo
-		for i in `seq 1 60`; do
+		for i in `seq 1 $SECONDS`; do
 			sleep 1s
 			echo -n "."
 		done
 		echo
 
-		header "Downloading and replaying pcaps to create logs for testing"
-		sed -i 's|#66.32.119.38|66.32.119.38|' /opt/bro/share/bro/intel/intel.dat
-		sed -i 's|#www.honeynet.org|www.honeynet.org|' /opt/bro/share/bro/intel/intel.dat
-		sed -i 's|#4285358dd748ef74cb8161108e11cb73|4285358dd748ef74cb8161108e11cb73|' /opt/bro/share/bro/intel/intel.dat
+		header "Running experimental ELSA migration script"
+		bash $DIR/elk-test/experimental/so-migrate-elsa-data-to-elastic -y
+
+		header "Replaying pcaps to create new logs for testing"
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/ssh/ssh.trace
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/dnp3/dnp3.trace
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/modbus/modbus.trace
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/radius/radius.trace
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rfb/vnc-mac-to-linux.pcap
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rfb/vncmac.pcap
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/sip/wireshark.trace
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/tunnels/gre-within-gre.pcap
 		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap *.trace *.pcap; do
-		echo -n "." 
-		tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
+			echo -n "." 
+			tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
 		done
 		echo
 	fi
