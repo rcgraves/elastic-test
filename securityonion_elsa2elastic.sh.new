@@ -228,7 +228,7 @@ echo "Done!"
 header "Starting Elastic Stack"
 docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data $DOCKERHUB/so-elasticsearch
 docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -v /nsm/import:/nsm/import:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 $DOCKERHUB/so-logstash
-docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch $DOCKERHUB/so-kibana
+docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch -e "KIBANA_DEFAULTAPPID=dashboard/94b52620-342a-11e7-9d52-4f090484f59e" $DOCKERHUB/so-kibana
 echo "Done!"
 
 header "Configuring Elastic Stack to start on boot"
