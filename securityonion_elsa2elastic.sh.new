@@ -51,16 +51,14 @@ This script will do the following:
 Depending on the speed of your hardware and Internet connection, this process will take at least 10 minutes.
 
 TODO
-* tag snort logs correctly
-* control ES disk usage
-* add script to wipe ES
-* update logstash patterns for Bro 2.5 (ssh, smtp, intel, and http) and convert from grok to csv where possible
+* control Elasticsearch disk usage
+* add script to wipe Elasticsearch
 * configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
 * configure Sguil client to pivot from IP address to Kibana search for that IP
 * configure Squert and Sguil to query ES directly
 
 HARDWARE REQUIREMENTS
-The Elastic stack requires more hardware than ELSA, so for a test VM, you'll probably want at LEAST 2 CPU cores and 4GB of RAM.
+The Elastic stack requires more hardware than ELSA.  For best results on your test VM, you'll probably want at LEAST 2 CPU cores and 8GB of RAM.
 
 THANKS
 Special thanks to Justin Henderson for his Logstash configs and installation guide!
@@ -111,20 +109,14 @@ if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
 	if [ $NUM_INTERFACES -gt 0 ]; then
 
-		header "Downloading and replaying pcaps to create logs in ELSA for testing"
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/ssh/ssh.trace
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/dnp3/dnp3.trace
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/modbus/modbus.trace
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/radius/radius.trace
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rfb/vnc-mac-to-linux.pcap
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rfb/vncmac.pcap
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/sip/wireshark.trace
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/tunnels/gre-within-gre.pcap
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/tunnels/Teredo.pcap
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/rdp/rdp-proprietary-encryption.pcap
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/snmp/snmpv1_get.pcap
-		wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/mysql/mysql.trace
-		
+		header "Downloading additional pcaps"
+		for i in ssh/ssh.trace dnp3/dnp3.trace modbus/modbus.trace radius/radius.trace rfb/vnc-mac-to-linux.pcap rfb/vncmac.pcap sip/wireshark.trace tunnels/gre-within-gre.pcap tunnels/Teredo.pcap rdp/rdp-proprietary-encryption.pcap snmp/snmpv1_get.pcap mysql/mysql.trace; do
+			echo -n "." 
+			wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/$i
+		done
+		echo
+	
+		header "Replaying pcaps to create logs in ELSA for testing"
 		sed -i 's|#66.32.119.38|66.32.119.38|' /opt/bro/share/bro/intel/intel.dat
 		sed -i 's|#www.honeynet.org|www.honeynet.org|' /opt/bro/share/bro/intel/intel.dat
 		sed -i 's|#4285358dd748ef74cb8161108e11cb73|4285358dd748ef74cb8161108e11cb73|' /opt/bro/share/bro/intel/intel.dat
