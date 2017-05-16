@@ -306,8 +306,8 @@ cd $DIR
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
 	if [ $NUM_INTERFACES -gt 0 ]; then
-
-		header "Giving Logstash a minute to initialize"
+		SECONDS=120
+		header "Waiting $SECONDS seconds to allow Logstash to initialize"
 		# This check for logstash isn't working correctly right now.
 		# I think docker-proxy is completing the 3WHS and making nc think that logstash is up before it actually is.
 		#max_wait=240
@@ -322,7 +322,7 @@ if [ -f /etc/nsm/sensortab ]; then
 		#	echo -n "."
 		#done
 		#echo
-		for i in `seq 1 60`; do
+		for i in `seq 1 $SECONDS`; do
 			sleep 1s
 			echo -n "."
 		done
