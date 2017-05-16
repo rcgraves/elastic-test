@@ -15,7 +15,6 @@
     "source_port", 
     "destination_ip", 
     "destination_port", 
-    "sensor_name", 
     "uid", 
     "_id"
   ]
