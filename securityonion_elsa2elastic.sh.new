@@ -277,6 +277,10 @@ chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
 
+header "Configuring Bro to log SMB traffic"
+sed -i 's|# @load policy/protocols/smb|@load policy/protocols/smb|g' /opt/bro/share/bro/site/local.bro
+broctl restart
+
 header "Configuring Kibana"
 max_wait=240
 es_host=localhost
