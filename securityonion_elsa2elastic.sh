@@ -110,7 +110,7 @@ if [ -f /etc/nsm/sensortab ]; then
 	if [ $NUM_INTERFACES -gt 0 ]; then
 
 		header "Downloading additional pcaps"
-		for i in ssh/ssh.trace dnp3/dnp3.trace modbus/modbus.trace radius/radius.trace rfb/vnc-mac-to-linux.pcap rfb/vncmac.pcap sip/wireshark.trace tunnels/gre-within-gre.pcap tunnels/Teredo.pcap rdp/rdp-proprietary-encryption.pcap snmp/snmpv1_get.pcap mysql/mysql.trace; do
+		for i in ssh/ssh.trace dnp3/dnp3.trace modbus/modbus.trace radius/radius.trace rfb/vnc-mac-to-linux.pcap rfb/vncmac.pcap sip/wireshark.trace tunnels/gre-within-gre.pcap tunnels/Teredo.pcap rdp/rdp-proprietary-encryption.pcap snmp/snmpv1_get.pcap mysql/mysql.trace smb/dssetup_DsRoleGetPrimaryDomainInformation_standalone_workstation.cap smb/raw_ntlm_in_smb.pcap smb/smb1.pcap smb/smb2.pcap; do
 			echo -n "." 
 			wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/$i
 		done
@@ -260,8 +260,8 @@ service apache2 restart
 header "Reconfiguring syslog-ng to send logs to Elastic"
 FILE="/etc/syslog-ng/syslog-ng.conf"
 cp $FILE $FILE.elsa
-sed -i '/^destination d_elsa/a destination d_logstash_bro { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
-sed -i 's/log { destination(d_elsa); };/log { destination(d_logstash_bro); };/' $FILE
+sed -i '/^destination d_elsa/a destination d_logstash { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
+sed -i 's/log { destination(d_elsa); };/log { destination(d_logstash); };/' $FILE
 sed -i '/rewrite(r_host);/d' $FILE
 sed -i '/rewrite(r_cisco_program);/d' $FILE
 sed -i '/rewrite(r_snare);/d' $FILE
@@ -269,6 +269,14 @@ sed -i '/rewrite(r_from_pipes);/d' $FILE
 sed -i '/rewrite(r_pipes);/d' $FILE
 sed -i '/parser(p_db);/d' $FILE
 sed -i '/rewrite(r_extracted_host);/d' $FILE
+sed -i '/^source s_bro_sip/a source s_bro_dce_rpc { file("/nsm/bro/logs/current/dce_rpc.log" flags(no-parse) program_override("bro_dce_rpc")); };' $FILE
+sed -i '/^source s_bro_sip/a source s_bro_ntlm { file("/nsm/bro/logs/current/ntlm.log" flags(no-parse) program_override("bro_ntlm")); };' $FILE
+sed -i '/^source s_bro_sip/a source s_bro_smb_files { file("/nsm/bro/logs/current/smb_files.log" flags(no-parse) program_override("bro_smb_files")); };' $FILE
+sed -i '/^source s_bro_sip/a source s_bro_smb_mapping { file("/nsm/bro/logs/current/smb_mapping.log" flags(no-parse) program_override("bro_smb_mapping")); };' $FILE
+sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_dce_rpc);' $FILE
+sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_ntlm);' $FILE
+sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_files);' $FILE
+sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_mapping);' $FILE
 service syslog-ng restart
 
 header "Updating OSSEC rules"
@@ -276,6 +284,10 @@ cp elk-test/ossec/securityonion_rules.xml /var/ossec/rules/
 chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
+
+header "Configuring Bro to log SMB traffic"
+sed -i 's|# @load policy/protocols/smb|@load policy/protocols/smb|g' /opt/bro/share/bro/site/local.bro
+broctl restart
 
 header "Configuring Kibana"
 max_wait=240
