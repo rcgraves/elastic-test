@@ -260,7 +260,7 @@ service apache2 restart
 header "Reconfiguring syslog-ng to send logs to Elastic"
 FILE="/etc/syslog-ng/syslog-ng.conf"
 cp $FILE $FILE.elsa
-sed -i '/^destination d_elsa/a destination d_logstash { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\n")); };' $FILE
+sed -i '/^destination d_elsa/a destination d_logstash { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\\n")); };' $FILE
 sed -i 's/log { destination(d_elsa); };/log { destination(d_logstash); };/' $FILE
 sed -i '/rewrite(r_host);/d' $FILE
 sed -i '/rewrite(r_cisco_program);/d' $FILE
