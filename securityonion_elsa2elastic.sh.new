@@ -211,7 +211,7 @@ echo "Done!"
 header "Configuring Logstash"
 mkdir -p /etc/logstash/conf.d/
 cp -rf elk-test/configfiles/*.conf /etc/logstash/conf.d/
-cp logstash/logstash-template.json /etc/logstash/
+cp elk-test/logstash/logstash-template.json /etc/logstash/
 cp -rf elk-test/dictionaries /lib/
 cp -rf elk-test/grok-patterns /lib/
 echo "Done!"
