@@ -8,6 +8,6 @@
   "optionsJSON": "{\"darkTheme\":true}", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"192.168.238.1\"}}}],\"highlightAll\":true,\"version\":true}"
+    "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"\"}}}],\"highlightAll\":true,\"version\":true}"
   }
 }
