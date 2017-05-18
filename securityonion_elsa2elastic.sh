@@ -175,7 +175,11 @@ export DOCKER_CONTENT_TRUST=1
 docker pull $DOCKERHUB/so-elasticsearch
 docker pull $DOCKERHUB/so-kibana
 docker pull $DOCKERHUB/so-logstash
+echo "Done!"
+
+header "Setting vm.max_map_count to 262144"
 sysctl -w vm.max_map_count=262144
+cp elk-test/sysctl.d/* /etc/sysctl.d/
 echo "Done!"
 
 #header "Installing Elastic plugins"
