@@ -8,13 +8,12 @@
   "title": "FTP - Logs", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\n  \"index\": \"logstash-*\",\n  \"highlightAll\": true,\n  \"version\": true,\n  \"filter\": [],\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"type:bro_ftp\",\n      \"analyze_wildcard\": true\n    }\n  }\n}"
+    "searchSourceJSON": "{\"index\":\"logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:bro_ftp\",\"analyze_wildcard\":true}}}"
   }, 
   "columns": [
     "source_ip", 
     "destination_ip", 
     "destination_port", 
-    "command", 
     "uid", 
     "fuid", 
     "_id"
