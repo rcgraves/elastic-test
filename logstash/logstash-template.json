@@ -33,27 +33,7 @@
       "properties" : {
         "@timestamp": { "type": "date", "include_in_all": false },
         "@version": { "type": "keyword", "include_in_all": false },
-	"destination_ip" : { "type": "ip" },
-	"source_ip" : { "type": "ip" },
         "geoip"  : {
-          "dynamic": true,
-          "properties" : {
-            "ip": { "type": "ip" },
-            "location" : { "type" : "geo_point" },
-            "latitude" : { "type" : "half_float" },
-            "longitude" : { "type" : "half_float" }
-          }
-        },
-        "destination_geo"  : {
-          "dynamic": true,
-          "properties" : {
-            "ip": { "type": "ip" },
-            "location" : { "type" : "geo_point" },
-            "latitude" : { "type" : "half_float" },
-            "longitude" : { "type" : "half_float" }
-          }
-        },
-        "source_geo"  : {
           "dynamic": true,
           "properties" : {
             "ip": { "type": "ip" },
