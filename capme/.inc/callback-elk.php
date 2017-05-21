@@ -155,7 +155,7 @@ if ($sidsrc == "elk") {
 			// source_ip
 			if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
 				$sip = $elk_response_object["hits"]["hits"][0]["_source"]["source_ip"];
-				if (!filter_var($sip, FILTER_VALIDATE_IP)) {
+				if (!filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
         				$errMsgELK = "Invalid source IP.";
 				}
 			} else {
@@ -175,7 +175,7 @@ if ($sidsrc == "elk") {
 			// destination_ip
 			if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
 				$dip = $elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
-				if (!filter_var($dip, FILTER_VALIDATE_IP)) {
+				if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
         				$errMsgELK = "Invalid source IP.";
 				}
 			} else {
@@ -262,7 +262,8 @@ if ($sidsrc == "elk") {
 				// source_ip
 				if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
 					$sip = $elk_response_object["hits"]["hits"][0]["_source"]["source_ip"];
-					if (!filter_var($sip, FILTER_VALIDATE_IP)) {
+					error_log($sip);
+					if (!filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
 	        				$errMsgELK = "Invalid source IP.";
 					}
 				} else {
@@ -282,7 +283,8 @@ if ($sidsrc == "elk") {
 				// destination_ip
 				if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
 					$dip = $elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
-					if (!filter_var($dip, FILTER_VALIDATE_IP)) {
+					error_log($dip);
+					if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
         					$errMsgELK = "Invalid source IP.";
 					}
 				} else {
@@ -309,27 +311,32 @@ if ($sidsrc == "elk") {
 	// Next, we'll use $sensor to look up the $sid in Sguil's sensor table.
 }
 
-// Query the Sguil database.
-$query = "SELECT sid FROM sensor WHERE hostname='$sensor' AND agent_type='pcap' LIMIT 1";
-$response = mysql_query($query);
-if (!$response) {
+if ($errMsgELK != "") {
     $err = 1;
-    $errMsg = "Error: The query failed, please verify database connectivity";
-    $debug = $query;
-} else if (mysql_num_rows($response) == 0) {
-    $err = 1;
-    $debug = $query;
-    $errMsg = "Failed to find a matching sid. " . $errMsgELK;
-
-    // Check for possible error condition: no pcap_agent.
-    $response = mysql_query("select * from sensor where agent_type='pcap' and active='Y';");
-    if (mysql_num_rows($response) == 0) {
-    $errMsg = "Error: No pcap_agent found";
-    }
-
+    $errMsg = $errMsgELK;
 } else {
-    $row = mysql_fetch_assoc($response);
-    $sid    = $row["sid"];
+	// Query the Sguil database.
+	$query = "SELECT sid FROM sensor WHERE hostname='$sensor' AND agent_type='pcap' LIMIT 1";
+	$response = mysql_query($query);
+	if (!$response) {
+	    $err = 1;
+	    $errMsg = "Error: The query failed, please verify database connectivity";
+	    $debug = $query;
+	} else if (mysql_num_rows($response) == 0) {
+	    $err = 1;
+	    $debug = $query;
+	    $errMsg = "Failed to find a matching sid. " . $errMsgELK;
+
+	    // Check for possible error condition: no pcap_agent.
+	    $response = mysql_query("select * from sensor where agent_type='pcap' and active='Y';");
+	    if (mysql_num_rows($response) == 0) {
+		    $errMsg = "Error: No pcap_agent found";
+	    }
+	} else {
+	    $row = mysql_fetch_assoc($response);
+	    $sid    = $row["sid"];
+	    $err = 0;
+	}
 }
 
 if ($err == 1) {
