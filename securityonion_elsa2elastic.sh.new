@@ -40,7 +40,8 @@ This script assumes that you've already installed and configured the latest Secu
 * Setup run in Evaluation Mode to enable ELSA
 
 This script will do the following:
-* build Docker containers for Elasticsearch, Logstash, and Kibana
+* replay sample pcaps to create data in ELSA and then export that data so that Elastic import can be tested
+* install Docker and download Docker images for Elasticsearch, Logstash, and Kibana
 * import our custom visualizations and dashboards
 * disable ELSA
 * configure syslog-ng to send logs to Logstash on port 6050
