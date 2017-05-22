@@ -8,9 +8,11 @@
   "title": "OSSEC - Logs", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\"index\":\"logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"type:ossec\",\"analyze_wildcard\":true}},\"filter\":[{\"meta\":{\"negate\":true,\"index\":\"logstash-*\",\"key\":\"tags\",\"value\":\"alert\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"tags\":{\"query\":\"alert\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+    "searchSourceJSON": "{\"index\":\"logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"type:ossec\",\"analyze_wildcard\":true}},\"filter\":[]}"
   }, 
   "columns": [
-    "message"
+    "alert_level", 
+    "classification", 
+    "description"
   ]
 }
