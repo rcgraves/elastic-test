@@ -266,6 +266,21 @@ HEXURL=$(xxd -pu -c 256 <<< "$URL")
 $MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','$HEXALIAS','','$ALIAS','$HEXURL');"
 service apache2 restart
 
+header "Replacing ELSA shortcuts with Kibana shortcuts"
+for i in /home/*/Desktop /etc/skel/Desktop /usr/share/applications; do
+	echo "Checking $i"
+	ELSA="$i/securityonion-elsa.desktop"
+	KIBANA="$i/securityonion-kibana.desktop"
+	if [ -f $ELSA ]; then
+		echo "Renaming $ELSA to $KIBANA"
+		mv $ELSA $KIBANA
+		echo "Updating $KIBANA"
+		sed -i 's|Name=ELSA|Name=Kibana|g' $KIBANA
+		sed -i 's|https://localhost/elsa|https://localhost/app/kibana|g' $KIBANA
+	fi
+done
+
+
 header "Reconfiguring syslog-ng to send logs to Elastic"
 FILE="/etc/syslog-ng/syslog-ng.conf"
 cp $FILE $FILE.elsa
