@@ -296,7 +296,7 @@ service ossec-hids-server restart
 
 header "Configuring Bro to log SMB traffic"
 sed -i 's|# @load policy/protocols/smb|@load policy/protocols/smb|g' /opt/bro/share/bro/site/local.bro
-broctl restart
+/usr/sbin/nsm_sensor_ps-restart --only-bro
 
 header "Configuring Kibana"
 max_wait=240

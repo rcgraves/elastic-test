@@ -40,7 +40,8 @@ This script assumes that you've already installed and configured the latest Secu
 * Setup run in Evaluation Mode to enable ELSA
 
 This script will do the following:
-* build Docker containers for Elasticsearch, Logstash, and Kibana
+* replay sample pcaps to create data in ELSA and then export that data so that Elastic import can be tested
+* install Docker and download Docker images for Elasticsearch, Logstash, and Kibana
 * import our custom visualizations and dashboards
 * disable ELSA
 * configure syslog-ng to send logs to Logstash on port 6050
@@ -209,9 +210,12 @@ chown -R 1000:1000 /nsm/es
 echo "Done!"
 
 header "Configuring Logstash"
+mkdir -p /nsm/logstash
+chown -R 1000:1000 /nsm/logstash
 mkdir -p /etc/logstash/conf.d/
 cp -rf elk-test/configfiles/*.conf /etc/logstash/conf.d/
 cp elk-test/logstash/logstash-template.json /etc/logstash/
+cp elk-test/logstash/logstash.yml /etc/logstash/
 cp -rf elk-test/dictionaries /lib/
 cp -rf elk-test/grok-patterns /lib/
 echo "Done!"
@@ -223,8 +227,8 @@ echo "Done!"
 #echo "Done!"
 
 header "Starting Elastic Stack"
-docker run -d --name=so-elasticsearch -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data $DOCKERHUB/so-elasticsearch
-docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -v /etc/logstash/logstash-template.json:/logstash-template.json:ro -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /lib/dictionaries:/lib/dictionaries:ro -v /nsm/import:/nsm/import:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 $DOCKERHUB/so-logstash
+docker run -d --name=so-elasticsearch -p 9200:9200 -e ES_JAVA_OPTS="-Xms600m -Xmx600m" -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data $DOCKERHUB/so-elasticsearch
+docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -e LS_JAVA_OPTS="-Xms1000m -Xmx1000m" -v /etc/logstash/logstash.yml:/opt/logstash/config/logstash.yml:ro -v /etc/logstash/logstash-template.json:/logstash-template.json:ro -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /nsm/logstash:/usr/share/logstash/data/ -v /lib/dictionaries:/lib/dictionaries:ro -v /nsm/import:/nsm/import:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 $DOCKERHUB/so-logstash
 docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch -e "KIBANA_DEFAULTAPPID=dashboard/94b52620-342a-11e7-9d52-4f090484f59e" $DOCKERHUB/so-kibana
 echo "Done!"
 
@@ -292,7 +296,7 @@ service ossec-hids-server restart
 
 header "Configuring Bro to log SMB traffic"
 sed -i 's|# @load policy/protocols/smb|@load policy/protocols/smb|g' /opt/bro/share/bro/site/local.bro
-broctl restart
+/usr/sbin/nsm_sensor_ps-restart --only-bro
 
 header "Configuring Kibana"
 max_wait=240
