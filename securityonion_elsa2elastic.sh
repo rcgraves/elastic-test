@@ -52,11 +52,8 @@ This script will do the following:
 Depending on the speed of your hardware and Internet connection, this process will take at least 10 minutes.
 
 TODO
-* control Elasticsearch disk usage
-* add script to wipe Elasticsearch
-* configure CapMe to detect BRO_PE / BRO_X509 and pivot to BRO_FILES via FID and then to BRO_CONN via CID
-* configure Sguil client to pivot from IP address to Kibana search for that IP
-* configure Squert and Sguil to query ES directly
+For the current TODO list, please see:
+https://github.com/Security-Onion-Solutions/security-onion/issues/1095
 
 HARDWARE REQUIREMENTS
 The Elastic stack requires more hardware than ELSA.  For best results on your test VM, you'll probably want at LEAST 2 CPU cores and 8GB of RAM.
