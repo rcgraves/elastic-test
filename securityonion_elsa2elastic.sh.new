@@ -264,6 +264,10 @@ URL="/app/kibana#/dashboard/68563ed0-34bf-11e7-9b32-bb903919ead9?_g=(refreshInte
 HEXURL=$(xxd -pu -c 356 <<< "$URL")
 $MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','$HEXALIAS','','$ALIAS','$HEXURL');"
 service apache2 restart
+sed -i 's|ELSA|Kibana|g' /usr/bin/sguil.tk
+sed -i 's|elsa|kibana|g' /usr/bin/sguil.tk
+sed -i 's|ELSA|Kibana|g' /usr/lib/sguil/extdata.tcl 
+sed -i "s|elsa-query/?query_string=\"\$ipAddr\"%20groupby:program|app/kibana#/dashboard/68563ed0-34bf-11e7-9b32-bb903919ead9?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-5y,mode:quick,to:now))\&_a=(columns:!(_source),index:'logstash-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'\"\$ipAddr\"')),sort:!('@timestamp',desc))|g" /usr/lib/sguil/extdata.tcl
 
 header "Replacing ELSA shortcuts with Kibana shortcuts"
 for i in /home/*/Desktop /etc/skel/Desktop /usr/share/applications; do
