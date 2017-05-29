@@ -226,6 +226,9 @@ echo "Done!"
 header "Starting Elastic Stack"
 cat << EOF >> /etc/nsm/securityonion.conf
 
+# Docker options
+DOCKERHUB="$DOCKERHUB"
+
 # Elasticsearch options
 ELASTICSEARCH_ENABLED="yes"
 ELASTICSEARCH_HEAP="600m"
@@ -241,15 +244,14 @@ KIBANA_ENABLED="yes"
 KIBANA_DEFAULTAPPID="dashboard/94b52620-342a-11e7-9d52-4f090484f59e"
 KIBANA_OPTIONS=""
 EOF
-echo DOCKERHUB="$DOCKERHUB" >> /etc/nsm/securityonion.conf
+
 cp elk-test/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*
 /usr/sbin/so-elastic-start
 echo "Done!"
 
 header "Configuring Elastic Stack to start on boot"
-sed -i 's|^exit 0$|/usr/sbin/so-elastic-start|' /etc/rc.local
-echo "exit 0" >> /etc/rc.local
+cp elk-test/etc/init/securityonion.conf /etc/init/securityonion.conf
 echo "Done!"
 
 header "Updating CapMe to integrate with Elasticsearch"
