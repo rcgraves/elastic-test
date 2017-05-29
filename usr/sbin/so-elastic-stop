@@ -1,6 +1,8 @@
 #!/bin/bash
 
+source /etc/nsm/securityonion.conf
+
 echo "Stopping containers:"
-docker stop so-logstash
-docker stop so-kibana
-docker stop so-elasticsearch
+[ "$LOGSTASH_ENABLED" = "yes" ] && docker stop so-logstash
+[ "$KIBANA_ENABLED" = "yes" ] && docker stop so-kibana
+[ "$ELASTICSEARCH_ENABLED" = "yes" ] && docker stop so-elasticsearch

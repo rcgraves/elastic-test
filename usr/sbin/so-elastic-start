@@ -2,50 +2,53 @@
 
 source /etc/nsm/securityonion.conf
 
-echo "Removing existing containers:"
-docker rm so-elasticsearch
-docker rm so-logstash
-docker rm so-kibana
+/usr/sbin/so-elastic-remove
 
 echo "Starting new containers:"
 
-echo -n "so-elasticsearch: "
-docker run --name=so-elasticsearch \
-	--detach \
-	--env "bootstrap_memory_lock=true" \
-	--env ES_JAVA_OPTS="-Xms$ELASTICSEARCH_HEAP -Xmx$ELASTICSEARCH_HEAP" \
-	--env "http.host=0.0.0.0" \
-	--env "transport.host=127.0.0.1" \
-	--publish 9200:9200 \
-	--ulimit memlock=-1:-1 \
-	--volume /nsm/es:/usr/share/elasticsearch/data \
-	$ELASTICSEARCH_OPTIONS \
-	$DOCKERHUB/so-elasticsearch
+if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
+	echo -n "so-elasticsearch: "
+	docker run --name=so-elasticsearch \
+		--detach \
+		--env "bootstrap_memory_lock=true" \
+		--env ES_JAVA_OPTS="-Xms$ELASTICSEARCH_HEAP -Xmx$ELASTICSEARCH_HEAP" \
+		--env "http.host=0.0.0.0" \
+		--env "transport.host=127.0.0.1" \
+		--publish 9200:9200 \
+		--ulimit memlock=-1:-1 \
+		--volume /nsm/es:/usr/share/elasticsearch/data \
+		$ELASTICSEARCH_OPTIONS \
+		$DOCKERHUB/so-elasticsearch
+fi
 
-echo -n "so-logstash: "
-docker run --name=so-logstash \
-	--detach \
-	--env LS_JAVA_OPTS="-Xms$LOGSTASH_HEAP -Xmx$LOGSTASH_HEAP" \
-	--link=so-elasticsearch:elasticsearch \
-	--publish 6050:6050 \
-	--publish 6051:6051 \
-	--publish 6052:6052 \
-	--publish 6053:6053 \
-	--volume /etc/logstash/logstash.yml:/opt/logstash/config/logstash.yml:ro \
-	--volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
-	--volume /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro \
-	--volume /etc/nsm/rules:/etc/nsm/rules:ro \
-	--volume /lib/dictionaries:/lib/dictionaries:ro \
-	--volume /nsm/import:/nsm/import:ro \
-	--volume /nsm/logstash:/usr/share/logstash/data/ \
-	$LOGSTASH_OPTIONS \
-	$DOCKERHUB/so-logstash
+if [ "$LOGSTASH_ENABLED" = "yes" ]; then
+	echo -n "so-logstash: "
+	docker run --name=so-logstash \
+		--detach \
+		--env LS_JAVA_OPTS="-Xms$LOGSTASH_HEAP -Xmx$LOGSTASH_HEAP" \
+		--link=so-elasticsearch:elasticsearch \
+		--publish 6050:6050 \
+		--publish 6051:6051 \
+		--publish 6052:6052 \
+		--publish 6053:6053 \
+		--volume /etc/logstash/logstash.yml:/opt/logstash/config/logstash.yml:ro \
+		--volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
+		--volume /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro \
+		--volume /etc/nsm/rules:/etc/nsm/rules:ro \
+		--volume /lib/dictionaries:/lib/dictionaries:ro \
+		--volume /nsm/import:/nsm/import:ro \
+		--volume /nsm/logstash:/usr/share/logstash/data/ \
+		$LOGSTASH_OPTIONS \
+		$DOCKERHUB/so-logstash
+fi
 
-echo -n "so-kibana: "
-docker run --name=so-kibana \
-	--detach \
-	--env "KIBANA_DEFAULTAPPID=$KIBANA_DEFAULTAPPID" \
-	--link=so-elasticsearch:elasticsearch \
-	--publish 5601:5601 \
-	$KIBANA_OPTIONS \
-	$DOCKERHUB/so-kibana
+if [ "$KIBANA_ENABLED" = "yes" ]; then
+	echo -n "so-kibana: "
+	docker run --name=so-kibana \
+		--detach \
+		--env "KIBANA_DEFAULTAPPID=$KIBANA_DEFAULTAPPID" \
+		--link=so-elasticsearch:elasticsearch \
+		--publish 5601:5601 \
+		$KIBANA_OPTIONS \
+		$DOCKERHUB/so-kibana
+fi

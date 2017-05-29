@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source /etc/nsm/securityonion.conf
+
+echo "Removing existing containers:"
+[ "$ELASTICSEARCH_ENABLED" = "yes" ] && docker rm so-elasticsearch
+[ "$LOGSTASH_ENABLED" = "yes" ] && docker rm so-logstash
+[ "$KIBANA_ENABLED" = "yes" ] && docker rm so-kibana

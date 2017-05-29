@@ -226,11 +226,18 @@ echo "Done!"
 header "Starting Elastic Stack"
 cat << EOF >> /etc/nsm/securityonion.conf
 
-# Container options
+# Elasticsearch options
+ELASTICSEARCH_ENABLED="yes"
 ELASTICSEARCH_HEAP="600m"
 ELASTICSEARCH_OPTIONS=""
+
+# Logstash options
+LOGSTASH_ENABLED="yes"
 LOGSTASH_HEAP="1g"
 LOGSTASH_OPTIONS=""
+
+# Kibana options
+KIBANA_ENABLED="yes"
 KIBANA_DEFAULTAPPID="dashboard/94b52620-342a-11e7-9d52-4f090484f59e"
 KIBANA_OPTIONS=""
 EOF
