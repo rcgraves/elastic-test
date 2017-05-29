@@ -224,20 +224,23 @@ echo "Done!"
 #echo "Done!"
 
 header "Starting Elastic Stack"
-docker run -d --name=so-elasticsearch -p 9200:9200 -e ES_JAVA_OPTS="-Xms600m -Xmx600m" -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "bootstrap_memory_lock=true" --ulimit memlock=-1:-1 -v /nsm/es:/usr/share/elasticsearch/data $DOCKERHUB/so-elasticsearch
-docker run -d --name=so-logstash --link=so-elasticsearch:elasticsearch -e LS_JAVA_OPTS="-Xms1000m -Xmx1000m" -v /etc/nsm/rules:/etc/nsm/rules:ro -v /etc/logstash/logstash.yml:/opt/logstash/config/logstash.yml:ro -v /etc/logstash/logstash-template.json:/logstash-template.json:ro -v /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro -v /nsm/logstash:/usr/share/logstash/data/ -v /lib/dictionaries:/lib/dictionaries:ro -v /nsm/import:/nsm/import:ro -p 6050:6050 -p 6051:6051 -p 6052:6052 -p 6053:6053 $DOCKERHUB/so-logstash
-docker run -d --name=so-kibana -p 5601:5601 --link=so-elasticsearch:elasticsearch -e "KIBANA_DEFAULTAPPID=dashboard/94b52620-342a-11e7-9d52-4f090484f59e" $DOCKERHUB/so-kibana
+cat << EOF >> /etc/nsm/securityonion.conf
+
+# Container options
+ELASTICSEARCH_HEAP="600m"
+ELASTICSEARCH_OPTIONS=""
+LOGSTASH_HEAP="1g"
+LOGSTASH_OPTIONS=""
+KIBANA_DEFAULTAPPID="dashboard/94b52620-342a-11e7-9d52-4f090484f59e"
+KIBANA_OPTIONS=""
+EOF
+echo DOCKERHUB="$DOCKERHUB" >> /etc/nsm/securityonion.conf
+cp elk-test/usr/sbin/* /usr/sbin/
+chmod +x /usr/sbin/so-elastic-*
+/usr/sbin/so-elastic-start
 echo "Done!"
 
 header "Configuring Elastic Stack to start on boot"
-FILE="/usr/sbin/so-elastic-start"
-cat << EOF > $FILE
-#!/bin/bash
-docker start so-elasticsearch
-docker start so-logstash
-docker start so-kibana
-EOF
-chmod +x $FILE
 sed -i 's|^exit 0$|/usr/sbin/so-elastic-start|' /etc/rc.local
 echo "exit 0" >> /etc/rc.local
 echo "Done!"

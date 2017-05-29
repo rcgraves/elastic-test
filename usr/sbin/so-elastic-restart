@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/usr/sbin/so-elastic-stop
+/usr/sbin/so-elastic-start

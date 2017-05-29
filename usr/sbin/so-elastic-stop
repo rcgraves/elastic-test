@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "Stopping containers:"
+docker stop so-logstash
+docker stop so-kibana
+docker stop so-elasticsearch
