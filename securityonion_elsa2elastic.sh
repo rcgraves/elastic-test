@@ -140,9 +140,9 @@ git clone $URL
 echo "Done!"
 
 header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
-cp elk-test/proxy/securityonion.conf /etc/apache2/sites-available/
-cp elk-test/proxy/so-apache-auth-sguil /usr/local/bin/
-cp -av elk-test/proxy/so/* /var/www/so/
+cp elk-test/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
+cp elk-test/usr/sbin/so-apache-auth-sguil /usr/sbin/
+cp -av elk-test/var/www/so/* /var/www/so/
 apt-get install libapache2-mod-authnz-external -y
 a2enmod auth_form
 a2enmod request
@@ -177,7 +177,7 @@ echo "Done!"
 
 header "Setting vm.max_map_count to 262144"
 sysctl -w vm.max_map_count=262144
-cp elk-test/sysctl.d/* /etc/sysctl.d/
+cp elk-test/etc/sysctl.d/* /etc/sysctl.d/
 echo "Done!"
 
 #header "Installing Elastic plugins"
@@ -211,8 +211,7 @@ mkdir -p /nsm/logstash
 chown -R 1000:1000 /nsm/logstash
 mkdir -p /etc/logstash/conf.d/
 cp -rf elk-test/configfiles/*.conf /etc/logstash/conf.d/
-cp elk-test/logstash/logstash-template.json /etc/logstash/
-cp elk-test/logstash/logstash.yml /etc/logstash/
+cp -av elk-test/etc/logstash/* /etc/logstash/
 cp -rf elk-test/dictionaries /lib/
 cp -rf elk-test/grok-patterns /lib/
 echo "Done!"
@@ -226,27 +225,36 @@ echo "Done!"
 header "Starting Elastic Stack"
 cat << EOF >> /etc/nsm/securityonion.conf
 
-# Container options
+# Docker options
+DOCKERHUB="$DOCKERHUB"
+
+# Elasticsearch options
+ELASTICSEARCH_ENABLED="yes"
 ELASTICSEARCH_HEAP="600m"
 ELASTICSEARCH_OPTIONS=""
+
+# Logstash options
+LOGSTASH_ENABLED="yes"
 LOGSTASH_HEAP="1g"
 LOGSTASH_OPTIONS=""
+
+# Kibana options
+KIBANA_ENABLED="yes"
 KIBANA_DEFAULTAPPID="dashboard/94b52620-342a-11e7-9d52-4f090484f59e"
 KIBANA_OPTIONS=""
 EOF
-echo DOCKERHUB="$DOCKERHUB" >> /etc/nsm/securityonion.conf
+
 cp elk-test/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*
 /usr/sbin/so-elastic-start
 echo "Done!"
 
 header "Configuring Elastic Stack to start on boot"
-sed -i 's|^exit 0$|/usr/sbin/so-elastic-start|' /etc/rc.local
-echo "exit 0" >> /etc/rc.local
+cp elk-test/etc/init/securityonion.conf /etc/init/securityonion.conf
 echo "Done!"
 
-header "Updating CapMe to integrate with Elasticsearch"
-cp -av elk-test/capme /var/www/so/
+#header "Updating CapMe to integrate with Elasticsearch"
+#cp -av elk-test/capme /var/www/so/
 
 header "Disabling ELSA"
 rm -f /etc/cron.d/elsa
