@@ -46,7 +46,8 @@ This script will do the following:
 * disable ELSA
 * configure syslog-ng to send logs to Logstash on port 6050
 * configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
-* update CapMe to leverage that single sign on and integrate with Elasticsearch
+* update CapMe to leverage that single sign on (SSO) and integrate with Elasticsearch
+* update Squert to use SSO
 * replay sample pcaps to provide data for testing
 
 Depending on the speed of your hardware and Internet connection, this process will take at least 10 minutes.
