@@ -1,6 +1,4 @@
-# Logstash-Configs
-Contains log parsers for Logstash for many systems and applications. Also contains many methods of augmenting logs.
-
+# Security Onion + Elastic
 This repo contains a script which will convert a Security Onion system running in Evaluation Mode from ELSA to Elastic.
 
 Please note the following!
