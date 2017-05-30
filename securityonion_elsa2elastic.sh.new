@@ -140,8 +140,8 @@ git clone $URL
 echo "Done!"
 
 header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
-cp elk-test/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
-cp elk-test/usr/sbin/so-apache-auth-sguil /usr/sbin/
+cp -av elk-test/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
+cp -av elk-test/usr/sbin/* /usr/sbin/
 cp -av elk-test/var/www/so/* /var/www/so/
 apt-get install libapache2-mod-authnz-external -y
 a2enmod auth_form
@@ -244,7 +244,6 @@ KIBANA_DEFAULTAPPID="dashboard/94b52620-342a-11e7-9d52-4f090484f59e"
 KIBANA_OPTIONS=""
 EOF
 
-cp elk-test/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*
 /usr/sbin/so-elastic-start
 echo "Done!"
@@ -376,7 +375,8 @@ if [ -f /etc/nsm/sensortab ]; then
 		echo
 
 		header "Running experimental ELSA migration script"
-		bash $DIR/elk-test/experimental/so-migrate-elsa-data-to-elastic -y
+		chmod +x /usr/sbin/so-migrate-elsa-data-to-elastic
+		/usr/sbin/so-migrate-elsa-data-to-elastic -y
 
 		header "Replaying pcaps to create new logs for testing"
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
