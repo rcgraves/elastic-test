@@ -210,10 +210,10 @@ header "Configuring Logstash"
 mkdir -p /nsm/logstash
 chown -R 1000:1000 /nsm/logstash
 mkdir -p /etc/logstash/conf.d/
-cp -rf elk-test/configfiles/*.conf /etc/logstash/conf.d/
+cp -av elk-test/configfiles/*.conf /etc/logstash/conf.d/
 cp -av elk-test/etc/logstash/* /etc/logstash/
-cp -rf elk-test/dictionaries /lib/
-cp -rf elk-test/grok-patterns /lib/
+cp -av elk-test/lib/dictionaries /lib/
+#cp -rf elk-test/grok-patterns /lib/
 echo "Done!"
 
 #header "Configuring Kibana"
