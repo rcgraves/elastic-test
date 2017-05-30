@@ -128,7 +128,7 @@ if [ -f /etc/nsm/sensortab ]; then
 			tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
 		done
 		echo
-		cd -
+		cd - > /dev/null
 	fi
 fi
 
