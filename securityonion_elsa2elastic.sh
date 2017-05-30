@@ -210,10 +210,10 @@ header "Configuring Logstash"
 mkdir -p /nsm/logstash
 chown -R 1000:1000 /nsm/logstash
 mkdir -p /etc/logstash/conf.d/
-cp -rf elk-test/configfiles/*.conf /etc/logstash/conf.d/
+cp -av elk-test/configfiles/*.conf /etc/logstash/conf.d/
 cp -av elk-test/etc/logstash/* /etc/logstash/
-cp -rf elk-test/dictionaries /lib/
-cp -rf elk-test/grok-patterns /lib/
+cp -av elk-test/lib/dictionaries /lib/
+#cp -rf elk-test/grok-patterns /lib/
 echo "Done!"
 
 #header "Configuring Kibana"
@@ -317,7 +317,7 @@ sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_mapping);' $FILE
 service syslog-ng restart
 
 header "Updating OSSEC rules"
-cp elk-test/ossec/securityonion_rules.xml /var/ossec/rules/
+cp elk-test/var/ossec/rules/securityonion_rules.xml /var/ossec/rules/
 chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
