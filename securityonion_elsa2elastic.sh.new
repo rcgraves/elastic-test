@@ -95,10 +95,12 @@ header() {
 }
 
 if [ "$1" == "dev" ]; then
-	URL="https://github.com/dougburks/elk-test.git"
+	REPO="elastic-test"
+	URL="https://github.com/dougburks/$REPO.git"
 	DOCKERHUB="dougburks"
 else
-	URL="https://github.com/Security-Onion-Solutions/elk-test.git"
+	REPO="elk-test"
+	URL="https://github.com/Security-Onion-Solutions/$REPO.git"
 	# TODO: change this to prod
 	DOCKERHUB="dougburks"
 fi
@@ -140,9 +142,9 @@ git clone $URL
 echo "Done!"
 
 header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
-cp -av elk-test/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
-cp -av elk-test/usr/sbin/* /usr/sbin/
-cp -av elk-test/var/www/so/* /var/www/so/
+cp -av $REPO/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
+cp -av $REPO/usr/sbin/* /usr/sbin/
+cp -av $REPO/var/www/so/* /var/www/so/
 apt-get install libapache2-mod-authnz-external -y
 a2enmod auth_form
 a2enmod request
@@ -157,7 +159,7 @@ ln -s ssl-cert-snakeoil.key /etc/ssl/private/securityonion.key
 echo "Done!"
 
 header "Installing Docker"
-cp elk-test/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
+cp $REPO/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
 apt-get -y install apt-transport-https ca-certificates curl > /dev/null
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 add-apt-repository        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
@@ -177,7 +179,7 @@ echo "Done!"
 
 header "Setting vm.max_map_count to 262144"
 sysctl -w vm.max_map_count=262144
-cp elk-test/etc/sysctl.d/* /etc/sysctl.d/
+cp $REPO/etc/sysctl.d/* /etc/sysctl.d/
 echo "Done!"
 
 #header "Installing Elastic plugins"
@@ -201,7 +203,7 @@ echo "Done!"
 header "Configuring ElasticSearch"
 #FILE="/etc/elasticsearch/elasticsearch.yml"
 #cp $FILE $FILE.bak
-#cp elk-test/elasticsearch/elasticsearch.yml $FILE
+#cp $REPO/elasticsearch/elasticsearch.yml $FILE
 mkdir -p /nsm/es
 chown -R 1000:1000 /nsm/es
 echo "Done!"
@@ -210,16 +212,16 @@ header "Configuring Logstash"
 mkdir -p /nsm/logstash
 chown -R 1000:1000 /nsm/logstash
 mkdir -p /etc/logstash/conf.d/
-cp -av elk-test/configfiles/*.conf /etc/logstash/conf.d/
-cp -av elk-test/etc/logstash/* /etc/logstash/
-cp -av elk-test/lib/dictionaries /lib/
-#cp -rf elk-test/grok-patterns /lib/
+cp -av $REPO/configfiles/*.conf /etc/logstash/conf.d/
+cp -av $REPO/etc/logstash/* /etc/logstash/
+cp -av $REPO/lib/dictionaries /lib/
+#cp -rf $REPO/grok-patterns /lib/
 echo "Done!"
 
 #header "Configuring Kibana"
 #FILE="/opt/kibana/config/kibana.yml"
 #cp $FILE $FILE.bak
-#cp elk-test/kibana/kibana.yml $FILE
+#cp $REPO/kibana/kibana.yml $FILE
 #echo "Done!"
 
 header "Starting Elastic Stack"
@@ -249,11 +251,11 @@ chmod +x /usr/sbin/so-elastic-*
 echo "Done!"
 
 header "Configuring Elastic Stack to start on boot"
-cp elk-test/etc/init/securityonion.conf /etc/init/securityonion.conf
+cp $REPO/etc/init/securityonion.conf /etc/init/securityonion.conf
 echo "Done!"
 
 #header "Updating CapMe to integrate with Elasticsearch"
-#cp -av elk-test/capme /var/www/so/
+#cp -av $REPO/capme /var/www/so/
 
 header "Disabling ELSA"
 rm -f /etc/cron.d/elsa
@@ -317,7 +319,7 @@ sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_mapping);' $FILE
 service syslog-ng restart
 
 header "Updating OSSEC rules"
-cp elk-test/var/ossec/rules/securityonion_rules.xml /var/ossec/rules/
+cp $REPO/var/ossec/rules/securityonion_rules.xml /var/ossec/rules/
 chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
@@ -343,9 +345,9 @@ until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; d
 done
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@elk-test/kibana/config.json; echo; echo
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@elk-test/kibana/index-pattern.json; echo; echo
-cd $DIR/elk-test/kibana/dashboards/
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@$REPO/kibana/config.json; echo; echo
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@$REPO/kibana/index-pattern.json; echo; echo
+cd $DIR/$REPO/kibana/dashboards/
 sh load.sh
 cd $DIR
 
