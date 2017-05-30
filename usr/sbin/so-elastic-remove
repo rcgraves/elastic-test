@@ -8,6 +8,6 @@ fi
 source /etc/nsm/securityonion.conf
 
 echo "Removing existing containers:"
-[ "$ELASTICSEARCH_ENABLED" = "yes" ] && docker rm so-elasticsearch
-[ "$LOGSTASH_ENABLED" = "yes" ] && docker rm so-logstash
-[ "$KIBANA_ENABLED" = "yes" ] && docker rm so-kibana
+[ "$ELASTICSEARCH_ENABLED" = "yes" ] && docker rm so-elasticsearch 2>&1 | grep -v "No such container"
+[ "$LOGSTASH_ENABLED" = "yes" ] && docker rm so-logstash 2>&1 | grep -v "No such container"
+[ "$KIBANA_ENABLED" = "yes" ] && docker rm so-kibana 2>&1 | grep -v "No such container"
