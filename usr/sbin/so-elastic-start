@@ -8,7 +8,7 @@ fi
 source /etc/nsm/securityonion.conf
 
 /usr/sbin/so-elastic-remove
-
+echo
 echo "Starting new containers:"
 
 if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then

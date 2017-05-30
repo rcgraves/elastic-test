@@ -317,7 +317,7 @@ sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_mapping);' $FILE
 service syslog-ng restart
 
 header "Updating OSSEC rules"
-cp elk-test/ossec/securityonion_rules.xml /var/ossec/rules/
+cp elk-test/var/ossec/rules/securityonion_rules.xml /var/ossec/rules/
 chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
