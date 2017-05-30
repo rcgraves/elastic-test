@@ -82,8 +82,9 @@ read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
 
 # Make a directory to store downloads
-DIR="/tmp/elk"
-mkdir $DIR
+DIR="/opt/elastic"
+PCAP_DIR="$DIR/pcap"
+mkdir -p $PCAP_DIR
 cd $DIR
 
 # Define a banner to separate sections
@@ -109,6 +110,7 @@ if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
 	if [ $NUM_INTERFACES -gt 0 ]; then
 
+		cd $PCAP_DIR
 		header "Downloading additional pcaps"
 		for i in ssh/ssh.trace dnp3/dnp3.trace modbus/modbus.trace radius/radius.trace rfb/vnc-mac-to-linux.pcap rfb/vncmac.pcap sip/wireshark.trace tunnels/gre-within-gre.pcap tunnels/Teredo.pcap rdp/rdp-proprietary-encryption.pcap snmp/snmpv1_get.pcap mysql/mysql.trace smb/dssetup_DsRoleGetPrimaryDomainInformation_standalone_workstation.cap smb/raw_ntlm_in_smb.pcap smb/smb1.pcap smb/smb2.pcap; do
 			echo -n "." 
@@ -121,11 +123,12 @@ if [ -f /etc/nsm/sensortab ]; then
 		sed -i 's|#www.honeynet.org|www.honeynet.org|' /opt/bro/share/bro/intel/intel.dat
 		sed -i 's|#4285358dd748ef74cb8161108e11cb73|4285358dd748ef74cb8161108e11cb73|' /opt/bro/share/bro/intel/intel.dat
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
-		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap *.trace *.pcap; do
+		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap $PCAP_DIR/*.trace $PCAP_DIR/*.pcap; do
 			echo -n "." 
 			tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
 		done
 		echo
+		cd - > /dev/null
 	fi
 fi
 
@@ -382,7 +385,7 @@ if [ -f /etc/nsm/sensortab ]; then
 
 		header "Replaying pcaps to create new logs for testing"
 		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
-		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap *.trace *.pcap; do
+		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap $PCAP_DIR/pcap/*.trace $PCAP_DIR/pcap/*.pcap; do
 			echo -n "." 
 			tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
 		done
