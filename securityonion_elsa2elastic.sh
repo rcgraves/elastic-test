@@ -101,10 +101,9 @@ if [ "$1" == "dev" ]; then
 	URL="https://github.com/dougburks/$REPO.git"
 	DOCKERHUB="dougburks"
 else
-	REPO="elk-test"
+	REPO="elastic-test"
 	URL="https://github.com/Security-Onion-Solutions/$REPO.git"
-	# TODO: change this to prod
-	DOCKERHUB="dougburks"
+	DOCKERHUB="securityonionsolutions"
 fi
 
 if [ -f /etc/nsm/sensortab ]; then
