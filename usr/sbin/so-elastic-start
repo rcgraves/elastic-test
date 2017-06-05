@@ -22,6 +22,8 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 		--publish 9200:9200 \
 		--ulimit memlock=-1:-1 \
 		--volume /nsm/es:/usr/share/elasticsearch/data \
+		--volume /etc/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro \
+		--volume /etc/elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro \
 		$ELASTICSEARCH_OPTIONS \
 		$DOCKERHUB/so-elasticsearch
 fi
@@ -36,7 +38,8 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 		--publish 6051:6051 \
 		--publish 6052:6052 \
 		--publish 6053:6053 \
-		--volume /etc/logstash/logstash.yml:/opt/logstash/config/logstash.yml:ro \
+		--volume /etc/logstash/log4j2.properties:/usr/share/logstash/config/log4j2.properties:ro \
+		--volume /etc/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:ro \
 		--volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
 		--volume /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro \
 		--volume /etc/nsm/rules:/etc/nsm/rules:ro \

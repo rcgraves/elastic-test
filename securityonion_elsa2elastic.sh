@@ -207,8 +207,10 @@ header "Configuring ElasticSearch"
 #FILE="/etc/elasticsearch/elasticsearch.yml"
 #cp $FILE $FILE.bak
 #cp $REPO/elasticsearch/elasticsearch.yml $FILE
+mkdir -p /etc/elasticsearch
 mkdir -p /nsm/es
 chown -R 1000:1000 /nsm/es
+cp -av $REPO/etc/elasticsearch/* /etc/elasticsearch/
 echo "Done!"
 
 header "Configuring Logstash"
