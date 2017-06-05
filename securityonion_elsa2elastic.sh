@@ -209,14 +209,18 @@ header "Configuring ElasticSearch"
 #cp $REPO/elasticsearch/elasticsearch.yml $FILE
 mkdir -p /etc/elasticsearch
 mkdir -p /nsm/elasticsearch
+mkdir -p /var/log/elasticsearch
 chown -R 1000:1000 /nsm/elasticsearch
+chown -R 1000:1000 /var/log/elasticsearch
 cp -av $REPO/etc/elasticsearch/* /etc/elasticsearch/
 echo "Done!"
 
 header "Configuring Logstash"
 mkdir -p /nsm/logstash
-chown -R 1000:1000 /nsm/logstash
+mkdir -p /var/log/logstash
 mkdir -p /etc/logstash/conf.d/
+chown -R 1000:1000 /nsm/logstash
+chown -R 1000:1000 /var/log/logstash
 cp -av $REPO/configfiles/*.conf /etc/logstash/conf.d/
 cp -av $REPO/etc/logstash/* /etc/logstash/
 cp -av $REPO/lib/dictionaries /lib/
