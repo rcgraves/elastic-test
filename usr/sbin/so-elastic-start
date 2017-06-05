@@ -22,8 +22,8 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 		--publish 9200:9200 \
 		--ulimit memlock=-1:-1 \
 		--volume /nsm/es:/usr/share/elasticsearch/data \
-		--volume /etc/es/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro \
-		--volume /etc/es/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro \
+		--volume /etc/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro \
+		--volume /etc/elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro \
 		$ELASTICSEARCH_OPTIONS \
 		$DOCKERHUB/so-elasticsearch
 fi
