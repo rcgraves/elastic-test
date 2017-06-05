@@ -208,8 +208,8 @@ header "Configuring ElasticSearch"
 #cp $FILE $FILE.bak
 #cp $REPO/elasticsearch/elasticsearch.yml $FILE
 mkdir -p /etc/elasticsearch
-mkdir -p /nsm/es
-chown -R 1000:1000 /nsm/es
+mkdir -p /nsm/elasticsearch
+chown -R 1000:1000 /nsm/elasticsearch
 cp -av $REPO/etc/elasticsearch/* /etc/elasticsearch/
 echo "Done!"
 
