@@ -22,6 +22,7 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 		--publish 9200:9200 \
 		--ulimit memlock=-1:-1 \
 		--ulimit nofile=65536:65536 \
+		--ulimit nproc=2048 \
 		--volume /nsm/elasticsearch:/usr/share/elasticsearch/data \
 		--volume /etc/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro \
 		--volume /etc/elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro \
