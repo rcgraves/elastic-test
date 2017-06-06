@@ -59,6 +59,8 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 		--env "KIBANA_DEFAULTAPPID=$KIBANA_DEFAULTAPPID" \
 		--link=so-elasticsearch:elasticsearch \
 		--publish 5601:5601 \
+		--volume /etc/kibana/:/usr/share/kibana/config/:ro \
+                --volume /var/log/kibana:/var/log/kibana \
 		$KIBANA_OPTIONS \
 		$DOCKERHUB/so-kibana
 fi

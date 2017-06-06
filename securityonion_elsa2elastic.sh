@@ -227,11 +227,16 @@ cp -av $REPO/lib/dictionaries /lib/
 #cp -rf $REPO/grok-patterns /lib/
 echo "Done!"
 
-#header "Configuring Kibana"
+header "Configuring Kibana"
+mkdir -p /etc/kibana
+mkdir -p /var/log/kibana
+chown -R 1000:1000 /etc/kibana
+chown -R 1000:1000 /var/log/kibana
+cp -av $REPO/etc/kibana/* /etc/kibana/
 #FILE="/opt/kibana/config/kibana.yml"
 #cp $FILE $FILE.bak
 #cp $REPO/kibana/kibana.yml $FILE
-#echo "Done!"
+echo "Done!"
 
 header "Starting Elastic Stack"
 cat << EOF >> /etc/nsm/securityonion.conf
