@@ -359,6 +359,7 @@ until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; d
 done
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
+curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@$REPO/kibana/config.json; echo; echo
 cd $DIR/$REPO/kibana/dashboards/
 sh load.sh
 cd $DIR
