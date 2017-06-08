@@ -102,10 +102,6 @@ fi
 DIR=dashboards
 echo "Loading dashboards to ${ELASTICSEARCH} in ${KIBANA_INDEX}"
 
-# Workaround for: https://github.com/elastic/beats-dashboards/issues/94
-${CURL} -XPUT "${ELASTICSEARCH}/${KIBANA_INDEX}"
-${CURL} -XPUT "${ELASTICSEARCH}/${KIBANA_INDEX}/_mapping/search" -d'{"search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}'
-
 TMP_SED_FILE="${DIR}/search/tmp_search.json"
 for file in ${DIR}/search/*.json
 do
