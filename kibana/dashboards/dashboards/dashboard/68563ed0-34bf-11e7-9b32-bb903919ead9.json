@@ -15,6 +15,6 @@
     "value": 0
   }, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"\\\"::1\\\"\"}}}],\"highlightAll\":true,\"version\":true}"
+    "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}],\"highlightAll\":true,\"version\":true}"
   }
 }
