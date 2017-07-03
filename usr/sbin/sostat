@@ -460,7 +460,7 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
         	if [ "$KIB_RUNNING" ]; then
                  	echo && echo "Kibana is running." 
         	else
-                	echo && echo -e "Kibana is not running.\n\nTry starting it with:\n\n'sudo so-elastic start'\n OR\n'sudo docker start so-kibana'\n\n\nIf that does not work, try checking /var/log/kibana/kibna.log for clues."
+                	echo && echo -e "Kibana is not running.\n\nTry starting it with:\n\n'sudo so-elastic start'\n OR\n'sudo docker start so-kibana'\n\n\nIf that does not work, try checking /var/log/kibana/kibana.log for clues."
         	fi
 	fi
 
