@@ -242,7 +242,9 @@ echo "Done!"
 
 header "Configuring Elastalert"
 mkdir -p /etc/elastalert/rules
+mkdir -p /var/log/elastalert
 chown -R 1000:1000 /etc/elastalert/rules
+chown -R 1000:1000 /var/log/elastalert
 cp -av $REPO/etc/elastalert/rules/* /etc/elastalert/rules/
 echo "Done!"
 
