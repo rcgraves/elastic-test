@@ -178,6 +178,8 @@ export DOCKER_CONTENT_TRUST=1
 docker pull $DOCKERHUB/so-elasticsearch
 docker pull $DOCKERHUB/so-kibana
 docker pull $DOCKERHUB/so-logstash
+docker pull $DOCKERHUB/so-elastalert
+
 echo "Done!"
 
 header "Setting vm.max_map_count to 262144"
@@ -238,6 +240,14 @@ cp -av $REPO/etc/kibana/* /etc/kibana/
 #cp $REPO/kibana/kibana.yml $FILE
 echo "Done!"
 
+header "Configuring Elastalert"
+mkdir -p /etc/elastalert/rules
+mkdir -p /var/log/elastalert
+chown -R 1000:1000 /etc/elastalert/rules
+chown -R 1000:1000 /var/log/elastalert
+cp -av $REPO/etc/elastalert/rules/* /etc/elastalert/rules/
+echo "Done!"
+
 header "Starting Elastic Stack"
 cat << EOF >> /etc/nsm/securityonion.conf
 
@@ -258,6 +268,10 @@ LOGSTASH_OPTIONS=""
 KIBANA_ENABLED="yes"
 KIBANA_DEFAULTAPPID="dashboard/94b52620-342a-11e7-9d52-4f090484f59e"
 KIBANA_OPTIONS=""
+
+#ElastAlert options
+ELASTALERT_ENABLED="yes"
+ELASTALERT_OPTIONS=""
 EOF
 
 chmod +x /usr/sbin/so-elastic-*
