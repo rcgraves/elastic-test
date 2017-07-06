@@ -11,3 +11,4 @@ echo "Stopping containers:"
 [ "$LOGSTASH_ENABLED" = "yes" ] && docker stop so-logstash
 [ "$KIBANA_ENABLED" = "yes" ] && docker stop so-kibana
 [ "$ELASTICSEARCH_ENABLED" = "yes" ] && docker stop so-elasticsearch
+[ "$ELASTALERT_ENABLED" = "yes" ] && docker stop so-elastalert

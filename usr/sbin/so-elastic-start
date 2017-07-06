@@ -66,3 +66,12 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 		$KIBANA_OPTIONS \
 		$DOCKERHUB/so-kibana
 fi
+if [ "$ELASTALERT_ENABLED" = "yes" ]; then
+        echo -n "so-elastalert: "
+        docker run --name=so-elastalert \
+                --detach \
+                --link=so-elasticsearch:elasticsearch \
+                --volume /etc/elastalert/rules:/etc/elastalert/rules/ \
+                $ELASTALERT_OPTIONS \
+                $DOCKERHUB/so-elastalert
+fi
