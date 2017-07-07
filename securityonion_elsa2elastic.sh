@@ -374,6 +374,7 @@ done
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
 curl -XPUT http://${es_host}:${es_port}/_template/kibana -d'{"template" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
+curl -XPUT http://${es_host}:${es_port}/_template/elastalert -d'{"template" : "elastalert_status", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@$REPO/kibana/config.json; echo; echo
 cd $DIR/$REPO/kibana/dashboards/
 sh load.sh
