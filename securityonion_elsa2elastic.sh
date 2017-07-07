@@ -361,7 +361,7 @@ max_wait=240
 es_host=localhost
 es_port=9200
 kibana_index=.kibana
-kibana_version=5.4.0
+kibana_version=5.5.0
 #kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
 until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; do
     wait_step=$(( ${wait_step} + 1 ))

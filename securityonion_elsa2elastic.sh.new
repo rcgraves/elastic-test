@@ -178,6 +178,8 @@ export DOCKER_CONTENT_TRUST=1
 docker pull $DOCKERHUB/so-elasticsearch
 docker pull $DOCKERHUB/so-kibana
 docker pull $DOCKERHUB/so-logstash
+docker pull $DOCKERHUB/so-elastalert
+
 echo "Done!"
 
 header "Setting vm.max_map_count to 262144"
@@ -207,25 +209,44 @@ header "Configuring ElasticSearch"
 #FILE="/etc/elasticsearch/elasticsearch.yml"
 #cp $FILE $FILE.bak
 #cp $REPO/elasticsearch/elasticsearch.yml $FILE
-mkdir -p /nsm/es
-chown -R 1000:1000 /nsm/es
+mkdir -p /etc/elasticsearch
+mkdir -p /nsm/elasticsearch
+mkdir -p /var/log/elasticsearch
+chown -R 1000:1000 /nsm/elasticsearch
+chown -R 1000:1000 /var/log/elasticsearch
+cp -av $REPO/etc/elasticsearch/* /etc/elasticsearch/
 echo "Done!"
 
 header "Configuring Logstash"
 mkdir -p /nsm/logstash
-chown -R 1000:1000 /nsm/logstash
+mkdir -p /var/log/logstash
 mkdir -p /etc/logstash/conf.d/
+chown -R 1000:1000 /nsm/logstash
+chown -R 1000:1000 /var/log/logstash
 cp -av $REPO/configfiles/*.conf /etc/logstash/conf.d/
 cp -av $REPO/etc/logstash/* /etc/logstash/
 cp -av $REPO/lib/dictionaries /lib/
 #cp -rf $REPO/grok-patterns /lib/
 echo "Done!"
 
-#header "Configuring Kibana"
+header "Configuring Kibana"
+mkdir -p /etc/kibana
+mkdir -p /var/log/kibana
+chown -R 1000:1000 /etc/kibana
+chown -R 1000:1000 /var/log/kibana
+cp -av $REPO/etc/kibana/* /etc/kibana/
 #FILE="/opt/kibana/config/kibana.yml"
 #cp $FILE $FILE.bak
 #cp $REPO/kibana/kibana.yml $FILE
-#echo "Done!"
+echo "Done!"
+
+header "Configuring Elastalert"
+mkdir -p /etc/elastalert/rules
+mkdir -p /var/log/elastalert
+chown -R 1000:1000 /etc/elastalert/rules
+chown -R 1000:1000 /var/log/elastalert
+cp -av $REPO/etc/elastalert/rules/* /etc/elastalert/rules/
+echo "Done!"
 
 header "Starting Elastic Stack"
 cat << EOF >> /etc/nsm/securityonion.conf
@@ -247,6 +268,10 @@ LOGSTASH_OPTIONS=""
 KIBANA_ENABLED="yes"
 KIBANA_DEFAULTAPPID="dashboard/94b52620-342a-11e7-9d52-4f090484f59e"
 KIBANA_OPTIONS=""
+
+#ElastAlert options
+ELASTALERT_ENABLED="yes"
+ELASTALERT_OPTIONS=""
 EOF
 
 chmod +x /usr/sbin/so-elastic-*
@@ -336,7 +361,7 @@ max_wait=240
 es_host=localhost
 es_port=9200
 kibana_index=.kibana
-kibana_version=5.4.0
+kibana_version=5.5.0
 #kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
 until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; do
     wait_step=$(( ${wait_step} + 1 ))
@@ -348,8 +373,8 @@ until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; d
 done
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
 curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
+curl -XPUT http://${es_host}:${es_port}/_template/kibana -d'{"template" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
 curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@$REPO/kibana/config.json; echo; echo
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/index-pattern/logstash-* -d@$REPO/kibana/index-pattern.json; echo; echo
 cd $DIR/$REPO/kibana/dashboards/
 sh load.sh
 cd $DIR
