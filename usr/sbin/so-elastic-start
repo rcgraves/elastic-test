@@ -81,7 +81,7 @@ if [ "$CURATOR_ENABLED" = "yes" ]; then
         docker run --name=so-curator \
                 --detach \
                 --link=so-elasticsearch:elasticsearch \
-                --volume /etc/curator/config/curator.yml:/etc/curator/config/cu
+                --volume /etc/curator/config/curator.yml:/etc/curator/config/curator.yml:ro \
                 --volume /etc/curator/action/:/etc/curator/action:ro \
                 --volume /var/log/curator/:/var/log/curator/ \
                 -it $DOCKERHUB/so-curator
