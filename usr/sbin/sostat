@@ -440,30 +440,44 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
                 echo Total Size '(in bytes)': $(($TOT_SIZE/10**6))MB
                 echo Free Memory: $FREE_MEM%
                 echo
-
+		docker stats --no-stream so-elasticsearch
+		echo
         else
                 echo
                 CLUST_NAME=$(grep cluster.name /etc/elasticsearch/elasticsearch.yml | awk '{print $2}'|sed -e 's/^"//' -e 's/"$//')
-                echo && echo -e "Elasticsearch is not running.\n\nTry starting it with:\n\n'sudo so-elastic start'\n OR\n'sudo docker start so-elasticsearch'\n\n\nIf that does not work, try checking /var/log/elasticsearch/"$CLUST_NAME".log for clues." && echo
+                echo && echo -e "Elasticsearch is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-elasticsearch'\n\n\nIf that does not work, try checking /var/log/elasticsearch/"$CLUST_NAME".log for clues." && echo
         fi
 	header "Logstash"
 	if [ "$LOGSTASH_ENABLED" = "yes" ]; then
         	if [ "$LS_RUNNING" ];then
                 	echo && echo "Logstash is running." && echo
-        	else
-                	echo && echo -e "Logstash is not running.\n\nTry starting it with:\n\n'sudo so-elastic start'\n OR\n'sudo docker start so-logstash'\n\n\nIf that does not work, try checking /var/log/logstash/logstash.log for clues." && echo
+			docker stats --no-stream so-logstash
+			echo
+		else
+			echo && echo -e "Logstash is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-logstash'\n\n\nIf that does not work, try checking /var/log/logstash/logstash.log for clues." && echo
         	fi
 	fi
 
         header "Kibana"
 	if [ "$KIBANA_ENABLED" = "yes" ]; then
         	if [ "$KIB_RUNNING" ]; then
-                 	echo && echo "Kibana is running." 
-        	else
-                	echo && echo -e "Kibana is not running.\n\nTry starting it with:\n\n'sudo so-elastic start'\n OR\n'sudo docker start so-kibana'\n\n\nIf that does not work, try checking /var/log/kibana/kibana.log for clues."
+			echo && echo "Kibana is running."
+		echo
+			docker stats --no-stream so-kibana
+		else
+			echo && echo -e "Kibana is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-kibana'\n\n\nIf that does not work, try checking /var/log/kibana/kibana.log for clues."
         	fi
 	fi
-
+	header "ElastAlert"
+        if [ "$ELASTALERT_ENABLED" = "yes" ]; then
+                if [ "$ELASTALERT_RUNNING" ]; then
+			echo && echo "ElastAlert is running."
+			echo
+                        docker stats --no-stream so-elastalert
+                else
+			echo && echo -e "ElastAlert is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-elastalert'\n\n\nIf that does not work, try checking /var/log/elastalert/elastalert_stderr.log for clues."
+                fi
+        fi
 fi
 if [ -f /etc/timezone ] && ! grep "Etc/UTC" /etc/timezone >/dev/null 2>&1; then
 	echo
