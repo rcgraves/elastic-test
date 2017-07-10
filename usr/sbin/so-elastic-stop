@@ -12,3 +12,4 @@ echo "Stopping containers:"
 [ "$KIBANA_ENABLED" = "yes" ] && docker stop so-kibana
 [ "$ELASTICSEARCH_ENABLED" = "yes" ] && docker stop so-elasticsearch
 [ "$ELASTALERT_ENABLED" = "yes" ] && docker stop so-elastalert
+[ "$CURATOR_ENABLED" = "yes" ] && docker stop so-curator

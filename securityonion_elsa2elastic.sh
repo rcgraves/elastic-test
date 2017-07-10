@@ -179,6 +179,7 @@ docker pull $DOCKERHUB/so-elasticsearch
 docker pull $DOCKERHUB/so-kibana
 docker pull $DOCKERHUB/so-logstash
 docker pull $DOCKERHUB/so-elastalert
+docker pull $DOCKERHUB/so-curator
 
 echo "Done!"
 
@@ -248,6 +249,17 @@ chown -R 1000:1000 /var/log/elastalert
 cp -av $REPO/etc/elastalert/rules/* /etc/elastalert/rules/
 echo "Done!"
 
+header "Configuring Curator"
+mkdir -p /etc/curator/config
+mkdir -p /etc/curator/action
+mkdir -p /var/log/curator
+chown -R 1000:1000 /etc/curator
+chown -R 1000:1000 /var/log/curator
+cp -av $REPO/etc/curator/config/* /etc/curator/config/
+cp -av $REPO/etc/curator/action/* /etc/curator/action/
+cp -av $REPO/etc/cron.d/* /etc/cron.d/
+echo "Done!"
+
 header "Starting Elastic Stack"
 cat << EOF >> /etc/nsm/securityonion.conf
 
@@ -272,6 +284,10 @@ KIBANA_OPTIONS=""
 #ElastAlert options
 ELASTALERT_ENABLED="yes"
 ELASTALERT_OPTIONS=""
+
+#Curator options
+CURATOR_ENABLED="yes"
+CURATOR_OPTIONS=""
 EOF
 
 chmod +x /usr/sbin/so-elastic-*
