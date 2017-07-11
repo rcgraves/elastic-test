@@ -5,4 +5,4 @@ if [ "$(id -u)" -ne 0 ]; then
         exit 1
 fi
 
-docker stats so-elasticsearch so-logstash so-kibana so-elastalert $@
+docker stats so-elasticsearch so-logstash so-kibana so-elastalert so-curator $@

@@ -421,8 +421,8 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 	ES_RUNNING=$(docker ps | grep so-elasticsearch)
 	LS_RUNNING=$(docker ps | grep so-logstash)
 	KIB_RUNNING=$(docker ps | grep so-kibana)
-	#ELAST_RUNNING=$(docker ps | grep so-elastalert)
-	#CURAT_RUNNING=$(docker ps } grep so-curator)
+	ELAST_RUNNING=$(docker ps | grep so-elastalert)
+	CURAT_RUNNING=$(docker ps } grep so-curator)
 	
 	echo
         header "Elasticsearch"
@@ -470,12 +470,21 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 	fi
 	header "ElastAlert"
         if [ "$ELASTALERT_ENABLED" = "yes" ]; then
-                if [ "$ELASTALERT_RUNNING" ]; then
+                if [ "$ELAST_RUNNING" ]; then
 			echo && echo "ElastAlert is running."
 			echo
                         docker stats --no-stream so-elastalert
                 else
 			echo && echo -e "ElastAlert is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-elastalert'\n\n\nIf that does not work, try checking /var/log/elastalert/elastalert_stderr.log for clues."
+                fi
+        fi
+	if [ "$CURATOR_ENABLED" = "yes" ]; then
+                if [ "$CURAT_RUNNING" ]; then
+                        echo && echo "Curator is running."
+                        echo
+                        docker stats --no-stream so-curator
+                else
+                        echo && echo -e "Curator is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-curator'\n\n\nIf that does not work, try checking /var/log/curator/curator.log for clues."
                 fi
         fi
 fi
