@@ -422,7 +422,7 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 	LS_RUNNING=$(docker ps | grep so-logstash)
 	KIB_RUNNING=$(docker ps | grep so-kibana)
 	ELAST_RUNNING=$(docker ps | grep so-elastalert)
-	CURAT_RUNNING=$(docker ps } grep so-curator)
+	CURAT_RUNNING=$(docker ps | grep so-curator)
 	
 	echo
         header "Elasticsearch"
@@ -441,23 +441,24 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
                 echo Free Memory: $FREE_MEM%
                 echo
 		docker stats --no-stream so-elasticsearch
-		echo
         else
                 echo
                 CLUST_NAME=$(grep cluster.name /etc/elasticsearch/elasticsearch.yml | awk '{print $2}'|sed -e 's/^"//' -e 's/"$//')
-                echo && echo -e "Elasticsearch is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-elasticsearch'\n\n\nIf that does not work, try checking /var/log/elasticsearch/"$CLUST_NAME".log for clues." && echo
+                echo && echo -e "Elasticsearch is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-elasticsearch'\n\n\nIf that does not work, try checking /var/log/elasticsearch/"$CLUST_NAME".log for clues."
         fi
+
+	echo
 	header "Logstash"
 	if [ "$LOGSTASH_ENABLED" = "yes" ]; then
         	if [ "$LS_RUNNING" ];then
                 	echo && echo "Logstash is running." && echo
 			docker stats --no-stream so-logstash
-			echo
 		else
-			echo && echo -e "Logstash is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-logstash'\n\n\nIf that does not work, try checking /var/log/logstash/logstash.log for clues." && echo
+			echo && echo -e "Logstash is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-logstash'\n\n\nIf that does not work, try checking /var/log/logstash/logstash.log for clues."
         	fi
 	fi
 
+	echo
         header "Kibana"
 	if [ "$KIBANA_ENABLED" = "yes" ]; then
         	if [ "$KIB_RUNNING" ]; then
@@ -468,6 +469,8 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 			echo && echo -e "Kibana is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-kibana'\n\n\nIf that does not work, try checking /var/log/kibana/kibana.log for clues."
         	fi
 	fi
+
+	echo
 	header "ElastAlert"
         if [ "$ELASTALERT_ENABLED" = "yes" ]; then
                 if [ "$ELAST_RUNNING" ]; then
@@ -478,6 +481,9 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 			echo && echo -e "ElastAlert is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-elastalert'\n\n\nIf that does not work, try checking /var/log/elastalert/elastalert_stderr.log for clues."
                 fi
         fi
+
+	echo
+	header "Curator"
 	if [ "$CURATOR_ENABLED" = "yes" ]; then
                 if [ "$CURAT_RUNNING" ]; then
                         echo && echo "Curator is running."
