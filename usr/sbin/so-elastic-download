@@ -39,20 +39,6 @@ done
 echo
 cd - > /dev/null
 
-header "Performing apt-get update"
-apt-get update > /dev/null
-echo "Done!"
-
-header "Installing git and libapache2-mod-authnz-external"
-apt-get install -y git libapache2-mod-authnz-external > /dev/null
-echo "Done!"
-
-header "Downloading files"
-git clone $URL
-cp -av $REPO/usr/sbin/* /usr/sbin/
-chmod +x /usr/sbin/so-elastic-*
-echo "Done!"
-
 header "Installing Docker"
 cp $REPO/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
 apt-get -y install apt-transport-https ca-certificates curl > /dev/null
