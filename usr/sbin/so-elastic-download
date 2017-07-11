@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# Check for prerequisites
+if [ "$(id -u)" -ne 0 ]; then
+	echo "This script must be run using sudo!"
+	exit 1
+fi
+
+# Make a directory to store downloads
+DIR="/opt/elastic"
+PCAP_DIR="$DIR/pcap"
+mkdir -p $PCAP_DIR
+cd $DIR
+
+# Define a banner to separate sections
+banner="========================================================================="
+
+header() {
+	echo
+	printf '%s\n' "$banner" "$*" "$banner"
+}
+
+if [ "$1" == "dev" ]; then
+	REPO="elastic-test"
+	URL="https://github.com/dougburks/$REPO.git"
+	DOCKERHUB="dougburks"
+else
+	REPO="elastic-test"
+	URL="https://github.com/Security-Onion-Solutions/$REPO.git"
+	DOCKERHUB="securityonionsolutions"
+fi
+
+header "Downloading additional pcaps"
+cd $PCAP_DIR
+for i in ssh/ssh.trace dnp3/dnp3.trace modbus/modbus.trace radius/radius.trace rfb/vnc-mac-to-linux.pcap rfb/vncmac.pcap sip/wireshark.trace tunnels/gre-within-gre.pcap tunnels/Teredo.pcap rdp/rdp-proprietary-encryption.pcap snmp/snmpv1_get.pcap mysql/mysql.trace smb/dssetup_DsRoleGetPrimaryDomainInformation_standalone_workstation.cap smb/raw_ntlm_in_smb.pcap smb/smb1.pcap smb/smb2.pcap; do
+	echo -n "." 
+	wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/$i
+done
+echo
+cd - > /dev/null
+
+header "Performing apt-get update"
+apt-get update > /dev/null
+echo "Done!"
+
+header "Installing git and libapache2-mod-authnz-external"
+apt-get install -y git libapache2-mod-authnz-external > /dev/null
+echo "Done!"
+
+header "Downloading files"
+git clone $URL
+cp -av $REPO/usr/sbin/* /usr/sbin/
+chmod +x /usr/sbin/so-elastic-*
+echo "Done!"
+
+header "Installing Docker"
+cp $REPO/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
+apt-get -y install apt-transport-https ca-certificates curl > /dev/null
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+       $(lsb_release -cs) \
+       stable"
+apt-get update > /dev/null
+apt-get -y install docker-ce > /dev/null
+echo "Done!"
+
+header "Downloading Docker containers"
+echo "export DOCKER_CONTENT_TRUST=1" >> /etc/profile.d/securityonion-docker.sh
+export DOCKER_CONTENT_TRUST=1
+docker pull $DOCKERHUB/so-elasticsearch
+docker pull $DOCKERHUB/so-kibana
+docker pull $DOCKERHUB/so-logstash
+docker pull $DOCKERHUB/so-elastalert
+docker pull $DOCKERHUB/so-curator
+echo "Done!"
