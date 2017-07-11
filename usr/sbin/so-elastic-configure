@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# Check for prerequisites
-if [ "$(id -u)" -ne 0 ]; then
-	echo "This script must be run using sudo!"
-	exit 1
-fi
+. /usr/sbin/so-elastic-common
 
 for FILE in /etc/nsm/securityonion.conf /etc/nsm/sensortab; do
 	if [ ! -f $FILE ]; then
@@ -12,28 +8,6 @@ for FILE in /etc/nsm/securityonion.conf /etc/nsm/sensortab; do
 		exit 1
 	fi
 done
-
-DIR="/opt/elastic"
-PCAP_DIR="$DIR/pcap"
-cd $DIR
-
-# Define a banner to separate sections
-banner="========================================================================="
-
-header() {
-	echo
-	printf '%s\n' "$banner" "$*" "$banner"
-}
-
-if [ "$1" == "dev" ]; then
-	REPO="elastic-test"
-	URL="https://github.com/dougburks/$REPO.git"
-	DOCKERHUB="dougburks"
-else
-	REPO="elastic-test"
-	URL="https://github.com/Security-Onion-Solutions/$REPO.git"
-	DOCKERHUB="securityonionsolutions"
-fi
 
 header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
 cp -av $REPO/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
