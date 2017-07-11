@@ -117,7 +117,7 @@ cp -av $REPO/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*
 echo "Done!"
 
-/usr/sbin/so-elastic-download
+. /usr/sbin/so-elastic-download
 
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
@@ -139,7 +139,7 @@ if [ -f /etc/nsm/sensortab ]; then
 	fi
 fi
 
-/usr/sbin/so-elastic-configure
+. /usr/sbin/so-elastic-configure
 
 if [ -f /etc/nsm/sensortab ]; then
 	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
