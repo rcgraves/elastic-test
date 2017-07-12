@@ -3,9 +3,33 @@
 
 # Check for prerequisites
 if [ "$(id -u)" -ne 0 ]; then
-	echo "This script must be run using sudo!"
-	exit 1
+        echo "This script must be run using sudo!"
+        exit 1
 fi
+
+# Make a directory to store downloads
+DIR="/opt/elastic"
+PCAP_DIR="$DIR/pcap"
+mkdir -p $PCAP_DIR
+cd $DIR
+
+# Define a banner to separate sections
+banner="========================================================================="
+
+header() {
+        echo
+        printf '%s\n' "$banner" "$*" "$banner"
+}
+
+REPO="elastic-test"
+if [ "$1" == "dev" ]; then
+        URL="https://github.com/dougburks/$REPO.git"
+        DOCKERHUB="dougburks"
+else
+        URL="https://github.com/Security-Onion-Solutions/$REPO.git"
+        DOCKERHUB="securityonionsolutions"
+fi
+EOF
 
 for FILE in /etc/nsm/securityonion.conf /etc/nsm/sensortab; do
 	if [ ! -f $FILE ]; then
@@ -81,30 +105,6 @@ Once you've read all of the WARNINGS AND DISCLAIMERS above, please type AGREE to
 EOF
 read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
-
-# Make a directory to store downloads
-DIR="/opt/elastic"
-PCAP_DIR="$DIR/pcap"
-mkdir -p $PCAP_DIR
-cd $DIR
-
-# Define a banner to separate sections
-banner="========================================================================="
-
-header() {
-	echo
-	printf '%s\n' "$banner" "$*" "$banner"
-}
-
-if [ "$1" == "dev" ]; then
-	REPO="elastic-test"
-	URL="https://github.com/dougburks/$REPO.git"
-	DOCKERHUB="dougburks"
-else
-	REPO="elastic-test"
-	URL="https://github.com/Security-Onion-Solutions/$REPO.git"
-	DOCKERHUB="securityonionsolutions"
-fi
 
 header "Installing git and libapache2-mod-authnz-external"
 apt-get update > /dev/null
