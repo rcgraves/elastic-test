@@ -57,4 +57,10 @@
     <description>Ignore Docker File Mismatch</description>
   </rule>
 
+  <rule id="111117" level="0">
+    <if_sid>31530</if_sid>
+    <url>/es_admin/</url>
+    <description>Ignoring often post requests inside /es_admin.</description>
+  </rule>
+
 </group>
