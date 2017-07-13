@@ -131,6 +131,7 @@ sed -i 's/ELSA=YES/ELSA=NO/' $FILE
 service sphinxsearch stop
 echo "manual" > /etc/init/sphinxsearch.conf.override
 a2dissite elsa
+a2dismod perl
 # Remove ELSA link from Squert
 mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e 'delete from filters where alias="ELSA";'
 # Add Elastic link to Squert
