@@ -1894,8 +1894,38 @@ if [ "$ELSA" = "YES" ]; then
     # update LOG_SIZE_LIMIT
     #sed -i "s|\"log_size_limit\" :.*$|\"log_size_limit\" : $LOG_SIZE_LIMIT,|g" /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-node.conf
 
-	cp /opt/elsa/contrib/securityonion/contrib/securityonion-syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
-	. /usr/sbin/so-elastic-configure dev
+        HTTP_LOGS=""
+        SENSORS=$(grep -v "^#" /etc/nsm/sensortab | cut -f 4)
+        COUNT=0
+        for token in $SENSORS; do
+                COUNT=$((COUNT+1))
+        done
+        echo $COUNT
+
+        if [ $COUNT -eq 1 ]; then
+                if grep "type=standalone" /opt/bro/etc/node.cfg > /dev/null; then
+                        echo "* Leaving syslog-ng.conf bro_http entry unmolested." | tee -a $LOG
+                else
+                        echo "* Altering syslog-ng.conf bro_http entry for single interface cluster-mode" | tee -a $LOG 
+                        # Pull the interface bro is listening for from node.cfg
+                        BRO_IFACE=$(grep "interface=" /opt/bro/etc/node.cfg | cut -d'=' -f2)
+                        # Alter syslog-ng.conf's entry for http
+                        sed -e "s|^\tfile(\"/nsm/bro/logs/current/http.log\".*|\tfile(\"/nsm/bro/logs/current/http_$BRO_IFACE.log\" flags(no-parse) program_override(\"bro_http\"));\n|" /opt/elsa/contrib/securityonion/contrib/securityonion-syslog-ng.conf > /etc/syslog-ng/syslog-ng.conf
+                fi
+        fi
+
+        if [ $COUNT -gt 1 ]; then
+                echo "* Altering syslog-ng.conf bro_http entries for multiple interfaces" | tee -a $LOG
+                for i in $SENSORS; do
+                        HTTP_LOGS=$HTTP_LOGS"\tfile(\"/nsm/bro/logs/current/http_$i.log\" flags(no-parse) program_override(\"bro_http\"));\n"
+                done
+                sed -e "s|^\tfile(\"/nsm/bro/logs/current/http.log\".*|$HTTP_LOGS|" /opt/elsa/contrib/securityonion/contrib/securityonion-syslog-ng.conf > /etc/syslog-ng/syslog-ng.conf
+        fi
+
+        echo "* Restarting syslog-ng" | tee -a $LOG
+        service syslog-ng restart
+
+	/usr/sbin/so-elastic-configure dev
 
 fi
 }
