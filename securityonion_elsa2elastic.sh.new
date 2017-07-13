@@ -136,12 +136,19 @@ if [ -f /etc/nsm/sensortab ]; then
 		done
 		echo
 		cd - > /dev/null
+
+		SECONDS=60
+		header "Waiting $SECONDS seconds to allow Bro to finish writing logs"
+		for i in `seq 1 $SECONDS`; do
+			sleep 1s
+			echo -n "."
+		done
+		echo
+		header "Processing final ELSA buffers"
+		sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
+		sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
 	fi
 fi
-
-header "Processing final ELSA buffers"
-sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
-sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
 
 . /usr/sbin/so-elastic-configure
 
