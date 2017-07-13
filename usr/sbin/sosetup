@@ -1895,7 +1895,7 @@ if [ "$ELSA" = "YES" ]; then
     #sed -i "s|\"log_size_limit\" :.*$|\"log_size_limit\" : $LOG_SIZE_LIMIT,|g" /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-node.conf
 
 	cp /opt/elsa/contrib/securityonion/contrib/securityonion-syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
-	. /usr/sbin/so-elastic-configure
+	. /usr/sbin/so-elastic-configure dev
 
 fi
 }
