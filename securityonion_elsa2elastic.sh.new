@@ -119,76 +119,37 @@ echo "Done!"
 
 . /usr/sbin/so-elastic-download
 
-if [ -f /etc/nsm/sensortab ]; then
-	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
-	if [ $NUM_INTERFACES -gt 0 ]; then
+sed -i 's|#66.32.119.38|66.32.119.38|' /opt/bro/share/bro/intel/intel.dat
+sed -i 's|#www.honeynet.org|www.honeynet.org|' /opt/bro/share/bro/intel/intel.dat
+sed -i 's|#4285358dd748ef74cb8161108e11cb73|4285358dd748ef74cb8161108e11cb73|' /opt/bro/share/bro/intel/intel.dat
 
-		cd $PCAP_DIR
-	
-		header "Replaying pcaps to create logs in ELSA for testing"
-		sed -i 's|#66.32.119.38|66.32.119.38|' /opt/bro/share/bro/intel/intel.dat
-		sed -i 's|#www.honeynet.org|www.honeynet.org|' /opt/bro/share/bro/intel/intel.dat
-		sed -i 's|#4285358dd748ef74cb8161108e11cb73|4285358dd748ef74cb8161108e11cb73|' /opt/bro/share/bro/intel/intel.dat
-		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
-		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap $PCAP_DIR/*.trace $PCAP_DIR/*.pcap; do
-			echo -n "." 
-			tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
-		done
-		echo
-		cd - > /dev/null
+. /usr/sbin/so-elastic-replay-pcaps
 
-		SECONDS=60
-		header "Waiting $SECONDS seconds to allow Bro to finish writing logs"
-		for i in `seq 1 $SECONDS`; do
-			sleep 1s
-			echo -n "."
-		done
-		echo
-		header "Processing final ELSA buffers"
-		sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
-		sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
-	fi
-fi
+SECONDS=60
+header "Waiting $SECONDS seconds to allow Bro to finish writing logs"
+for i in `seq 1 $SECONDS`; do
+	sleep 1s
+	echo -n "."
+done
+echo
+
+header "Processing final ELSA buffers"
+sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
+sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
 
 . /usr/sbin/so-elastic-configure
 
-if [ -f /etc/nsm/sensortab ]; then
-	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
-	if [ $NUM_INTERFACES -gt 0 ]; then
-		SECONDS=120
-		header "Waiting $SECONDS seconds to allow Logstash to initialize"
-		# This check for logstash isn't working correctly right now.
-		# I think docker-proxy is completing the 3WHS and making nc think that logstash is up before it actually is.
-		#max_wait=240
-		#wait_step=0
-		#until nc -vz localhost 6050 > /dev/null 2>&1 ; do
-		#	wait_step=$(( ${wait_step} + 1 ))
-		#	if [ ${wait_step} -gt ${max_wait} ]; then
-		#		echo "ERROR: logstash not available for more than ${max_wait} seconds."
-		#		exit 5
-		#	fi
-		#	sleep 1;
-		#	echo -n "."
-		#done
-		#echo
-		for i in `seq 1 $SECONDS`; do
-			sleep 1s
-			echo -n "."
-		done
-		echo
+header "Running experimental ELSA migration script"
+/usr/sbin/so-migrate-elsa-data-to-elastic -y
 
-		header "Running experimental ELSA migration script"
-		chmod +x /usr/sbin/so-migrate-elsa-data-to-elastic
-		/usr/sbin/so-migrate-elsa-data-to-elastic -y
+SECONDS=60
+header "Waiting $SECONDS seconds to allow Logstash to initialize"
+for i in `seq 1 $SECONDS`; do
+	sleep 1s
+	echo -n "."
+done
+echo
 
-		header "Replaying pcaps to create new logs for testing"
-		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
-		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap $PCAP_DIR/*.trace $PCAP_DIR/*.pcap; do
-			echo -n "." 
-			tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
-		done
-		echo
-	fi
-fi
+. /usr/sbin/so-elastic-replay-pcaps
 
 . /usr/sbin/so-elastic-final-text
