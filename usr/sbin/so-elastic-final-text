@@ -2,6 +2,7 @@
 
 . /usr/sbin/so-elastic-common
 
+echo
 header "All done!"
 cat << EOF
 
