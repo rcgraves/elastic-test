@@ -1,5 +1,6 @@
 #!/bin/bash
-# Convert Security Onion ELSA to Elastic
+
+# Configure Elastic on Security Onion
 
 # Check for prerequisites
 if [ "$(id -u)" -ne 0 ]; then
