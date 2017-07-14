@@ -9,30 +9,12 @@ for FILE in /etc/nsm/securityonion.conf /etc/nsm/sensortab; do
 	fi
 done
 
-header "Configuring Apache to reverse proxy Kibana and authenticate against Sguil database"
-cp -av $REPO/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
-cp -av $REPO/var/www/so/* /var/www/so/
-a2enmod auth_form
-a2enmod request
-a2enmod session_cookie
-a2enmod session_crypto
-FILE="/etc/apache2/session"
-LC_ALL=C </dev/urandom tr -dc '[:alnum:]' | head -c 64 >> $FILE
-chown www-data:www-data $FILE
-chmod 660 $FILE
-ln -s ssl-cert-snakeoil.pem /etc/ssl/certs/securityonion.pem
-ln -s ssl-cert-snakeoil.key /etc/ssl/private/securityonion.key
-echo "Done!"
-
 header "Setting vm.max_map_count to 262144"
 sysctl -w vm.max_map_count=262144
 cp $REPO/etc/sysctl.d/* /etc/sysctl.d/
 echo "Done!"
 
 header "Configuring ElasticSearch"
-#FILE="/etc/elasticsearch/elasticsearch.yml"
-#cp $FILE $FILE.bak
-#cp $REPO/elasticsearch/elasticsearch.yml $FILE
 mkdir -p /etc/elasticsearch
 mkdir -p /nsm/elasticsearch
 mkdir -p /var/log/elasticsearch
@@ -59,9 +41,6 @@ mkdir -p /var/log/kibana
 chown -R 1000:1000 /etc/kibana
 chown -R 1000:1000 /var/log/kibana
 cp -av $REPO/etc/kibana/* /etc/kibana/
-#FILE="/opt/kibana/config/kibana.yml"
-#cp $FILE $FILE.bak
-#cp $REPO/kibana/kibana.yml $FILE
 echo "Done!"
 
 header "Configuring Elastalert"
@@ -121,15 +100,19 @@ header "Configuring Elastic Stack to start on boot"
 cp $REPO/etc/init/securityonion.conf /etc/init/securityonion.conf
 echo "Done!"
 
-#header "Updating CapMe to integrate with Elasticsearch"
-#cp -av $REPO/capme /var/www/so/
-
-header "Disabling ELSA"
-rm -f /etc/cron.d/elsa
-FILE="/etc/nsm/securityonion.conf"
-sed -i 's/ELSA=YES/ELSA=NO/' $FILE
-service sphinxsearch stop
-echo "manual" > /etc/init/sphinxsearch.conf.override
+header "Configuring Apache"
+cp -av $REPO/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
+cp -av $REPO/var/www/so/* /var/www/so/
+a2enmod auth_form
+a2enmod request
+a2enmod session_cookie
+a2enmod session_crypto
+FILE="/etc/apache2/session"
+LC_ALL=C </dev/urandom tr -dc '[:alnum:]' | head -c 64 >> $FILE
+chown www-data:www-data $FILE
+chmod 660 $FILE
+ln -s ssl-cert-snakeoil.pem /etc/ssl/certs/securityonion.pem
+ln -s ssl-cert-snakeoil.key /etc/ssl/private/securityonion.key
 a2dissite elsa
 a2dismod perl
 # Remove ELSA link from Squert
@@ -144,10 +127,19 @@ URL="/app/kibana#/dashboard/68563ed0-34bf-11e7-9b32-bb903919ead9?_g=(refreshInte
 HEXURL=$(xxd -pu -c 356 <<< "$URL")
 $MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','$HEXALIAS','','$ALIAS','$HEXURL');"
 service apache2 restart
+echo "Done!"
+
+header "Disabling ELSA"
+rm -f /etc/cron.d/elsa
+FILE="/etc/nsm/securityonion.conf"
+sed -i 's/ELSA=YES/ELSA=NO/' $FILE
+service sphinxsearch stop
+echo "manual" > /etc/init/sphinxsearch.conf.override
 sed -i 's|ELSA|Kibana|g' /usr/bin/sguil.tk
 sed -i 's|elsa|kibana|g' /usr/bin/sguil.tk
 sed -i 's|ELSA|Kibana|g' /usr/lib/sguil/extdata.tcl 
 sed -i "s|elsa-query/?query_string=\"\$ipAddr\"%20groupby:program|app/kibana#/dashboard/68563ed0-34bf-11e7-9b32-bb903919ead9?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-5y,mode:quick,to:now))\&_a=(columns:!(_source),index:'logstash-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'\"\$ipAddr\"')),sort:!('@timestamp',desc))|g" /usr/lib/sguil/extdata.tcl
+echo "Done!"
 
 header "Replacing ELSA shortcuts with Kibana shortcuts"
 for i in /home/*/Desktop /etc/skel/Desktop /usr/share/applications; do
@@ -162,10 +154,11 @@ for i in /home/*/Desktop /etc/skel/Desktop /usr/share/applications; do
 		sed -i 's|https://localhost/elsa|https://localhost/app/kibana|g' $KIBANA
 	fi
 done
+echo "Done!"
 
 header "Reconfiguring syslog-ng to send logs to Elastic"
 FILE="/etc/syslog-ng/syslog-ng.conf"
-cp $FILE $FILE.elsa
+cp $FILE $FILE.bak
 sed -i '/^destination d_elsa/a destination d_logstash { tcp("127.0.0.1" port(6050) template("$(format-json --scope selected_macros --scope nv_pairs --exclude DATE --key ISODATE)\\n")); };' $FILE
 sed -i 's/log { destination(d_elsa); };/log { destination(d_logstash); };/' $FILE
 sed -i '/rewrite(r_host);/d' $FILE
@@ -184,16 +177,19 @@ sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_ntlm);' $FILE
 sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_files);' $FILE
 sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_mapping);' $FILE
 service syslog-ng restart
+echo "Done!"
 
 header "Updating OSSEC rules"
 cp $REPO/var/ossec/rules/securityonion_rules.xml /var/ossec/rules/
 chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
+echo "Done!"
 
 header "Configuring Bro to log SMB traffic"
 sed -i 's|# @load policy/protocols/smb|@load policy/protocols/smb|g' /opt/bro/share/bro/site/local.bro
 /usr/sbin/nsm_sensor_ps-restart --only-bro
+echo "Done!"
 
 header "Configuring Kibana"
 max_wait=240
