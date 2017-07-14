@@ -95,33 +95,6 @@ echo "Done!"
 
 /usr/sbin/sosetup
 
-if [ -f /etc/nsm/sensortab ]; then
-	NUM_INTERFACES=`grep -v "^#" /etc/nsm/sensortab | wc -l`
-	if [ $NUM_INTERFACES -gt 0 ]; then
-		SECONDS=120
-		header "Waiting $SECONDS seconds to allow Logstash to initialize"
-		# This check for logstash isn't working correctly right now.
-		# I think docker-proxy is completing the 3WHS and making nc think that logstash is up before it actually is.
-		#max_wait=240
-		#wait_step=0
-		#until nc -vz localhost 6050 > /dev/null 2>&1 ; do
-		#	wait_step=$(( ${wait_step} + 1 ))
-		#	if [ ${wait_step} -gt ${max_wait} ]; then
-		#		echo "ERROR: logstash not available for more than ${max_wait} seconds."
-		#		exit 5
-		#	fi
-		#	sleep 1;
-		#	echo -n "."
-		#done
-		#echo
-		for i in `seq 1 $SECONDS`; do
-			sleep 1s
-			echo -n "."
-		done
-		echo
-
-		. /usr/sbin/so-elastic-replay-pcaps
-	fi
-fi
+. /usr/sbin/so-elastic-replay-pcaps
 
 . /usr/sbin/so-elastic-final-text
