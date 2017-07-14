@@ -10,9 +10,9 @@ fi
 
 # Make a directory to store downloads
 DIR="/opt/elastic"
-PCAP_DIR="$DIR/pcap"
-mkdir -p $PCAP_DIR
+mkdir -p $DIR
 cd $DIR
+PCAP_DIR="$DIR/pcap"
 
 # Define a banner to separate sections
 banner="========================================================================="
