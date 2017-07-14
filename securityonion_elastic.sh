@@ -80,12 +80,12 @@ EOF
 read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
 
-header "Installing git and libapache2-mod-authnz-external"
+header "Installing git"
 apt-get update > /dev/null
-apt-get install -y git libapache2-mod-authnz-external > /dev/null
+apt-get install -y git > /dev/null
 echo "Done!"
 
-header "Downloading files"
+header "Cloning git repo"
 git clone $URL
 cp -av $REPO/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*
@@ -120,42 +120,8 @@ if [ -f /etc/nsm/sensortab ]; then
 		done
 		echo
 
-		header "Replaying pcaps to create new logs for testing"
-		INTERFACE=`grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}'`
-		for i in /opt/samples/*.pcap /opt/samples/markofu/*.pcap /opt/samples/mta/*.pcap $PCAP_DIR/*.trace $PCAP_DIR/*.pcap; do
-			echo -n "." 
-			tcpreplay -i $INTERFACE -M10 $i >/dev/null 2>&1
-		done
-		echo
+		. /usr/sbin/so-elastic-replay-pcaps
 	fi
 fi
 
-header "All done!"
-cat << EOF
-
-After a minute or two, you should be able to access Kibana via the following URL:
-https://localhost/app/kibana
-
-When prompted for username and password, use the same credentials that you use to login to Sguil and Squert.
-
-You will automatically start on our Overview dashboard and you will see links to other dashboards as well.  These dashboards are designed to work at 1024x768 screen resolution in order to maximize compatibility.
-
-As you search through the data in Kibana, you should see Bro logs, syslog, and Snort alerts.  Logstash should have parsed out most fields in most Bro logs and Snort alerts.
-
-Notice that the source_ip and destination_ip fields are hyperlinked.  These hyperlinks will take you to a dashboard that will help you analyze the traffic relating to that particular IP address.
-
-UID fields are also hyperlinked.  This hyperlink will start a new Kibana search for that particular UID.  In the case of Bro UIDs this will show you all Bro logs related to that particular connection.
-
-Each log entry also has an _id field that is hyperlinked.  This hyperlink will take you to CapMe, allowing you to request full packet capture for any arbitrary log type!  This assumes that the log is for tcp or udp traffic that was seen by Bro and Bro recorded it correctly in its conn.log.  CapMe should try to do the following:
-* retrieve the _id from Elasticsearch
-* parse out timestamp
-* if Bro log, parse out the CID, otherwise parse out src IP, src port, dst IP, and dst port
-* query Elasticsearch for those terms and try to find the corresponding bro_conn log
-* parse out sensor name (hostname-interface)
-* send a request to sguild to request pcap from that sensor name
-
-Previously, in Squert, you could pivot from an IP address to ELSA.  That pivot has been removed and replaced with a pivot to Kibana.
-
-Happy Hunting!
-
-EOF
+. /usr/sbin/so-elastic-final-text

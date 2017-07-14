@@ -2,14 +2,10 @@
 
 . /usr/sbin/so-elastic-common
 
-header "Downloading additional pcaps"
-cd $PCAP_DIR
-for i in ssh/ssh.trace dnp3/dnp3.trace modbus/modbus.trace radius/radius.trace rfb/vnc-mac-to-linux.pcap rfb/vncmac.pcap sip/wireshark.trace tunnels/gre-within-gre.pcap tunnels/Teredo.pcap rdp/rdp-proprietary-encryption.pcap snmp/snmpv1_get.pcap mysql/mysql.trace smb/dssetup_DsRoleGetPrimaryDomainInformation_standalone_workstation.cap smb/raw_ntlm_in_smb.pcap smb/smb1.pcap smb/smb2.pcap; do
-	echo -n "." 
-	wget -q https://github.com/bro/bro/raw/master/testing/btest/Traces/$i
-done
-echo
-cd - > /dev/null
+. /usr/sbin/so-elastic-download-pcaps
+
+header "Installing libapache2-mod-authnz-external"
+apt-get install -y libapache2-mod-authnz-external > /dev/null
 
 header "Installing Docker"
 cp $REPO/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
