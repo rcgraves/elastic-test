@@ -13,3 +13,5 @@ echo "Stopping containers:"
 [ "$ELASTICSEARCH_ENABLED" = "yes" ] && docker stop so-elasticsearch
 [ "$ELASTALERT_ENABLED" = "yes" ] && docker stop so-elastalert
 [ "$CURATOR_ENABLED" = "yes" ] && docker stop so-curator
+[ "$FREQ_SERVER_ENABLED" = "yes" ] && docker stop so-freqserver
+[ "$DOMAIN_STATS_ENABLED" = "yes" ] && docker stop so-domainstats
