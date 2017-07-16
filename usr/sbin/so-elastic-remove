@@ -13,4 +13,5 @@ echo "Removing existing containers:"
 [ "$KIBANA_ENABLED" = "yes" ] && docker rm so-kibana 2>&1 | grep -v "No such container"
 [ "$ELASTALERT_ENABLED" = "yes" ] && docker rm so-elastalert 2>&1 | grep -v "No such container"
 [ "$CURATOR_ENABLED" = "yes" ] && docker rm so-curator 2>&1 | grep -v "No such container"
-
+[ "$FREQ_SERVER_ENABLED" = "yes" ] && docker rm so-freqserver 2>&1 | grep -v "No such container"
+[ "$DOMAIN_STATS_ENABLED" = "yes" ] && docker rm so-domainstats 2>&1 | grep -v "No such container"
