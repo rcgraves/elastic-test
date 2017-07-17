@@ -107,12 +107,12 @@ ELASTALERT_OPTIONS=""
 CURATOR_ENABLED="yes"
 CURATOR_OPTIONS=""
 
-#Freq_server default options
-FREQ_SERVER_ENABLED="yes"
+# Freq_server default options
+FREQ_SERVER_ENABLED="no"
 FREQ_SERVER_OPTIONS=""
 
-#Domain_stats options
-DOMAIN_STATS_ENABLED="yes"
+# Domain_stats options
+DOMAIN_STATS_ENABLED="no"
 DOMAIN_STATS_OPTIONS=""
 EOF
 
