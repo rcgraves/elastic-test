@@ -7,6 +7,8 @@
 # Fixes contributed by:
 # Stephane Chazelas
 # Shane Castle
+# Freq_server and Domain_stats components written by:
+# Justin Henderson
 
 # Import settings file
 if [ -f /etc/nsm/securityonion.conf ]; then
@@ -423,6 +425,8 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 	KIB_RUNNING=$(docker ps | grep so-kibana)
 	ELAST_RUNNING=$(docker ps | grep so-elastalert)
 	CURAT_RUNNING=$(docker ps | grep so-curator)
+	FREQ_RUNNING=$(docker ps | grep so-freqserver)
+	DOMAINSTATS_RUNNING=$(docker ps | grep so-domainstats)
 	
 	echo
         header "Elasticsearch"
@@ -491,6 +495,45 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
                         docker stats --no-stream so-curator
                 else
                         echo && echo -e "Curator is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-curator'\n\n\nIf that does not work, try checking /var/log/curator/curator.log for clues."
+                fi
+        fi
+	
+	echo
+	header "Freq Server"
+	if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
+                if [ "$FREQ_RUNNING" ]; then
+                        echo && echo "Freq_server is running."
+                        echo
+                        docker stats --no-stream so-freqserver
+			echo "Testing freq_server now..."
+			FREQ_SERVER_RESPONSE=`curl http://127.0.0.1:10004/measure/google.com`
+			FREQ_RESULT=$(awk -vx=$FREQ_SERVER_RESPONSE 'BEGIN{ print x>=y?1:0}')
+			if [ $FREQ_RESULT -eq 1 ]; then
+				echo "Freq Server is working"
+			else
+				echo "Freq_server is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-freqserver'\n\n\nIf that does not work, try checking /var/log/freq_server/freq_server.log for clues."
+			fi
+                else
+                        echo && echo -e "Freq_server is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-freqserver'\n\n\nIf that does not work, try checking /var/log/freq_server/freq_server.log for clues."
+                fi
+	fi
+	echo
+	header "Domain Stats"
+	if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
+                if [ "$DOMAINSTATS_RUNNING" ]; then
+                        echo && echo "Domain_stats is running."
+                        echo
+                        docker stats --no-stream so-domainstats
+			echo "Testing domain_stats now..."
+			DOMAIN_STATS_RESPONSE=`curl http://127.0.0.1:20000/alexa/google.com`
+			DOMAIN_STATS_RESULT=$(awk -vx=$DOMAIN_STATS_RESPONSE 'BEGIN{ print x>=y?1:0}')
+			if [ $DOMAIN_STATS_RESULT -eq 1 ]; then
+				echo "Domain_stats is working"
+			else
+				echo "Domain_stats is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-domainstats'\n\n\nIf that does not work, try checking /var/log/domain_stats/domain_stats.log for clues."
+			fi
+                else
+                        echo && echo -e "Domain_stats is not running.\n\nTry starting it with:\n\n'sudo so-elastic-start'\n OR\n'sudo docker start so-domainstats'\n\n\nIf that does not work, try checking /var/log/domain_stats/domain_stats.log for clues."
                 fi
         fi
 fi
