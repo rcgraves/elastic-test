@@ -104,7 +104,7 @@ if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
 		--detach \
 		--publish 10004:10004 \
 		--volume /var/log/freq_server:/var/log/freq_server \
-		lightforge/freq_server
+		$DOCKERHUB/so-freqserver
 fi
 if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
 	echo -n "so-domainstats: "
@@ -112,5 +112,5 @@ if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
 		--detach \
 		--publish 20000:20000 \
 		--volume /var/log/domain_stats:/var/log/domain_stats \
-		lightforge/domain_stats
+		$DOCKERHUB/so-domainstats
 fi

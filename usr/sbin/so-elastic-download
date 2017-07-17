@@ -26,6 +26,6 @@ docker pull $DOCKERHUB/so-kibana
 docker pull $DOCKERHUB/so-logstash
 docker pull $DOCKERHUB/so-elastalert
 docker pull $DOCKERHUB/so-curator
-docker pull lightforge/freq_server
-docker pull lightforge/domain_stats
+docker pull $DOCKERHUB/so-freqserver
+docker pull $DOCKERHUB/so-domainstats
 echo "Done!"
