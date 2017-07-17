@@ -31,7 +31,7 @@ mkdir -p /etc/logstash/optional/
 chown -R 1000:1000 /nsm/logstash
 chown -R 1000:1000 /var/log/logstash
 cp -av $REPO/configfiles/*.conf /etc/logstash/conf.d/
-cp -av $REPO/configfiles-setup_required/8*_postprocess_dns_alexa_tagging.conf /etc/logstash/optional/
+cp -av $REPO/configfiles-setup_required/8*_postprocess_dns_*_tagging.conf /etc/logstash/optional/
 cp -av $REPO/configfiles-setup_required/85*_postprocess_freq_analysis_*.conf /etc/logstash/optional/
 cp -av $REPO/configfiles/*.conf /etc/logstash/conf.d/
 cp -av $REPO/etc/logstash/* /etc/logstash/
