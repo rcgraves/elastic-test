@@ -298,19 +298,19 @@ KIBANA_ENABLED="yes"
 KIBANA_DEFAULTAPPID="dashboard/94b52620-342a-11e7-9d52-4f090484f59e"
 KIBANA_OPTIONS=""
 
-#ElastAlert options
+# ElastAlert options
 ELASTALERT_ENABLED="yes"
 ELASTALERT_OPTIONS=""
 
-#Curator options
+# Curator options
 CURATOR_ENABLED="yes"
 CURATOR_OPTIONS=""
 
-#Freq_server default options
+# Freq_server default options
 FREQ_SERVER_ENABLED="no"
 FREQ_SERVER_OPTIONS=""
 
-#Domain_stats options
+# Domain_stats options
 DOMAIN_STATS_ENABLED="no"
 DOMAIN_STATS_OPTIONS=""
 EOF
