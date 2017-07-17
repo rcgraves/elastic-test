@@ -180,6 +180,8 @@ docker pull $DOCKERHUB/so-kibana
 docker pull $DOCKERHUB/so-logstash
 docker pull $DOCKERHUB/so-elastalert
 docker pull $DOCKERHUB/so-curator
+docker pull lightforge/freq_server
+docker pull lightforge/domain_stats
 
 echo "Done!"
 
@@ -222,9 +224,12 @@ header "Configuring Logstash"
 mkdir -p /nsm/logstash
 mkdir -p /var/log/logstash
 mkdir -p /etc/logstash/conf.d/
+mkdir -p /etc/logstash/optional/
 chown -R 1000:1000 /nsm/logstash
 chown -R 1000:1000 /var/log/logstash
 cp -av $REPO/configfiles/*.conf /etc/logstash/conf.d/
+cp -av $REPO/configfiles-setup_required/8*_postprocess_dns_alexa_tagging.conf /etc/logstash/optional/
+cp -av $REPO/configfiles-setup_required/85*_postprocess_freq_analysis_*.conf /etc/logstash/optional/
 cp -av $REPO/etc/logstash/* /etc/logstash/
 cp -av $REPO/lib/dictionaries /lib/
 #cp -rf $REPO/grok-patterns /lib/
@@ -260,6 +265,18 @@ cp -av $REPO/etc/curator/action/* /etc/curator/action/
 cp -av $REPO/etc/curator/cron.d/* /etc/cron.d/
 echo "Done!"
 
+header "Configuring freq_server"
+mkdir -p /var/log/freq_server
+mkdir -p /var/log/freq_server_dns
+chown -R 1000:1000 /var/log/freq_server
+echo "Done!"
+
+header "Configuring domain_stats"
+mkdir -p /var/log/domain_stats
+mkdir -p /var/log/domain_stats
+chown -R 1000:1000 /var/log/domain_stats
+echo "Done!"
+
 header "Starting Elastic Stack"
 cat << EOF >> /etc/nsm/securityonion.conf
 
@@ -288,6 +305,13 @@ ELASTALERT_OPTIONS=""
 #Curator options
 CURATOR_ENABLED="yes"
 CURATOR_OPTIONS=""
+#Freq_server default options
+FREQ_SERVER_ENABLED="yes"
+FREQ_SERVER_OPTIONS=""
+
+#Domain_stats options
+DOMAIN_STATS_ENABLED="yes"
+DOMAIN_STATS_OPTIONS=""
 EOF
 
 chmod +x /usr/sbin/so-elastic-*
