@@ -2,6 +2,16 @@
 
 . /usr/sbin/so-elastic-common
 
+header "Configuring Bro with sample intel"
 sed -i 's|#66.32.119.38|66.32.119.38|' /opt/bro/share/bro/intel/intel.dat
 sed -i 's|#www.honeynet.org|www.honeynet.org|' /opt/bro/share/bro/intel/intel.dat
 sed -i 's|#4285358dd748ef74cb8161108e11cb73|4285358dd748ef74cb8161108e11cb73|' /opt/bro/share/bro/intel/intel.dat
+
+header "Configuring Bro to log SMB traffic"
+sed -i 's|# @load policy/protocols/smb|@load policy/protocols/smb|g' /opt/bro/share/bro/site/local.bro
+
+header "Restarting Bro"
+/usr/sbin/nsm_sensor_ps-restart --only-bro
+
+echo "Done!"
+

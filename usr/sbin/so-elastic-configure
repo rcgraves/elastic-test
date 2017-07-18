@@ -210,11 +210,6 @@ chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
 echo "Done!"
 
-header "Configuring Bro to log SMB traffic"
-sed -i 's|# @load policy/protocols/smb|@load policy/protocols/smb|g' /opt/bro/share/bro/site/local.bro
-/usr/sbin/nsm_sensor_ps-restart --only-bro
-echo "Done!"
-
 header "Configuring Kibana"
 max_wait=240
 es_host=localhost
