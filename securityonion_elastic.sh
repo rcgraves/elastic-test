@@ -94,6 +94,8 @@ echo "Done!"
 
 . /usr/sbin/so-elastic-download
 
+. /usr/sbin/so-elastic-enable-bro-intel
+
 cat << EOF
 You're now ready to run through Setup.
 

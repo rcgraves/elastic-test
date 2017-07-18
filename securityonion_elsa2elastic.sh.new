@@ -106,12 +106,12 @@ EOF
 read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
 
-header "Installing git and libapache2-mod-authnz-external"
+header "Installing git"
 apt-get update > /dev/null
-apt-get install -y git libapache2-mod-authnz-external > /dev/null
+apt-get install -y git > /dev/null
 echo "Done!"
 
-header "Downloading files"
+header "Cloning git repo"
 git clone $URL
 cp -av $REPO/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*
@@ -119,9 +119,7 @@ echo "Done!"
 
 . /usr/sbin/so-elastic-download
 
-sed -i 's|#66.32.119.38|66.32.119.38|' /opt/bro/share/bro/intel/intel.dat
-sed -i 's|#www.honeynet.org|www.honeynet.org|' /opt/bro/share/bro/intel/intel.dat
-sed -i 's|#4285358dd748ef74cb8161108e11cb73|4285358dd748ef74cb8161108e11cb73|' /opt/bro/share/bro/intel/intel.dat
+. /usr/sbin/so-elastic-enable-bro-intel
 
 . /usr/sbin/so-elastic-replay-pcaps
 
