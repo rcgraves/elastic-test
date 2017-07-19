@@ -94,13 +94,11 @@ echo "Done!"
 
 . /usr/sbin/so-elastic-download
 
-. /usr/sbin/so-elastic-configure-bro
-
 cat << EOF
 You're now ready to run through Setup.
 
 Once you've run through both phases of Setup (network configuration, reboot, service configuration), you can then replay some sample pcaps using the following command:
-sudo /usr/sbin/so-elastic-replay-pcaps
+sudo so-test
 
 Once you have some data, you should then be able to login to Kibana:
 https://localhost/app/kibana

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+. /usr/sbin/so-test-configure-bro
+
+. /usr/sbin/so-replay
