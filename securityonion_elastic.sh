@@ -92,6 +92,7 @@ echo "Done!"
 . /usr/sbin/so-elastic-download
 
 cat << EOF
+
 You're now ready to run through Setup.
 
 Once you've run through both phases of Setup (network configuration, reboot, service configuration), you can then replay some sample pcaps using the following command:
