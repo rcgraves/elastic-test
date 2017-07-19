@@ -81,12 +81,9 @@ EOF
 read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
 
-header "Installing git"
+header "Cloning git repo"
 apt-get update > /dev/null
 apt-get install -y git > /dev/null
-echo "Done!"
-
-header "Cloning git repo"
 git clone $URL
 cp -av $REPO/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*

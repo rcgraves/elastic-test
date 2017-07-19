@@ -106,28 +106,17 @@ EOF
 read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
 
-header "Installing git"
+header "Cloning git repo"
 apt-get update > /dev/null
 apt-get install -y git > /dev/null
-echo "Done!"
-
-header "Cloning git repo"
 git clone $URL
 cp -av $REPO/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*
 echo "Done!"
 
-. /usr/sbin/so-elastic-download
-
 . /usr/sbin/so-replay
 
-SECONDS=60
-header "Waiting $SECONDS seconds to allow Bro to finish writing logs"
-for i in `seq 1 $SECONDS`; do
-	sleep 1s
-	echo -n "."
-done
-echo
+. /usr/sbin/so-elastic-download
 
 header "Processing final ELSA buffers"
 sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
