@@ -424,7 +424,7 @@ fi
 if [ $SERVER -eq 1 ]; then
 	USERNAME_CONFIRMED="no"
 	while [ $USERNAME_CONFIRMED = "no" ]; do
-		TEXT="What would you like your Sguil username to be?\r\rThis will be used when logging into Sguil, Squert, and ELSA.\r\rPlease use alphanumeric characters only."
+		TEXT="What would you like your Sguil username to be?\r\rThis will be used when logging into Sguil, Squert, and Kibana.\r\rPlease use alphanumeric characters only."
 		SGUIL_CLIENT_USERNAME=`zenity --title="$TITLE" --text="$TEXT" --entry`
 		if [ $? = 1 ]; then
 			if [ $DEBUG -eq 1 ]; then
@@ -455,7 +455,7 @@ if [ $SERVER -eq 1 ]; then
 \n\
 Password must be at least 6 characters.\n\
 \n\
-This password will be used for Sguil, Squert, and ELSA.\n\
+This password will be used for Sguil, Squert, and Kibana.\n\
 \n\
 Once you've logged into these interfaces using this initial password, you can change it in the Sguil client."
 		SGUIL_CLIENT_PASSWORD_1=`zenity --title="$TITLE" --text="$TEXT" --entry --hide-text`
@@ -1848,12 +1848,12 @@ EOF
 	sed -i 's|https://localhost|https://localhost/squert|g' $SQUERT_LAUNCHER
 	sed -i 's|Name=README|Name=Squert|g' $SQUERT_LAUNCHER
 
-	# Use README launcher as template to create ELSA launcher (if enabled)
+	# Use README launcher as template to create Kibana launcher (if enabled)
 	if [ "$ELSA" = "YES" ]; then
-		ELSA_LAUNCHER="$DIR/securityonion-elsa.desktop"
-		cp $README_LAUNCHER $ELSA_LAUNCHER
-		sed -i 's|https://localhost|https://localhost/elsa|g' $ELSA_LAUNCHER
-		sed -i 's|Name=README|Name=ELSA|g' $ELSA_LAUNCHER
+		KIBANA_LAUNCHER="$DIR/securityonion-kibana.desktop"
+		cp $README_LAUNCHER $KIBANA_LAUNCHER
+		sed -i 's|https://localhost|https://localhost/app/kibana|g' $KIBANA_LAUNCHER
+		sed -i 's|Name=README|Name=Kibana|g' $KIBANA_LAUNCHER
 	fi
 
 	# Use README launcher as template to create Xplico launcher (if enabled)
@@ -1900,11 +1900,12 @@ if [ "$ELSA" = "YES" ]; then
         for token in $SENSORS; do
                 COUNT=$((COUNT+1))
         done
-        echo $COUNT
+        #echo $COUNT
 
         if [ $COUNT -eq 1 ]; then
                 if grep "type=standalone" /opt/bro/etc/node.cfg > /dev/null; then
                         echo "* Leaving syslog-ng.conf bro_http entry unmolested." | tee -a $LOG
+			cp /opt/elsa/contrib/securityonion/contrib/securityonion-syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
                 else
                         echo "* Altering syslog-ng.conf bro_http entry for single interface cluster-mode" | tee -a $LOG 
                         # Pull the interface bro is listening for from node.cfg
@@ -2016,9 +2017,9 @@ TEXT="Security Onion Setup is now complete! \n \
 Setup log can be found here:\n \
 $LOG\n \
 \n \
-You may view IDS alerts using Sguil, Squert, or ELSA (if enabled). \n \
+You may view IDS alerts using Sguil, Squert, or Kibana (if enabled). \n \
 \n \
-Bro logs can be found in ELSA (if enabled) and the following location: \n \
+Bro logs can be found in Kibana (if enabled) and the following location: \n \
 /nsm/bro/"
 }
 
