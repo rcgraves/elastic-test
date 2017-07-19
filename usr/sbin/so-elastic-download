@@ -6,6 +6,7 @@
 
 header "Installing libapache2-mod-authnz-external"
 apt-get install -y libapache2-mod-authnz-external > /dev/null
+echo "Done!"
 
 header "Installing Docker"
 cp $REPO/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
@@ -18,14 +19,17 @@ apt-get update > /dev/null
 apt-get -y install docker-ce > /dev/null
 echo "Done!"
 
-header "Downloading Docker containers"
+header "Enabling DOCKER_CONTENT_TRUST"
 echo "export DOCKER_CONTENT_TRUST=1" >> /etc/profile.d/securityonion-docker.sh
 export DOCKER_CONTENT_TRUST=1
-docker pull $DOCKERHUB/so-elasticsearch
-docker pull $DOCKERHUB/so-kibana
-docker pull $DOCKERHUB/so-logstash
-docker pull $DOCKERHUB/so-elastalert
-docker pull $DOCKERHUB/so-curator
-docker pull $DOCKERHUB/so-freqserver
-docker pull $DOCKERHUB/so-domainstats
+echo "Done!"
+
+header "Downloading Docker containers"
+docker pull --disable-content-trust=false $DOCKERHUB/so-elasticsearch
+docker pull --disable-content-trust=false $DOCKERHUB/so-kibana
+docker pull --disable-content-trust=false $DOCKERHUB/so-logstash
+docker pull --disable-content-trust=false $DOCKERHUB/so-elastalert
+docker pull --disable-content-trust=false $DOCKERHUB/so-curator
+docker pull --disable-content-trust=false $DOCKERHUB/so-freqserver
+docker pull --disable-content-trust=false $DOCKERHUB/so-domainstats
 echo "Done!"
