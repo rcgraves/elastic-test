@@ -216,5 +216,5 @@ service ossec-hids-server restart
 echo "Done!"
 cd $DIR
 
-. /usr/sbin/so-elastic-configure-kibana-config
+. /usr/sbin/so-elastic-configure-kibana
 echo "Done!"
