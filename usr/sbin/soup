@@ -21,7 +21,6 @@ LOG=0
 # Grab SSH info so we can check the server for updates.
 SSH_CONF="/root/.ssh/securityonion_ssh.conf"
 KEY="/root/.ssh/securityonion"
-DOCKERHUB="securityonionsolutions"
 #########################################
 # Got r00t?
 #########################################
@@ -138,12 +137,15 @@ fi
 
 # check if updates are available for Security Onion Docker images
 CURRENT="up to date"
-if ! docker pull "$DOCKERHUB"/so-curator | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-domainstats | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-elastalert | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-elasticsearch | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-freqserver | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-kibana | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-logstash | grep "$CURRENT" > /dev/null; then
+. /usr/sbin/so-elastic-common
+if docker pull "$DOCKERHUB"/so-curator | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-domainstats | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-elastalert | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-elasticsearch | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-freqserver | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-kibana | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-logstash | grep "$CURRENT"; then
 	echo
 	echo -n "Security Onion Docker images up to date."
 	echo
 else
-        echo
+	echo "Updates detected."
+	echo "Stopping Docker containers..."
+	echo
 	/usr/sbin/so-elastic-stop > /dev/null 2>&1
 	RESTART_CONTAINERS=yes
 	#APPLY_CONFIG=yes
@@ -196,13 +198,13 @@ fi
 
 # Do we need to restart Docker containers?
 if [ "$RESTART_CONTAINERS" == "yes" ]; then
-	if [ "$APPLY_CONFIG" == "yes" ]; then
-		echo
-		echo -n "Restarting Docker containers and applying configuration..."
-		/usr/sbin/so-elastic-start > /dev/null 2>&1
-		echo
-	fi
-else
+	#if [ "$APPLY_CONFIG" == "yes" ]; then
+	#	echo
+	#	echo -n "Restarting Docker containers and applying configuration..."
+	#	/usr/sbin/so-elastic-start > /dev/null 2>&1
+	#	echo
+	#fi
+#else
 	echo
 	echo -n "Restarting Docker containers..."
 	echo
