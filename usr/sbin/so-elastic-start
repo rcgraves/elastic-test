@@ -11,6 +11,26 @@ source /etc/nsm/securityonion.conf
 echo
 echo "Starting new containers:"
 
+if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
+	echo -n "so-freqserver: "
+	docker run --name=so-freqserver \
+		--detach \
+		--publish 10004:10004 \
+		--volume /var/log/freq_server:/var/log/freq_server \
+		$FREQ_SERVER_OPTIONS \
+		$DOCKERHUB/so-freqserver
+fi
+
+if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
+	echo -n "so-domainstats: "
+	docker run --name=so-domainstats \
+		--detach \
+		--publish 20000:20000 \
+		--volume /var/log/domain_stats:/var/log/domain_stats \
+		$DOMAIN_STATS_OPTIONS \
+		$DOCKERHUB/so-domainstats
+fi
+
 if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 	echo -n "so-elasticsearch: "
 	docker run --name=so-elasticsearch \
@@ -32,15 +52,19 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 fi
 
 if [ "$LOGSTASH_ENABLED" = "yes" ]; then
+	LINK_FREQSERVER=""
+	LINK_DOMAINSTATS=""
 	echo -n "so-logstash: "
 	if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
 		cp -f /etc/logstash/optional/*_postprocess_freq_analysis_*.conf /etc/logstash/conf.d/
+		LINK_FREQSERVER="--link=so-freqserver:freqserver"
 	fi
 	if [ "$FREQ_SERVER_ENABLED" = "no" ]; then
 		rm -f /etc/logstash/conf.d/*_postprocess_freq_analysis_*.conf
 	fi
 	if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
 		cp -f /etc/logstash/optional/8007_postprocess_dns_top1m_tagging.conf /etc/logstash/conf.d/
+		LINK_DOMAINSTATS="--link=so-domainstats:domainstats"
 	fi
 	if [ "$DOMAIN_STATS_ENABLED" = "no" ]; then
 		rm -f /etc/logstash/conf.d/8007_postprocess_dns_top1m_tagging.conf
@@ -49,8 +73,8 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 		--detach \
 		--env LS_JAVA_OPTS="-Xms$LOGSTASH_HEAP -Xmx$LOGSTASH_HEAP" \
 		--link=so-elasticsearch:elasticsearch \
-		--link=so-freqserver:freqserver \
-		--link=so-domainstats:domainstats \
+		$LINK_FREQSERVER \
+		$LINK_DOMAINSTATS \
 		--publish 6050:6050 \
 		--publish 6051:6051 \
 		--publish 6052:6052 \
@@ -99,20 +123,4 @@ if [ "$CURATOR_ENABLED" = "yes" ]; then
                 --volume /etc/curator/action/:/etc/curator/action:ro \
                 --volume /var/log/curator/:/var/log/curator/ \
                 -it $DOCKERHUB/so-curator
-fi
-if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
-	echo -n "so-freqserver: "
-	docker run --name=so-freqserver \
-		--detach \
-		--publish 10004:10004 \
-		--volume /var/log/freq_server:/var/log/freq_server \
-		$DOCKERHUB/so-freqserver
-fi
-if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
-	echo -n "so-domainstats: "
-	docker run --name=so-domainstats \
-		--detach \
-		--publish 20000:20000 \
-		--volume /var/log/domain_stats:/var/log/domain_stats \
-		$DOCKERHUB/so-domainstats
 fi
