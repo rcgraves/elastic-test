@@ -1,14 +1,10 @@
 #!/bin/bash
-# Define a banner to separate sections
-banner="========================================================================="
 
-header() {
-        echo
-        printf '%s\n' "$banner" "$*" "$banner"
-}
-header "Configuring Kibana"
 . /usr/sbin/so-elastic-common
-source /etc/nsm/securityonion.conf
+
+. /etc/nsm/securityonion.conf
+
+header "Configuring Kibana"
 max_wait=240
 #kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
 while getopts ":hr" OPTION

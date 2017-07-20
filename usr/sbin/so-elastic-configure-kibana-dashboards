@@ -1,14 +1,10 @@
 #!/bin/bash
-# Define a banner to separate sections
-banner="========================================================================="
 
-header() {
-        echo
-        printf '%s\n' "$banner" "$*" "$banner"
-}
-header "Configuring Kibana dashboards"
 . /usr/sbin/so-elastic-common
-source /etc/nsm/securityonion.conf
+
+. /etc/nsm/securityonion.conf
+
+header "Configuring Kibana dashboards"
 max_wait=240
 # Check to see if server is available
 until curl -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/health > /dev/null ; do
