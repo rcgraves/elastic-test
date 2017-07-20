@@ -1,0 +1,28 @@
+#!/bin/bash
+# Define a banner to separate sections
+banner="========================================================================="
+
+header() {
+        echo
+        printf '%s\n' "$banner" "$*" "$banner"
+}
+header "Configuring Kibana dashboards"
+. /usr/sbin/so-elastic-common
+source /etc/nsm/securityonion.conf
+max_wait=240
+# Check to see if server is available
+until curl -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/health > /dev/null ; do
+	wait_step=$(( ${wait_step} + 1 ))
+	if [ ${wait_step} -gt ${max_wait} ]; then
+		echo "ERROR: elasticsearch server not available for more than ${max_wait} seconds."
+		exit 5
+	fi
+	sleep 1s;
+done
+
+# Apply config and template
+cd $DIR/$REPO/kibana/dashboards/
+
+# Load dashboards, visualizations, index pattern(s), etc.
+sh load.sh
+cd $DIR
