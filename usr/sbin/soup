@@ -1,0 +1,220 @@
+#!/bin/bash
+
+#########################################
+# Variables
+#########################################
+
+# A banner for user output
+BANNER="###########################################################################"
+
+# Most updates don't require a reboot, but kernel updates do.
+# Also, if we install mysql-server updates, we have to stop all services,
+# so we might as well reboot to bring all services back up.
+REBOOT=no
+
+# Skip interactive key presses
+SKIP=0
+
+# Log to file
+LOG=0
+
+# Grab SSH info so we can check the server for updates.
+SSH_CONF="/root/.ssh/securityonion_ssh.conf"
+KEY="/root/.ssh/securityonion"
+DOCKERHUB="securityonionsolutions"
+#########################################
+# Got r00t?
+#########################################
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+    echo "This script needs to be run as root.  Please try again using sudo."
+    exit
+fi
+
+#########################################
+# Options
+#########################################
+
+usage()
+{
+cat <<EOF
+
+Security Onion Update
+
+     Options:
+
+        -h      	This message
+	-l <file> 	Log stdout and stderr to specified file (Use with \`\`-y'')
+	-y		Skip interactive mode
+
+Usage: $0
+EOF
+}
+
+while getopts "hl:y" OPTION
+do
+     case $OPTION in
+         h)
+	     usage
+             exit 0
+             ;;
+	 l)
+	     LOG=1
+             LOGFILE="$OPTARG"
+             ;;
+         y)
+             SKIP=1
+             ;;
+     esac
+done
+
+if [ $LOG -eq 1 ]; then
+#	exec > >(tee "$LOGFILE") 2>&1
+	echo -e "\n --> Logging stdout & stderr to $LOGFILE"
+	exec > "$LOGFILE" 2>&1
+fi
+
+#########################################
+# UPDATE!
+#########################################
+
+if [ $SKIP -ne 1 ]; then
+	# Prompt user to continue
+	echo $BANNER
+	echo "This script will automatically install all available updates"
+	echo "and remove any old kernels (keeping at least two kernels)."
+	echo ""
+	echo "For distributed deployments, please ensure this script is"
+	echo "run on the master server before updating sensors."
+	echo ""
+	echo "If mysql-server updates are available, it will stop sensor processes"
+	echo "to ensure a clean update."
+	echo ""
+	echo "At the end of the script, if mysql-server and/or kernel updates"
+	echo "were installed, you will be prompted to reboot."
+	echo $BANNER
+	echo ""
+	echo "Press Enter to continue or Ctrl-C to cancel."
+	read input
+
+	# If running a server-sensor deployment, check to see if the server needs updates.
+	if [ -f $SSH_CONF ]; then
+		source $SSH_CONF
+		echo "Checking to see if the master server has already been updated, please wait..."
+		SERVER_PKG=$(ssh -i "$KEY" $SSH_USERNAME@$SERVERNAME "/usr/lib/update-notifier/apt-check --human-readable | grep 'packages can be updated' | awk '{print \$1}'")
+		if [ "$SERVER_PKG" -ne 0 ]; then
+			echo ""
+			echo "The master server reports that it has $SERVER_PKG updates that need to be installed."
+			echo "We highly recommend updating the master server before updating this sensor."
+			echo ""
+			echo "Recommendation: Press Ctrl-c now and then update your master server."
+			echo ""
+			echo "If you really want to continue updating this sensor (may cause issues), press Enter."
+			read input
+		fi	
+	fi
+fi
+
+# Remove old kernels
+echo "Checking for kernels that can be removed..."
+/usr/sbin/so-purge-old-kernels -y
+
+# Sync with mirrors
+echo
+echo "Checking for updates..."
+apt-get update -qq
+
+# if docker-ce updates are available, apply them and set a flag to restart containers
+if apt-get dist-upgrade --assume-no |grep docker-ce >/dev/null; then
+        echo $BANNER
+        echo -n "New docker-ce package available. Stopping services for clean update."
+	echo ""
+	echo -n "Stopping Docker containers..."#	/usr/sbin/so-elastic-stop > /dev/null 2>&1
+	echo -n "Installing Docker updates..."
+	apt-get install -y docker-ce
+	echo -n "Starting Docker service..."
+	service docker start > /dev/null 2>&1
+	RESTART_CONTAINERS=yes
+fi
+
+# check if updates are available for Security Onion Docker images
+CURRENT="up to date"
+if ! docker pull "$DOCKERHUB"/so-curator | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-domainstats | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-elastalert | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-elasticsearch | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-freqserver | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-kibana | grep "$CURRENT" > /dev/null && docker pull "$DOCKERHUB"/so-logstash | grep "$CURRENT" > /dev/null; then
+	echo
+	echo -n "Security Onion Docker images up to date."
+	echo
+else
+        echo
+	/usr/sbin/so-elastic-stop > /dev/null 2>&1
+	RESTART_CONTAINERS=yes
+	#APPLY_CONFIG=yes
+fi
+
+# if mysql-server updates are available, we need to stop services and force reboot at end
+if apt-get dist-upgrade --assume-no |grep mysql-server >/dev/null; then
+	echo $BANNER
+	echo -n "New mysql-server packages available. Stopping services for clean update."
+	service nsm stop > /dev/null 2>&1
+	echo -n "."
+	service syslog-ng stop > /dev/null 2>&1
+	echo -n "."
+	service apache2 stop > /dev/null 2>&1
+	echo -n "."
+	pkill autossh > /dev/null 2>&1
+	echo -n "."
+	pkill perl > /dev/null 2>&1
+	echo "done."
+	echo $BANNER
+	apt-get install -y mysql-server mysql-server-core-5.5 mysql-server-5.5
+	REBOOT=yes
+fi
+
+# Force pfring-module to install before any kernel updates
+apt-get install -y securityonion-pfring-module | while read; do 
+	echo "$REPLY" | grep -v "^Use 'apt-get autoremove' to remove them.$"
+done
+
+# If there is a kernel update available, we need to reboot at the end
+apt-get dist-upgrade --assume-no | grep -A1000 "The following NEW packages will be installed:" | grep -B1000 "The following packages will be upgraded:" | grep linux-image >/dev/null && REBOOT=yes
+
+# Do the actual upgrade
+apt-get -y dist-upgrade | while read; do 
+	echo "$REPLY" | grep -v "^Use 'apt-get autoremove' to remove them.$"
+done
+
+# Check again if the system requires a reboot
+test -e /var/run/reboot-required && REBOOT=yes
+
+# Final output
+echo $BANNER
+hwe-support-status > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+	echo "All updates have been installed."
+else
+	echo "Please upgrade your Hardware Enablement Stack (HWE):"
+	echo "https://github.com/Security-Onion-Solutions/security-onion/wiki/HWE"
+fi
+
+# Do we need to restart Docker containers?
+if [ "$RESTART_CONTAINERS" == "yes" ]; then
+	if [ "$APPLY_CONFIG" == "yes" ]; then
+		echo
+		echo -n "Restarting Docker containers and applying configuration..."
+		/usr/sbin/so-elastic-start > /dev/null 2>&1
+		echo
+	fi
+else
+	echo
+	echo -n "Restarting Docker containers..."
+	echo
+	/usr/sbin/so-elastic-start > /dev/null 2>&1
+fi
+
+# If we need to reboot, give the user a chance to cancel.
+if [ $REBOOT == "yes" ]; then
+	if [ $SKIP -ne 1 ]; then
+		echo
+		echo "Press Enter to reboot or Ctrl-C to cancel."
+		read input
+	fi
+	reboot
+fi
