@@ -1,13 +1,13 @@
 #!/bin/bash
-#
-# This script is used to wipe all indices/data from Elasticsearch
-#
-# List indices.
+
+. /usr/sbin/so-elastic-common
+
+# List indices
 echo
 curl -XGET 'localhost:9200/_cat/indices?v&pretty'
 echo
 
-# Inform user we are about to delete all data.
+# Inform user we are about to delete all data
 echo
 echo "This script will delete all data (documents, indices, etc.) in the Elasticsearch database."
 echo
@@ -23,7 +23,7 @@ echo
 service syslog-ng stop
 echo
 
-# Delete data.
+# Delete data
 echo "Deleting data..."
 curl -XDELETE 'localhost:9200/logstash-*' > /dev/null 2>&1
 
@@ -32,7 +32,7 @@ echo
 service syslog-ng start
 echo
 
-# Mesage to user
+# Message to user
 echo
 echo "All Elasticsearch data has been deleted."
 echo
