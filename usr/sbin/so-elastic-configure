@@ -86,6 +86,8 @@ DOCKERHUB="$DOCKERHUB"
 
 # Elasticsearch options
 ELASTICSEARCH_ENABLED="yes"
+ELASTICSEARCH_HOST="localhost"
+ELASTICSEARCH_PORT=9200
 ELASTICSEARCH_HEAP="600m"
 ELASTICSEARCH_OPTIONS=""
 
@@ -96,11 +98,14 @@ LOGSTASH_OPTIONS=""
 
 # Kibana options
 KIBANA_ENABLED="yes"
+KIBANA_INDEX=.kibana
+KIBANA_VERSION=5.5.0
 KIBANA_DEFAULTAPPID="dashboard/94b52620-342a-11e7-9d52-4f090484f59e"
 KIBANA_OPTIONS=""
 
 # ElastAlert options
 ELASTALERT_ENABLED="yes"
+ELASTALERT_INDEX="elastalert_status"
 ELASTALERT_OPTIONS=""
 
 # Curator options
@@ -209,28 +214,7 @@ chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
 echo "Done!"
-
-header "Configuring Kibana"
-max_wait=240
-es_host=localhost
-es_port=9200
-kibana_index=.kibana
-kibana_version=5.5.0
-#kibana_build=$(jq -r '.build.number' < /opt/kibana/package.json )
-until curl -s -XGET http://${es_host}:${es_port}/_cluster/health > /dev/null ; do
-    wait_step=$(( ${wait_step} + 1 ))
-    if [ ${wait_step} -gt ${max_wait} ]; then
-        echo "ERROR: elasticsearch server not available for more than ${max_wait} seconds."
-        exit 5
-    fi
-    sleep 1s;
-done
-curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version}
-curl -s -XDELETE http://${es_host}:${es_port}/${kibana_index}
-curl -XPUT http://${es_host}:${es_port}/_template/kibana -d'{"template" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
-curl -XPUT http://${es_host}:${es_port}/_template/elastalert -d'{"template" : "elastalert_status", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
-curl -XPUT http://${es_host}:${es_port}/${kibana_index}/config/${kibana_version} -d@$REPO/kibana/config.json; echo; echo
-cd $DIR/$REPO/kibana/dashboards/
-sh load.sh
 cd $DIR
+
+. /usr/sbin/so-elastic-configure-kibana-config
 echo "Done!"
