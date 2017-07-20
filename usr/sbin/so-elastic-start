@@ -49,6 +49,8 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 		--detach \
 		--env LS_JAVA_OPTS="-Xms$LOGSTASH_HEAP -Xmx$LOGSTASH_HEAP" \
 		--link=so-elasticsearch:elasticsearch \
+		--link=so-freqserver:freqserver \
+		--link=so-domainstats:domainstats \
 		--publish 6050:6050 \
 		--publish 6051:6051 \
 		--publish 6052:6052 \
