@@ -136,6 +136,9 @@ if apt-get dist-upgrade --assume-no |grep docker-ce >/dev/null; then
 fi
 
 # check if updates are available for Security Onion Docker images
+echo
+echo "Checking Security Onion Docker image status..."
+echo
 CURRENT="up to date"
 . /usr/sbin/so-elastic-common
 if docker pull "$DOCKERHUB"/so-curator | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-domainstats | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-elastalert | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-elasticsearch | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-freqserver | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-kibana | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-logstash | grep "$CURRENT"; then
