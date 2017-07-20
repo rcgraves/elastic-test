@@ -41,13 +41,13 @@ This script assumes that you've already installed the latest Security Onion 14.0
 * (1) sniffing interface (separate from management interface)
 
 This script will do the following:
+* disable ELSA (if it was enabled)
 * install Docker and download Docker images for Elasticsearch, Logstash, and Kibana
 * import our custom visualizations and dashboards
 * configure syslog-ng to send logs to Logstash on port 6050
 * configure Apache as a reverse proxy for Kibana and authenticate users against Sguil database
 * update CapMe to leverage that single sign on (SSO) and integrate with Elasticsearch
 * update Squert to use SSO
-* replay sample pcaps to provide data for testing
 
 Depending on the speed of your hardware and Internet connection, this process will take at least 10 minutes.
 
@@ -89,22 +89,10 @@ cp -av $REPO/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*
 echo "Done!"
 
-. /usr/sbin/so-elastic-download
-
-cat << EOF
-
-You're now ready to run through Setup.
-
-Once you've run through both phases of Setup (network configuration, reboot, service configuration), you can then replay some sample pcaps using the following command:
-sudo so-test
-
-Once you have some data, you should then be able to login to Kibana:
-https://localhost/app/kibana
-
-Please press Enter to proceed with the Setup process.
-
-EOF
-
-read input
-
-/usr/sbin/sosetup
+ELSA=NO
+[ -f /etc/nsm/securityonion.conf ] && . /etc/nsm/securityonion.conf
+if [ $ELSA == "YES" ]; then
+	. $REPO/scripts/securityonion_elastic_elsa
+else
+	. $REPO/scripts/securityonion_elastic_new
+fi
