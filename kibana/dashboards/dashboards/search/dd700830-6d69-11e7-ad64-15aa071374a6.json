@@ -11,6 +11,10 @@
     "searchSourceJSON": "{\"index\":\"logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:autoruns\",\"analyze_wildcard\":true}}}"
   }, 
   "columns": [
-    "_source"
+    "entry", 
+    "entry_location", 
+    "image_path", 
+    "hostname", 
+    "_id"
   ]
 }

@@ -8,9 +8,15 @@
   "title": "Firewall - Logs", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\"index\":\"logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"tags:firewall\",\"analyze_wildcard\":true}}}"
+    "searchSourceJSON": "{\"index\":\"logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:firewall\",\"analyze_wildcard\":true}}}"
   }, 
   "columns": [
-    "_source"
+    "action", 
+    "reason", 
+    "source_ip", 
+    "source_port", 
+    "destination_ip", 
+    "destination_port", 
+    "_id"
   ]
 }
