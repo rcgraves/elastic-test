@@ -3,11 +3,11 @@
   "timeRestore": false, 
   "description": "", 
   "title": "Firewall", 
-  "uiStateJSON": "{}", 
-  "panelsJSON": "[]", 
+  "uiStateJSON": "{\"P-2\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-4\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-5\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}}", 
+  "panelsJSON": "[{\"col\":1,\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"panelIndex\":1,\"row\":1,\"size_x\":2,\"size_y\":10,\"type\":\"visualization\"},{\"col\":3,\"id\":\"da8a3b70-6d6b-11e7-ad64-15aa071374a6\",\"panelIndex\":2,\"row\":1,\"size_x\":2,\"size_y\":2,\"type\":\"visualization\"},{\"col\":5,\"id\":\"e76d2eb0-6d6b-11e7-ad64-15aa071374a6\",\"panelIndex\":3,\"row\":1,\"size_x\":8,\"size_y\":2,\"type\":\"visualization\"},{\"col\":3,\"id\":\"c3a06740-6d75-11e7-b09b-f57b22df6524\",\"panelIndex\":4,\"row\":9,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"col\":8,\"id\":\"df06de60-6d75-11e7-b09b-f57b22df6524\",\"panelIndex\":5,\"row\":9,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"col\":3,\"id\":\"2a1eb100-6d82-11e7-bcd4-0d514e0e7da1\",\"panelIndex\":7,\"row\":3,\"size_x\":6,\"size_y\":3,\"type\":\"visualization\"},{\"col\":9,\"id\":\"fcf75bc0-6d75-11e7-b09b-f57b22df6524\",\"panelIndex\":8,\"row\":3,\"size_x\":4,\"size_y\":3,\"type\":\"visualization\"},{\"size_x\":6,\"size_y\":3,\"panelIndex\":9,\"type\":\"visualization\",\"id\":\"f8f0dbc0-6d82-11e7-912f-0950e6d5c322\",\"col\":5,\"row\":6},{\"size_x\":12,\"size_y\":6,\"panelIndex\":10,\"type\":\"search\",\"id\":\"37c16940-6d6b-11e7-ad64-15aa071374a6\",\"col\":1,\"row\":14,\"columns\":[\"action\",\"reason\",\"source_ip\",\"source_port\",\"destination_ip\",\"destination_port\",\"_id\"],\"sort\":[\"@timestamp\",\"desc\"]}]", 
   "optionsJSON": "{\"darkTheme\":true}", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"query\":\"*\"}}}],\"highlightAll\":true,\"version\":true}"
+    "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}],\"highlightAll\":true,\"version\":true}"
   }
 }

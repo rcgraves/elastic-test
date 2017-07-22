@@ -1,0 +1,11 @@
+{
+  "visState": "{\"title\":\"Autoruns - Hostname (Tag Cloud)\",\"type\":\"tagcloud\",\"params\":{\"scale\":\"linear\",\"orientation\":\"single\",\"minFontSize\":10,\"maxFontSize\":30},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"hostname.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}", 
+  "description": "", 
+  "title": "Autoruns - Hostname (Tag Cloud)", 
+  "uiStateJSON": "{}", 
+  "version": 1, 
+  "savedSearchId": "dd700830-6d69-11e7-ad64-15aa071374a6", 
+  "kibanaSavedObjectMeta": {
+    "searchSourceJSON": "{\"filter\":[]}"
+  }
+}
