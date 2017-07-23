@@ -1,11 +1,8 @@
 #!/bin/bash
 
-if [ "$(id -u)" -ne 0 ]; then
-        echo "This script must be run using sudo!"
-        exit 1
-fi
+. /usr/sbin/so-elastic-common
 
-source /etc/nsm/securityonion.conf
+. /etc/nsm/securityonion.conf
 
 echo "Removing existing containers:"
 [ "$ELASTICSEARCH_ENABLED" = "yes" ] && docker rm so-elasticsearch 2>&1 | grep -v "No such container"

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+. /usr/sbin/so-elastic-configure-kibana-config
+
+. /usr/sbin/so-elastic-configure-kibana-dashboards

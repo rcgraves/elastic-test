@@ -1,5 +1,5 @@
 # Security Onion + Elastic
-This repo contains a script which will convert a Security Onion system running in Evaluation Mode from ELSA to Elastic.
+This repo contains a script which will configure the Elastic stack on Security Onion.
 
 Please note the following!
 
