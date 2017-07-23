@@ -61,10 +61,12 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 	fi
 	if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
 		cp -f /etc/logstash/optional/8007_postprocess_dns_top1m_tagging.conf /etc/logstash/conf.d/
+		cp -f /etc/logstash/optional/8008_postprocess_dns_whois_age.conf /etc/logstash/conf.d/
 		LINK_DOMAINSTATS="--link=so-domainstats:domainstats"
 	fi
 	if [ "$DOMAIN_STATS_ENABLED" = "no" ]; then
 		rm -f /etc/logstash/conf.d/8007_postprocess_dns_top1m_tagging.conf
+		rm -f /etc/logstash/conf.d/8008_postprocess_dns_whois_age.conf
 	fi
 	docker run --name=so-logstash \
 		--detach \
