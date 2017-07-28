@@ -8,12 +8,6 @@ if [ "$(id -u)" -ne 0 ]; then
         exit 1
 fi
 
-# Make a directory to store downloads
-ELASTICDIR="/opt/elastic"
-mkdir -p $ELASTICDIR
-cd $ELASTICDIR
-PCAP_DIR="$ELASTICDIR/pcap"
-
 # Define a banner to separate sections
 banner="========================================================================="
 
@@ -21,27 +15,6 @@ header() {
         echo
         printf '%s\n' "$banner" "$*" "$banner"
 }
-
-GITREPO="elastic-test"
-GITURL="https://github.com/Security-Onion-Solutions/$GITREPO.git"
-DOCKERHUB="securityonionsolutions"
-if [ "$1" == "dev" ]; then
-        GITURL="https://github.com/dougburks/$GITREPO.git"
-        DOCKERHUB="dougburks"
-fi
-
-ELASTICDOWNLOADCONF="/etc/nsm/elasticdownload.conf"
-if ! grep "# Elastic Download" $ELASTICDOWNLOADCONF >/dev/null 2>&1; then
-cat << EOF >> $ELASTICDOWNLOADCONF
-
-# Elastic Download
-GITREPO="$GITREPO"
-GITURL="$GITURL"
-DOCKERHUB="$DOCKERHUB"
-EOF
-fi
-
-[ -f $ELASTICDOWNLOADCONF ] && . $ELASTICDOWNLOADCONF
 
 clear
 cat << EOF 
@@ -91,6 +64,33 @@ Once you've read all of the WARNINGS AND DISCLAIMERS above, please type AGREE to
 EOF
 read INPUT
 if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
+
+# Make a directory to store downloads
+ELASTICDIR="/opt/elastic"
+mkdir -p $ELASTICDIR
+cd $ELASTICDIR
+PCAP_DIR="$ELASTICDIR/pcap"
+
+GITREPO="elastic-test"
+GITURL="https://github.com/Security-Onion-Solutions/$GITREPO.git"
+DOCKERHUB="securityonionsolutions"
+if [ "$1" == "dev" ]; then
+        GITURL="https://github.com/dougburks/$GITREPO.git"
+        DOCKERHUB="dougburks"
+fi
+
+ELASTICDOWNLOADCONF="/etc/nsm/elasticdownload.conf"
+if ! grep "# Elastic Download" $ELASTICDOWNLOADCONF >/dev/null 2>&1; then
+cat << EOF >> $ELASTICDOWNLOADCONF
+
+# Elastic Download
+GITREPO="$GITREPO"
+GITURL="$GITURL"
+DOCKERHUB="$DOCKERHUB"
+EOF
+fi
+
+[ -f $ELASTICDOWNLOADCONF ] && . $ELASTICDOWNLOADCONF
 
 header "Cloning git repo"
 apt-get update > /dev/null
