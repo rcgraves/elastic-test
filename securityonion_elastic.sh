@@ -9,10 +9,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Make a directory to store downloads
-DIR="/opt/elastic"
-mkdir -p $DIR
-cd $DIR
-PCAP_DIR="$DIR/pcap"
+ELASTICDIR="/opt/elastic"
+mkdir -p $ELASTICDIR
+cd $ELASTICDIR
+PCAP_DIR="$ELASTICDIR/pcap"
 
 # Define a banner to separate sections
 banner="========================================================================="
@@ -22,15 +22,25 @@ header() {
         printf '%s\n' "$banner" "$*" "$banner"
 }
 
-REPO="elastic-test"
+GITREPO="elastic-test"
+GITURL="https://github.com/Security-Onion-Solutions/$GITREPO.git"
+DOCKERHUB="securityonionsolutions"
 if [ "$1" == "dev" ]; then
-        URL="https://github.com/dougburks/$REPO.git"
+        GITURL="https://github.com/dougburks/$GITREPO.git"
         DOCKERHUB="dougburks"
-else
-        URL="https://github.com/Security-Onion-Solutions/$REPO.git"
-        DOCKERHUB="securityonionsolutions"
 fi
+
+CONF="/etc/nsm/securityonion.conf"
+if ! grep "# Elastic Download" $CONF >/dev/null 2>&1; then
+cat << EOF >> $CONF
+
+# Elastic Download
+GITREPO="$GITREPO"
+GITURL="$GITURL"
+DOCKERHUB="$DOCKERHUB"
 EOF
+
+[ -f $CONF ] && . $CONF
 
 clear
 cat << EOF 
@@ -84,15 +94,15 @@ if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
 header "Cloning git repo"
 apt-get update > /dev/null
 apt-get install -y git > /dev/null
-git clone $URL
-cp -av $REPO/usr/sbin/* /usr/sbin/
+git clone $GITURL
+cp -av $GITREPO/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*
 echo "Done!"
 
 ELSA=NO
 [ -f /etc/nsm/securityonion.conf ] && . /etc/nsm/securityonion.conf
 if [ $ELSA == "YES" ]; then
-	. $REPO/scripts/securityonion_elastic_elsa
+	. $GITREPO/scripts/securityonion_elastic_elsa
 else
-	. $REPO/scripts/securityonion_elastic_new
+	. $GITREPO/scripts/securityonion_elastic_new
 fi

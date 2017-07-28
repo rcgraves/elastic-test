@@ -2,16 +2,27 @@
 
 . /usr/sbin/so-common
 
-DIR="/opt/elastic"
-mkdir -p $DIR
-cd $DIR
-PCAP_DIR="$DIR/pcap"
+ELASTICDIR="/opt/elastic"
+mkdir -p $ELASTICDIR
+cd $ELASTICDIR
+PCAP_DIR="$ELASTICDIR/pcap"
 
-REPO="elastic-test"
+GITREPO="elastic-test"
+GITURL="https://github.com/Security-Onion-Solutions/$GITREPO.git"
+DOCKERHUB="securityonionsolutions"
 if [ "$1" == "dev" ]; then
-        URL="https://github.com/dougburks/$REPO.git"
-        DOCKERHUB="dougburks"
-else
-        URL="https://github.com/Security-Onion-Solutions/$REPO.git"
-        DOCKERHUB="securityonionsolutions"
+	GITURL="https://github.com/dougburks/$GITREPO.git"
+	DOCKERHUB="dougburks"
 fi
+
+CONF="/etc/nsm/securityonion.conf"
+if ! grep "# Elastic Download" $CONF >/dev/null 2>&1; then
+cat << EOF >> $CONF
+
+# Elastic Download
+GITREPO="$GITREPO"
+GITURL="$GITURL"
+DOCKERHUB="$DOCKERHUB"
+EOF
+
+[ -f $CONF ] && . $CONF

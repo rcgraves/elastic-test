@@ -9,7 +9,7 @@ apt-get install -y libapache2-mod-authnz-external > /dev/null
 echo "Done!"
 
 header "Installing Docker"
-cp $REPO/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
+cp $ELASTICDIR/$GITREPO/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
 apt-get -y install apt-transport-https ca-certificates curl > /dev/null
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 add-apt-repository        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \

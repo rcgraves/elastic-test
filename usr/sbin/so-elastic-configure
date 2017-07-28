@@ -11,7 +11,7 @@ done
 
 header "Setting vm.max_map_count to 262144"
 sysctl -w vm.max_map_count=262144
-cp $REPO/etc/sysctl.d/* /etc/sysctl.d/
+cp $ELASTICDIR/$GITREPO/etc/sysctl.d/* /etc/sysctl.d/
 echo "Done!"
 
 header "Configuring ElasticSearch"
@@ -20,7 +20,7 @@ mkdir -p /nsm/elasticsearch
 mkdir -p /var/log/elasticsearch
 chown -R 1000:1000 /nsm/elasticsearch
 chown -R 1000:1000 /var/log/elasticsearch
-cp -av $REPO/etc/elasticsearch/* /etc/elasticsearch/
+cp -av $ELASTICDIR/$GITREPO/etc/elasticsearch/* /etc/elasticsearch/
 echo "Done!"
 
 header "Configuring Logstash"
@@ -30,13 +30,13 @@ mkdir -p /etc/logstash/conf.d/
 mkdir -p /etc/logstash/optional/
 chown -R 1000:1000 /nsm/logstash
 chown -R 1000:1000 /var/log/logstash
-cp -av $REPO/configfiles/*.conf /etc/logstash/conf.d/
-cp -av $REPO/configfiles-setup_required/8*_postprocess_dns_*.conf /etc/logstash/optional/
-cp -av $REPO/configfiles-setup_required/85*_postprocess_freq_analysis_*.conf /etc/logstash/optional/
-cp -av $REPO/configfiles/*.conf /etc/logstash/conf.d/
-cp -av $REPO/etc/logstash/* /etc/logstash/
-cp -av $REPO/lib/dictionaries /lib/
-#cp -rf $REPO/grok-patterns /lib/
+cp -av $ELASTICDIR/$GITREPO/configfiles/*.conf /etc/logstash/conf.d/
+cp -av $ELASTICDIR/$GITREPO/configfiles-setup_required/8*_postprocess_dns_*.conf /etc/logstash/optional/
+cp -av $ELASTICDIR/$GITREPO/configfiles-setup_required/85*_postprocess_freq_analysis_*.conf /etc/logstash/optional/
+cp -av $ELASTICDIR/$GITREPO/configfiles/*.conf /etc/logstash/conf.d/
+cp -av $ELASTICDIR/$GITREPO/etc/logstash/* /etc/logstash/
+cp -av $ELASTICDIR/$GITREPO/lib/dictionaries /lib/
+#cp -rf $ELASTICDIR/$GITREPO/grok-patterns /lib/
 echo "Done!"
 
 header "Configuring Kibana"
@@ -44,7 +44,7 @@ mkdir -p /etc/kibana
 mkdir -p /var/log/kibana
 chown -R 1000:1000 /etc/kibana
 chown -R 1000:1000 /var/log/kibana
-cp -av $REPO/etc/kibana/* /etc/kibana/
+cp -av $ELASTICDIR/$GITREPO/etc/kibana/* /etc/kibana/
 echo "Done!"
 
 header "Configuring Elastalert"
@@ -52,7 +52,7 @@ mkdir -p /etc/elastalert/rules
 mkdir -p /var/log/elastalert
 chown -R 1000:1000 /etc/elastalert/rules
 chown -R 1000:1000 /var/log/elastalert
-cp -av $REPO/etc/elastalert/rules/* /etc/elastalert/rules/
+cp -av $ELASTICDIR/$GITREPO/etc/elastalert/rules/* /etc/elastalert/rules/
 echo "Done!"
 
 header "Configuring Curator"
@@ -61,9 +61,9 @@ mkdir -p /etc/curator/action
 mkdir -p /var/log/curator
 chown -R 1000:1000 /etc/curator
 chown -R 1000:1000 /var/log/curator
-cp -av $REPO/etc/curator/config/* /etc/curator/config/
-cp -av $REPO/etc/curator/action/* /etc/curator/action/
-cp -av $REPO/etc/curator/cron.d/* /etc/cron.d/
+cp -av $ELASTICDIR/$GITREPO/etc/curator/config/* /etc/curator/config/
+cp -av $ELASTICDIR/$GITREPO/etc/curator/action/* /etc/curator/action/
+cp -av $ELASTICDIR/$GITREPO/etc/curator/cron.d/* /etc/cron.d/
 echo "Done!"
 
 header "Configuring freq_server"
@@ -126,12 +126,12 @@ chmod +x /usr/sbin/so-elastic-*
 echo "Done!"
 
 header "Configuring Elastic Stack to start on boot"
-cp $REPO/etc/init/securityonion.conf /etc/init/securityonion.conf
+cp $ELASTICDIR/$GITREPO/etc/init/securityonion.conf /etc/init/securityonion.conf
 echo "Done!"
 
 header "Configuring Apache"
-cp -av $REPO/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
-cp -av $REPO/var/www/so/* /var/www/so/
+cp -av $ELASTICDIR/$GITREPO/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
+cp -av $ELASTICDIR/$GITREPO/var/www/so/* /var/www/so/
 a2enmod auth_form
 a2enmod request
 a2enmod session_cookie
@@ -157,7 +157,7 @@ HEXURL=$(xxd -pu -c 356 <<< "$URL")
 $MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','$HEXALIAS','','$ALIAS','$HEXURL');"
 service apache2 restart
 echo "Done!"
-
+STICDIR/$GIT
 header "Disabling ELSA"
 rm -f /etc/cron.d/elsa
 FILE="/etc/nsm/securityonion.conf"
@@ -209,12 +209,12 @@ service syslog-ng restart
 echo "Done!"
 
 header "Updating OSSEC rules"
-cp $REPO/var/ossec/rules/securityonion_rules.xml /var/ossec/rules/
+cp $ELASTICDIR/$GITREPO/var/ossec/rules/securityonion_rules.xml /var/ossec/rules/
 chown root:ossec /var/ossec/rules/securityonion_rules.xml
 chmod 660 /var/ossec/rules/securityonion_rules.xml
 service ossec-hids-server restart
 echo "Done!"
-cd $DIR
+cd $ELASTICDIR
 
 . /usr/sbin/so-elastic-configure-kibana
 . /usr/sbin/so-elastic-configure-elastalert

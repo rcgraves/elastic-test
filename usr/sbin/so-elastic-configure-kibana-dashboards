@@ -18,6 +18,6 @@ until curl -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/
 done
 
 # Load dashboards, visualizations, index pattern(s), etc.
-cd $DIR/$REPO/kibana/dashboards/
+cd $ELASTICDIR/$GITREPO/kibana/dashboards/
 sh load.sh
-cd $DIR
+cd $ELASTICDIR
