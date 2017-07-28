@@ -15,9 +15,9 @@ if [ "$1" == "dev" ]; then
 	DOCKERHUB="dougburks"
 fi
 
-CONF="/etc/nsm/securityonion.conf"
-if ! grep "# Elastic Download" $CONF >/dev/null 2>&1; then
-cat << EOF >> $CONF
+ELASTICDOWNLOADCONF="/etc/nsm/elasticdownload.conf"
+if ! grep "# Elastic Download" $ELASTICDOWNLOADCONF >/dev/null 2>&1; then
+cat << EOF >> $ELASTICDOWNLOADCONF
 
 # Elastic Download
 GITREPO="$GITREPO"
@@ -26,4 +26,4 @@ DOCKERHUB="$DOCKERHUB"
 EOF
 fi
 
-[ -f $CONF ] && . $CONF
+[ -f $ELASTICDOWNLOADCONF ] && . $ELASTICDOWNLOADCONF
