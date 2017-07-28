@@ -81,9 +81,6 @@ echo "Done!"
 header "Starting Elastic Stack"
 cat << EOF >> /etc/nsm/securityonion.conf
 
-# Docker options
-DOCKERHUB="$DOCKERHUB"
-
 # Elasticsearch options
 ELASTICSEARCH_ENABLED="yes"
 ELASTICSEARCH_HOST="localhost"
