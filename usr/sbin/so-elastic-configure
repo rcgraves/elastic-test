@@ -194,14 +194,22 @@ sed -i '/rewrite(r_from_pipes);/d' $FILE
 sed -i '/rewrite(r_pipes);/d' $FILE
 sed -i '/parser(p_db);/d' $FILE
 sed -i '/rewrite(r_extracted_host);/d' $FILE
-sed -i '/^source s_bro_sip/a source s_bro_dce_rpc { file("/nsm/bro/logs/current/dce_rpc.log" flags(no-parse) program_override("bro_dce_rpc")); };' $FILE
-sed -i '/^source s_bro_sip/a source s_bro_ntlm { file("/nsm/bro/logs/current/ntlm.log" flags(no-parse) program_override("bro_ntlm")); };' $FILE
-sed -i '/^source s_bro_sip/a source s_bro_smb_files { file("/nsm/bro/logs/current/smb_files.log" flags(no-parse) program_override("bro_smb_files")); };' $FILE
-sed -i '/^source s_bro_sip/a source s_bro_smb_mapping { file("/nsm/bro/logs/current/smb_mapping.log" flags(no-parse) program_override("bro_smb_mapping")); };' $FILE
-sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_dce_rpc);' $FILE
-sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_ntlm);' $FILE
-sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_files);' $FILE
-sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_mapping);' $FILE
+if ! grep s_bro_dce_rpc $FILE >/dev/null 2>&1; then
+	sed -i '/^source s_bro_sip/a source s_bro_dce_rpc { file("/nsm/bro/logs/current/dce_rpc.log" flags(no-parse) program_override("bro_dce_rpc")); };' $FILE
+	sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_dce_rpc);' $FILE
+fi
+if ! grep s_bro_ntlm $FILE >/dev/null 2>&1; then
+	sed -i '/^source s_bro_sip/a source s_bro_ntlm { file("/nsm/bro/logs/current/ntlm.log" flags(no-parse) program_override("bro_ntlm")); };' $FILE
+	sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_ntlm);' $FILE
+fi
+if ! grep s_bro_smb_files $FILE >/dev/null 2>&1; then
+	sed -i '/^source s_bro_sip/a source s_bro_smb_files { file("/nsm/bro/logs/current/smb_files.log" flags(no-parse) program_override("bro_smb_files")); };' $FILE
+	sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_files);' $FILE
+fi
+if ! grep s_bro_smb_mapping $FILE >/dev/null 2>&1; then
+	sed -i '/^source s_bro_sip/a source s_bro_smb_mapping { file("/nsm/bro/logs/current/smb_mapping.log" flags(no-parse) program_override("bro_smb_mapping")); };' $FILE
+	sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_mapping);' $FILE
+fi
 service syslog-ng restart
 echo "Done!"
 
