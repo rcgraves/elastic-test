@@ -154,7 +154,7 @@ HEXURL=$(xxd -pu -c 356 <<< "$URL")
 $MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','$HEXALIAS','','$ALIAS','$HEXURL');"
 service apache2 restart
 echo "Done!"
-STICDIR/$GIT
+
 header "Disabling ELSA"
 rm -f /etc/cron.d/elsa
 FILE="/etc/nsm/securityonion.conf"
