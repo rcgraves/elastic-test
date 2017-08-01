@@ -14,6 +14,7 @@ if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
 		--detach \
 		--publish 10004:10004 \
 		--volume /var/log/freq_server:/var/log/freq_server \
+                --network $DOCKERNET \
 		$FREQ_SERVER_OPTIONS \
 		$DOCKERHUB/so-freqserver
 fi
@@ -24,6 +25,7 @@ if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
 		--detach \
 		--publish 20000:20000 \
 		--volume /var/log/domain_stats:/var/log/domain_stats \
+		--network $DOCKERNET \
 		$DOMAIN_STATS_OPTIONS \
 		$DOCKERHUB/so-domainstats
 fi
@@ -44,17 +46,18 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 		--volume /etc/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro \
 		--volume /etc/elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro \
 		--volume /var/log/elasticsearch:/var/log/elasticsearch \
+		--network $DOCKERNET \
 		$ELASTICSEARCH_OPTIONS \
 		$DOCKERHUB/so-elasticsearch
 fi
 
 if [ "$LOGSTASH_ENABLED" = "yes" ]; then
-	LINK_FREQSERVER=""
-	LINK_DOMAINSTATS=""
+	#LINK_FREQSERVER=""
+	#LINK_DOMAINSTATS=""
 	echo -n "so-logstash: "
 	if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
 		cp -f /etc/logstash/optional/*_postprocess_freq_analysis_*.conf /etc/logstash/conf.d/
-		LINK_FREQSERVER="--link=so-freqserver:freqserver"
+		#LINK_FREQSERVER="--link=so-freqserver:freqserver"
 	fi
 	if [ "$FREQ_SERVER_ENABLED" = "no" ]; then
 		rm -f /etc/logstash/conf.d/*_postprocess_freq_analysis_*.conf
@@ -62,7 +65,7 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 	if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
 		cp -f /etc/logstash/optional/8007_postprocess_dns_top1m_tagging.conf /etc/logstash/conf.d/
 		cp -f /etc/logstash/optional/8008_postprocess_dns_whois_age.conf /etc/logstash/conf.d/
-		LINK_DOMAINSTATS="--link=so-domainstats:domainstats"
+		#LINK_DOMAINSTATS="--link=so-domainstats:domainstats"
 	fi
 	if [ "$DOMAIN_STATS_ENABLED" = "no" ]; then
 		rm -f /etc/logstash/conf.d/8007_postprocess_dns_top1m_tagging.conf
@@ -71,9 +74,6 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 	docker run --name=so-logstash \
 		--detach \
 		--env LS_JAVA_OPTS="-Xms$LOGSTASH_HEAP -Xmx$LOGSTASH_HEAP" \
-		--link=so-elasticsearch:elasticsearch \
-		$LINK_FREQSERVER \
-		$LINK_DOMAINSTATS \
 		--publish 6050:6050 \
 		--publish 6051:6051 \
 		--publish 6052:6052 \
@@ -87,6 +87,7 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 		--volume /nsm/import:/nsm/import:ro \
 		--volume /nsm/logstash:/usr/share/logstash/data/ \
 		--volume /var/log/logstash:/var/log/logstash \
+                --network $DOCKERNET \
 		$LOGSTASH_OPTIONS \
 		$DOCKERHUB/so-logstash
 fi
@@ -114,10 +115,10 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 	docker run --name=so-kibana \
 		--detach \
 		--env "KIBANA_DEFAULTAPPID=$KIBANA_DEFAULTAPPID" \
-		--link=so-elasticsearch:elasticsearch \
 		--publish 5601:5601 \
 		--volume /etc/kibana/:/usr/share/kibana/config/:ro \
                 --volume /var/log/kibana:/var/log/kibana \
+		--network $DOCKERNET \
 		$KIBANA_OPTIONS \
 		$DOCKERHUB/so-kibana
 fi
@@ -125,19 +126,19 @@ if [ "$ELASTALERT_ENABLED" = "yes" ]; then
         echo -n "so-elastalert: "
         docker run --name=so-elastalert \
                 --detach \
-                --link=so-elasticsearch:elasticsearch \
-                --volume /etc/elastalert/rules:/etc/elastalert/rules/ \
+		--volume /etc/elastalert/rules:/etc/elastalert/rules/ \
 		--volume /var/log/elastalert:/var/log/elastalert/ \
-                $ELASTALERT_OPTIONS \
+                --network $DOCKERNET \
+		$ELASTALERT_OPTIONS \
                 $DOCKERHUB/so-elastalert
 fi
 if [ "$CURATOR_ENABLED" = "yes" ]; then
         echo -n "so-curator: "
         docker run --name=so-curator \
                 --detach \
-                --link=so-elasticsearch:elasticsearch \
                 --volume /etc/curator/config/curator.yml:/etc/curator/config/curator.yml:ro \
                 --volume /etc/curator/action/:/etc/curator/action:ro \
                 --volume /var/log/curator/:/var/log/curator/ \
+		--network $DOCKERNET \
                 -it $DOCKERHUB/so-curator
 fi

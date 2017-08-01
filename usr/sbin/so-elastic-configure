@@ -9,6 +9,13 @@ for FILE in /etc/nsm/securityonion.conf /etc/nsm/sensortab; do
 	fi
 done
 
+#Specify Docker network and create it
+header "Creating Docker network for Elastic Stack"
+DOCKERNET="so-elastic-net"
+if pgrep -f docker > /dev/null; then
+	docker network create $DOCKERNET --driver=bridge >/dev/null 2>&1
+fi
+
 header "Setting vm.max_map_count to 262144"
 sysctl -w vm.max_map_count=262144
 cp $ELASTICDIR/$GITREPO/etc/sysctl.d/* /etc/sysctl.d/
@@ -80,6 +87,9 @@ echo "Done!"
 
 header "Starting Elastic Stack"
 cat << EOF >> /etc/nsm/securityonion.conf
+
+# Docker options
+DOCKERNET="$DOCKERNET"
 
 # Elasticsearch options
 ELASTICSEARCH_ENABLED="yes"
