@@ -10,5 +10,10 @@ timeframe:
 filter:
 - term:
     type: "snort"
+
+# Only count number of records, instead of bringing all data back
+use_count_query: true
+doc_type: 'snort'
+
 alert:
 - "debug"

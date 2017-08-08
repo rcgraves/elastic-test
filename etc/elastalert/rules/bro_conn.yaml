@@ -40,6 +40,10 @@ filter:
 - term:
     type: 'bro_conn'
 
+# Only count number of records, instead of bringing all data back
+use_count_query: true
+doc_type: 'bro_conn'
+
 # (Required)
 # The alert is use when a match is found
 #alert:
