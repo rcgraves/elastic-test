@@ -6,4 +6,4 @@
 
 header "Configuring ElastAlert"
 curl -s -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${ELASTALERT_INDEX}
-curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/elastalert -d'{"template" : "elastalert_status", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}' && echo && echo "Template configured for ElastAlert." && echo
+curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/elastalert -d'{"template" : "elastalert_status", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}, "match_body.source_ip": {"type": "ip"}, "match_body.destination_ip": {"type": "ip"}}}}}' && echo && echo "Template configured for ElastAlert." && echo
