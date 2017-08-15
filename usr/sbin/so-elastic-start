@@ -97,14 +97,23 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
         # Wait for ElasticSearch to come up, so that we can query for version infromation
 	echo
         echo -n "Waiting for ElasticSearch"
-        until $(curl --output /dev/null --silent --head --fail http://"$ELASTICSEARCH_HOST":"$ELASTICSEARCH_PORT"); do
-                echo -n '.'
-                sleep 1
-        done
-        echo
-        echo "Connection to ElasticSearch successful!"
-        echo
-        # Compare current version of ES with previously stored version.
+        COUNT=0
+	while [[ "$COUNT" -le 60 ]]; do
+                curl --output /dev/null --silent --head --fail http://"$ELASTICSEARCH_HOST":"$ELASTICSEARCH_PORT"
+		if [ $? -eq 0 ]; then
+			SUCCESS="yes"
+			echo -e "\nConnection to ElasticSearch successful"
+			break
+		else
+			((COUNT+=1))
+			sleep 1
+			printf "."
+		fi
+	done
+		if [ "$SUCCESS" != "yes" ]; then
+			 echo -e "Connection attempt timed out.  Unable to connect to ElasticSearch.  \nPlease try checking log(s) in /var/log/elasticsearch/."
+		fi
+	# Compare current version of ES with previously stored version.
 	CURRENT_KIBANA_VERSION=$(curl -s "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT" | jq .version.number | sed 's/"//g')
         STORED_KIBANA_VERSION=$(grep 'KIBANA_VERSION' /etc/nsm/securityonion.conf | cut -d'=' -f2 )
         if [ "$CURRENT_KIBANA_VERSION" != "$STORED_KIBANA_VERSION" ]; then
