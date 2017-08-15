@@ -117,7 +117,7 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 		else
 			((COUNT+=1))
 			sleep 1
-			echo "."
+			echo -n "."
 		fi
 	done
 	if [ "$ELASTICSEARCH_CONNECTED" == "no" ]; then
