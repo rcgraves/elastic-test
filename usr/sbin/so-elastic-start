@@ -98,10 +98,11 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 	echo
         echo -n "Waiting for ElasticSearch"
         COUNT=0
+	ELASTICSEARCH_CONNECTED="no"
 	while [[ "$COUNT" -le 60 ]]; do
                 curl --output /dev/null --silent --head --fail http://"$ELASTICSEARCH_HOST":"$ELASTICSEARCH_PORT"
 		if [ $? -eq 0 ]; then
-			SUCCESS="yes"
+			ELASTICSEARCH_CONNECTED="yes"
 			echo
 			echo -e "\nConnection to ElasticSearch successful!"
 			echo
@@ -109,28 +110,21 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 			CURRENT_KIBANA_VERSION=$(curl -s "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT" | jq .version.number | sed 's/"//g')
 			STORED_KIBANA_VERSION=$(grep 'KIBANA_VERSION' /etc/nsm/securityonion.conf | cut -d'=' -f2 )
 			if [ "$CURRENT_KIBANA_VERSION" != "$STORED_KIBANA_VERSION" ]; then
-			sed -i "s/KIBANA_VERSION=.*/KIBANA_VERSION=$KIBANA_VERSION/" /etc/nsm/securityonion.conf
-			/usr/sbin/so-elastic-configure-kibana -r > /dev/null 2>&1
+				sed -i "s/KIBANA_VERSION=.*/KIBANA_VERSION=$KIBANA_VERSION/" /etc/nsm/securityonion.conf
+				/usr/sbin/so-elastic-configure-kibana -r > /dev/null 2>&1
 			fi
 			break
 		else
 			((COUNT+=1))
 			sleep 1
-			printf "."
+			echo "."
 		fi
 	done
-	if [ "$SUCCESS" != "yes" ]; then
+	if [ "$ELASTICSEARCH_CONNECTED" == "no" ]; then
 			echo
 			echo -e "Connection attempt timed out.  Unable to connect to ElasticSearch.  \nPlease try: \n  -checking log(s) in /var/log/elasticsearch/\n  -running 'sudo docker ps' \n  -running 'sudo so-elastic-restart'" 
 			echo
 	fi
-	# Compare current version of ES with previously stored version.
-	#CURRENT_KIBANA_VERSION=$(curl -s "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT" | jq .version.number | sed 's/"//g')
-        #STORED_KIBANA_VERSION=$(grep 'KIBANA_VERSION' /etc/nsm/securityonion.conf | cut -d'=' -f2 )
-        #if [ "$CURRENT_KIBANA_VERSION" != "$STORED_KIBANA_VERSION" ]; then
-         #       sed -i "s/KIBANA_VERSION=.*/KIBANA_VERSION=$KIBANA_VERSION/" /etc/nsm/securityonion.conf
-          #      /usr/sbin/so-elastic-configure-kibana -r > /dev/null 2>&1
-        #fi
 	echo -n "so-kibana: "
 	docker run --name=so-kibana \
 		--detach \
@@ -142,6 +136,7 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 		$DOCKERHUB/so-kibana
 		docker network connect --alias kibana $DOCKERNET so-kibana
 fi
+
 if [ "$ELASTALERT_ENABLED" = "yes" ]; then
         echo -n "so-elastalert: "
         docker run --name=so-elastalert \
@@ -152,6 +147,7 @@ if [ "$ELASTALERT_ENABLED" = "yes" ]; then
                 $DOCKERHUB/so-elastalert
                 docker network connect --alias elastalert $DOCKERNET so-elastalert
 fi
+
 if [ "$CURATOR_ENABLED" = "yes" ]; then
         echo -n "so-curator: "
         docker run --name=so-curator \
