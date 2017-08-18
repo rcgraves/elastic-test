@@ -129,6 +129,7 @@ apt-get update -qq
 # If our docker config is present, check for updates for docker-ce and individual docker images
 if [ -f /etc/apt/preferences.d/securityonion-docker ]; then
 
+	echo
 	# if a new version of docker-ce is available, stop containers, upgrade docker-ce, and then set a flag to restart containers
 	if apt-get dist-upgrade --assume-no |grep docker-ce >/dev/null; then
         	echo $BANNER
@@ -153,14 +154,15 @@ if [ -f /etc/apt/preferences.d/securityonion-docker ]; then
 		docker pull --disable-content-trust=false "$DOCKERHUB"/so-freqserver | grep "$CURRENT" && 
 		docker pull --disable-content-trust=false "$DOCKERHUB"/so-kibana | grep "$CURRENT" && 
 		docker pull --disable-content-trust=false "$DOCKERHUB"/so-logstash | grep "$CURRENT"; then
-		echo "Security Onion Docker images up to date."
+		echo "Security Onion Docker images are up to date."
 	else
-		echo "Updates detected."
+		echo "Security Onion Docker images have been updated."
 		echo "Stopping Docker containers..."
 		/usr/sbin/so-elastic-stop > /dev/null 2>&1
 		RESTART_CONTAINERS=yes
 		#APPLY_CONFIG=yes
 	fi
+	echo
 fi
 
 # if mysql-server updates are available, we need to stop services and force reboot at end
