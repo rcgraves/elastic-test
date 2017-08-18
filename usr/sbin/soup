@@ -145,7 +145,13 @@ if dpkg -l |grep docker-ce >/dev/null; then
 	echo "Checking Security Onion Docker image status..."
 	CURRENT="up to date"
 	. /usr/sbin/so-elastic-common
-	if docker pull "$DOCKERHUB"/so-curator | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-domainstats | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-elastalert | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-elasticsearch | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-freqserver | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-kibana | grep "$CURRENT" && docker pull "$DOCKERHUB"/so-logstash | grep "$CURRENT"; then
+	if 	docker pull --disable-content-trust=false "$DOCKERHUB"/so-curator | grep "$CURRENT" && 
+		docker pull --disable-content-trust=false "$DOCKERHUB"/so-domainstats | grep "$CURRENT" && 
+		docker pull --disable-content-trust=false "$DOCKERHUB"/so-elastalert | grep "$CURRENT" && 
+		docker pull --disable-content-trust=false "$DOCKERHUB"/so-elasticsearch | grep "$CURRENT" && 
+		docker pull --disable-content-trust=false "$DOCKERHUB"/so-freqserver | grep "$CURRENT" && 
+		docker pull --disable-content-trust=false "$DOCKERHUB"/so-kibana | grep "$CURRENT" && 
+		docker pull --disable-content-trust=false "$DOCKERHUB"/so-logstash | grep "$CURRENT"; then
 		echo "Security Onion Docker images up to date."
 	else
 		echo "Updates detected."
