@@ -126,8 +126,9 @@ echo
 echo "Checking for updates..."
 apt-get update -qq
 
-# If docker-ce is installed, check for updates for docker-ce and individual docker images
-if dpkg -l |grep docker-ce >/dev/null; then
+# If our docker config is present, check for updates for docker-ce and individual docker images
+if [ -f /etc/apt/preferences.d/securityonion-docker ]; then
+
 	# if a new version of docker-ce is available, stop containers, upgrade docker-ce, and then set a flag to restart containers
 	if apt-get dist-upgrade --assume-no |grep docker-ce >/dev/null; then
         	echo $BANNER
