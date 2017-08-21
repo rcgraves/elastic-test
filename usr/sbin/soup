@@ -147,7 +147,7 @@ if [ -f /etc/apt/preferences.d/securityonion-docker ]; then
 	echo "Checking Security Onion Docker image status..."
 	. /usr/sbin/so-elastic-common
 	for i in so-curator so-domainstats so-elastalert so-elasticsearch so-freqserver so-kibana so-logstash; do
-		OUTPUT=`docker pull --disable-content-trust=false "$DOCKERHUB"/$i`
+		OUTPUT=`docker pull --disable-content-trust=false $DOCKERHUB/$i`
 		#echo $OUTPUT
 		if echo $OUTPUT | grep -q "up to date"; then
 			echo "$i image is up to date."
@@ -156,7 +156,7 @@ if [ -f /etc/apt/preferences.d/securityonion-docker ]; then
 			RESTART_CONTAINERS=yes
 			#APPLY_CONFIG=yes
 		fi
-		docker tag "$DOCKERHUB"/$i $i
+		docker tag $DOCKERHUB/$i $i
 	done
 	if [ "$RESTART_CONTAINERS" == "yes" ]; then
 		echo "One or more docker images have been updated."

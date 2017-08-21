@@ -25,11 +25,8 @@ export DOCKER_CONTENT_TRUST=1
 echo "Done!"
 
 header "Downloading Docker containers"
-docker pull --disable-content-trust=false $DOCKERHUB/so-elasticsearch
-docker pull --disable-content-trust=false $DOCKERHUB/so-kibana
-docker pull --disable-content-trust=false $DOCKERHUB/so-logstash
-docker pull --disable-content-trust=false $DOCKERHUB/so-elastalert
-docker pull --disable-content-trust=false $DOCKERHUB/so-curator
-docker pull --disable-content-trust=false $DOCKERHUB/so-freqserver
-docker pull --disable-content-trust=false $DOCKERHUB/so-domainstats
+for i in so-elasticsearch so-kibana so-logstash so-elastalert so-curator so-freqserver so-domainstats; do
+	docker pull --disable-content-trust=false $DOCKERHUB/$i
+	docker tag $DOCKERHUB/$i $i
+done
 echo "Done!"
