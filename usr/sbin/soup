@@ -137,7 +137,7 @@ echo "Checking for updates..."
 apt-get update -qq
 
 # If our docker config is present, check for updates for docker-ce and individual docker images
-if [ -f /etc/apt/preferences.d/securityonion-docker ]; then
+if [ -f /etc/apt/preferences.d/securityonion-docker ] && [ -f /usr/sbin/so-elastic-stop ] && [ -f /usr/sbin/so-elastic-common ]; then
 
 	echo
 	# if a new version of docker-ce is available, stop containers, upgrade docker-ce, and then set a flag to restart containers
