@@ -148,7 +148,7 @@ if [ -f /etc/apt/preferences.d/securityonion-docker ]; then
 	. /usr/sbin/so-elastic-common
 	for i in so-curator so-domainstats so-elastalert so-elasticsearch so-freqserver so-kibana so-logstash; do
 		OUTPUT=`docker pull --disable-content-trust=false "$DOCKERHUB"/$i`
-		echo $OUTPUT
+		#echo $OUTPUT
 		if echo $OUTPUT | grep -q "up to date"; then
 			echo "$i image is up to date."
 		else
