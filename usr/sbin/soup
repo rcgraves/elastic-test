@@ -91,8 +91,8 @@ if [ $SKIP -ne 1 ]; then
 	echo "This script will automatically install all available updates"
 	echo "and remove any old kernels (keeping at least two kernels)."
 	echo
-	echo "Please review the following sites for more information"
-	echo "about the update process and recent updates."
+	echo "Please review the following for more information"
+	echo "about the update process and recent updates:"
 	echo "https://securityonion.net/wiki/Upgrade"
 	echo "http://blog.securityonion.net"
 	echo
