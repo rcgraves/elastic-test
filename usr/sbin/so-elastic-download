@@ -27,6 +27,5 @@ echo "Done!"
 header "Downloading Docker containers"
 for i in so-elasticsearch so-kibana so-logstash so-elastalert so-curator so-freqserver so-domainstats; do
 	docker pull --disable-content-trust=false $DOCKERHUB/$i
-	docker tag $DOCKERHUB/$i $i
 done
 echo "Done!"

@@ -15,7 +15,7 @@ if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
 		--publish 10004:10004 \
 		--volume /var/log/freq_server:/var/log/freq_server \
 		$FREQ_SERVER_OPTIONS \
-		so-freqserver
+		$DOCKERHUB/so-freqserver
                 docker network connect --alias freqserver $DOCKERNET so-freqserver
 fi
 
@@ -26,7 +26,7 @@ if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
 		--publish 20000:20000 \
 		--volume /var/log/domain_stats:/var/log/domain_stats \
 		$DOMAIN_STATS_OPTIONS \
-		so-domainstats
+		$DOCKERHUB/so-domainstats
 		docker network connect --alias domainstats $DOCKERNET so-domainstats
 fi
 
@@ -47,7 +47,7 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 		--volume /etc/elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro \
 		--volume /var/log/elasticsearch:/var/log/elasticsearch \
 		$ELASTICSEARCH_OPTIONS \
-		so-elasticsearch
+		$DOCKERHUB/so-elasticsearch
 		docker network connect --alias elasticsearch $DOCKERNET so-elasticsearch
 fi
 
@@ -84,7 +84,7 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 		--volume /nsm/logstash:/usr/share/logstash/data/ \
 		--volume /var/log/logstash:/var/log/logstash \
 		$LOGSTASH_OPTIONS \
-		so-logstash
+		$DOCKERHUB/so-logstash
                 docker network connect --alias logstash $DOCKERNET so-logstash
 fi
 
@@ -129,7 +129,7 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 		--volume /etc/kibana/:/usr/share/kibana/config/:ro \
                 --volume /var/log/kibana:/var/log/kibana \
 		$KIBANA_OPTIONS \
-		so-kibana
+		$DOCKERHUB/so-kibana
 		docker network connect --alias kibana $DOCKERNET so-kibana
 fi
 
@@ -140,7 +140,7 @@ if [ "$ELASTALERT_ENABLED" = "yes" ]; then
 		--volume /etc/elastalert/rules:/etc/elastalert/rules/ \
 		--volume /var/log/elastalert:/var/log/elastalert/ \
 		$ELASTALERT_OPTIONS \
-                so-elastalert
+                $DOCKERHUB/so-elastalert
                 docker network connect --alias elastalert $DOCKERNET so-elastalert
 fi
 
@@ -153,6 +153,6 @@ if [ "$CURATOR_ENABLED" = "yes" ]; then
                 --volume /var/log/curator/:/var/log/curator/ \
                 -it \
 		$CURATOR_OPTIONS \
-		so-curator
+		$DOCKERHUB/so-curator
                 docker network connect --alias curator $DOCKERNET so-curator
 fi

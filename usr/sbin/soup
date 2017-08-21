@@ -156,7 +156,6 @@ if [ -f /etc/apt/preferences.d/securityonion-docker ]; then
 			RESTART_CONTAINERS=yes
 			#APPLY_CONFIG=yes
 		fi
-		docker tag $DOCKERHUB/$i $i
 	done
 	if [ "$RESTART_CONTAINERS" == "yes" ]; then
 		echo "One or more docker images have been updated."
