@@ -91,8 +91,10 @@ if [ $SKIP -ne 1 ]; then
 	echo "This script will automatically install all available updates"
 	echo "and remove any old kernels (keeping at least two kernels)."
 	echo
-	echo "Please review https://securityonion.net/wiki/Upgrade for information about the update process."
-	echo "Please also review http://blog.securityonion.net for information about recent updates."
+	echo "Please review the following sites for more information"
+	echo "about the update process and recent updates."
+	echo "https://securityonion.net/wiki/Upgrade"
+	echo "http://blog.securityonion.net"
 	echo
 	echo "For distributed deployments, please ensure this script is"
 	echo "run on the master server before updating sensors."
