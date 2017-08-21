@@ -8,9 +8,9 @@ cat << EOF
 
 You're now ready to run through Setup.
 
-Run through Setup as you normall would (configure network, reboot, and start Setup again to perform service configuration).  You'll then see a new option of Experimental Mode that you'll need to choose in order to configure the Elastic stack.
+Run through Setup as you normally would (configure network, reboot, and start Setup again to perform service configuration).  You'll then see a new option of Experimental Mode that you'll need to choose in order to configure the Elastic stack.
 
-Once you've Experimental Mode configuration, you can then replay some sample pcaps using the following command:
+Once you've completed Experimental Mode configuration, you can then replay some sample pcaps using the following command:
 sudo so-test
 
 Once you have some data, you should then be able to login to Kibana:
