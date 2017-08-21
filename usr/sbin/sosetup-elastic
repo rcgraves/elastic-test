@@ -1934,6 +1934,7 @@ if [ "$ELSA" = "YES" ]; then
         echo "* Restarting syslog-ng" >> $LOG 2>&1
         service syslog-ng restart >> $LOG 2>&1
 
+	/usr/sbin/so-elastic-download >> $LOG 2>&1
 	/usr/sbin/so-elastic-configure >> $LOG 2>&1
 
 fi
