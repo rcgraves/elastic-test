@@ -199,8 +199,7 @@ fi
 TEXT="Stable Setup or Experimental Setup?\n\
 \n\
 Choosing Stable Setup will run the current stable version of Setup.\n\
-Stable Setup will configure ELSA.\n\
-It is the recommended option for most users at this time.\n\
+Stable Setup will configure ELSA and is the recommended option for most users at this time.\n\
 If you are unsure, choose Stable Setup.\n\
 \n\
 Choosing Experimental Setup will run the experimental version of Setup.\n\
