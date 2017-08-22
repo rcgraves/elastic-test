@@ -1,0 +1,14 @@
+#!/bin/bash
+. /usr/sbin/so-common
+
+echo
+header "Starting NSM services..."
+echo
+
+service nsm start
+
+echo
+header "Starting Elastic stack..."
+echo
+
+/usr/sbin/so-elastic-start
