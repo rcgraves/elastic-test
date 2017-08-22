@@ -207,7 +207,7 @@ Choosing Experimental Setup will run the experimental version of Setup.\n\
 Experimental Setup will configure the Elastic stack (Elasticsearch, Logstash, and Kibana).\n\
 This is still experimental and should NOT be used in production!"
 SETUP=""
-SETUP=`zenity --height=400 --list --radiolist \
+SETUP=`zenity --list --radiolist \
         --column "1" --column "2" --hide-header --title="$TITLE" \
         TRUE "Stable Setup" FALSE "Experimental Setup" --text="$TEXT"`
 if [ $? = 1 ]; then
@@ -242,7 +242,7 @@ and allows you to build a distributed sensor network.  You choose:\n\
 - which IDS ruleset(s) to use (Emerging Threats, Snort Subscriber (Talos), or both)\n\
 - how many processes to run for Snort/Suricata/Bro"
 SETUP=""
-SETUP=`zenity --height=400 --list --radiolist \
+SETUP=`zenity --list --radiolist \
         --column "1" --column "2" --hide-header --title="$TITLE" \
         TRUE "Evaluation Mode" FALSE "Production Mode" --text="$TEXT"`
 if [ $? = 1 ]; then
