@@ -1936,7 +1936,11 @@ if [ "$ELSA" = "YES" ]; then
         echo "* Restarting syslog-ng" >> $LOG 2>&1
         service syslog-ng restart >> $LOG 2>&1
 
+    	echo "91"
+	echo "# Please wait while downloading Elastic components..." | tee -a $LOG
 	/usr/sbin/so-elastic-download >> $LOG 2>&1
+    	echo "95"
+	echo "# Please wait while configuring Elastic..." | tee -a $LOG
 	/usr/sbin/so-elastic-configure >> $LOG 2>&1
 
 fi
