@@ -194,9 +194,41 @@ ANSWER="$?"
 fi
 
 #########################################
-# Quick Setup or Advanced Setup
+# Stable Setup or Experimental Setup
 #########################################
-TEXT="Evaluation Mode is recommended for first-time users or standalone VMs:\n\
+TEXT="Stable Setup or Experimental Setup?\n\
+\n\
+Choosing Stable Setup will run the current stable version of Setup.\n\
+Stable Setup will configure ELSA.\n\
+It is the recommended option for most users at this time.\n\
+If you are unsure, choose Stable Setup.\n\
+\n\
+Choosing Experimental Setup will run the experimental version of Setup.\n\
+Experimental Setup will configure the Elastic stack (Elasticsearch, Logstash, and Kibana).\n\
+This is still experimental and should NOT be used in production!"
+SETUP=""
+SETUP=`zenity --height=400 --list --radiolist \
+        --column "1" --column "2" --hide-header --title="$TITLE" \
+        TRUE "Stable Setup" FALSE "Experimental Setup" --text="$TEXT"`
+if [ $? = 1 ]; then
+	if [ $DEBUG -eq 1 ]; then
+		echo "DEBUG: Clicked Cancel.  Exiting." && exit 1
+	else
+		exit 1
+	fi
+fi
+[ "$SETUP" == "" ] && exit
+if [ "$SETUP" == "Experimental Setup" ]; then
+	/usr/sbin/sosetup-elastic
+	exit $?
+fi
+
+#########################################
+# Evaluation Mode or Production Mode
+#########################################
+TEXT="Evaluation Mode or Production Mode?\n\
+\n\
+Evaluation Mode is recommended for first-time users or standalone VMs:\n\
 - ideal for quickly evaluating Security Onion\n\
 - will automatically configure most details of your system\n\
 - configures Snort and Bro to monitor one network interface\n\
@@ -208,13 +240,11 @@ and allows you to build a distributed sensor network.  You choose:\n\
 - Sguil server, Sguil sensor, or both\n\
 - which IDS engine to use (Snort or Suricata)\n\
 - which IDS ruleset(s) to use (Emerging Threats, Snort Subscriber (Talos), or both)\n\
-- how many processes to run for Snort/Suricata/Bro\n\
-\n\
-Experimental Mode is only for experimenting with the latest ALPHA software."
+- how many processes to run for Snort/Suricata/Bro"
 SETUP=""
 SETUP=`zenity --height=400 --list --radiolist \
         --column "1" --column "2" --hide-header --title="$TITLE" \
-        TRUE "Evaluation Mode" FALSE "Production Mode" FALSE "Experimental Mode" --text="$TEXT"`
+        TRUE "Evaluation Mode" FALSE "Production Mode" --text="$TEXT"`
 if [ $? = 1 ]; then
 	if [ $DEBUG -eq 1 ]; then
 		echo "DEBUG: Clicked Cancel.  Exiting." && exit 1
@@ -223,10 +253,6 @@ if [ $? = 1 ]; then
 	fi
 fi
 [ "$SETUP" == "" ] && exit
-if [ "$SETUP" == "Experimental Mode" ]; then
-	/usr/sbin/sosetup-elastic
-	exit $?
-fi
 [ "$SETUP" == "Production Mode" ] && ADVANCED_SETUP="1" || ADVANCED_SETUP="0"
 if [ $ADVANCED_SETUP -eq 0 ]; then
 	[ $DEBUG -eq 1 ] && echo "DEBUG: Selected Evaluation Mode."

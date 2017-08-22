@@ -204,9 +204,11 @@ ANSWER="$?"
 fi
 
 #########################################
-# Quick Setup or Advanced Setup
+# Evaluation Mode or Production Mode
 #########################################
-TEXT="Evaluation Mode is recommended for first-time users or standalone VMs:\n\
+TEXT="Evaluation Mode or Production Mode?\n\
+\n\
+Evaluation Mode is recommended for first-time users or standalone VMs:\n\
 - ideal for quickly evaluating Security Onion\n\
 - will automatically configure most details of your system\n\
 - configures Snort and Bro to monitor one network interface\n\
