@@ -1,0 +1,15 @@
+#!/bin/bash
+. /usr/sbin/so-common
+
+echo
+header "Restarting NSM services..."
+echo
+
+service nsm restart
+
+echo
+header "Restarting Elastic stack..."
+echo
+
+/usr/sbin/so-elastic-restart
+

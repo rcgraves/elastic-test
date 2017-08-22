@@ -1,0 +1,15 @@
+#!/bin/bash
+. /usr/sbin/so-common
+
+echo
+header "Stopping NSM services..."
+echo
+
+service nsm stop
+
+echo
+header "Stopping Elastic stack..."
+echo
+
+/usr/sbin/so-elastic-stop
+
