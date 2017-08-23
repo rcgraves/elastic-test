@@ -30,6 +30,10 @@ SNORT=no
 SURICATA=no
 BRO=no
 
+# no apt options by default
+# this is set later if the user passed the -y option to skip interactive mode
+APT_OPTIONS=''
+
 #########################################
 # Got r00t?
 #########################################
@@ -60,25 +64,31 @@ EOF
 
 while getopts "hl:y" OPTION
 do
-     case $OPTION in
-         h)
-	     usage
-             exit 0
-             ;;
-	 l)
-	     LOG=1
-             LOGFILE="$OPTARG"
-             ;;
-         y)
-             SKIP=1
-             ;;
-     esac
+	case $OPTION in
+	h)
+		usage
+		exit 0
+		;;
+	l)
+		LOG=1
+		LOGFILE="$OPTARG"
+		;;
+	y)
+		SKIP=1
+		APT_OPTIONS='-o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confnew"'
+		;;
+	esac
 done
 
 if [ $LOG -eq 1 ]; then
 #	exec > >(tee "$LOGFILE") 2>&1
 	echo -e "\n --> Logging stdout & stderr to $LOGFILE"
 	exec > "$LOGFILE" 2>&1
+fi
+
+if [ $SKIP -eq 1 ]; then
+	echo "Setting APT_OPTIONS to:"
+	echo $APT_OPTIONS
 fi
 
 #########################################
@@ -147,7 +157,7 @@ if [ -f /etc/apt/preferences.d/securityonion-docker ] && [ -f /usr/sbin/so-elast
 		echo "Stopping Docker containers..."
 		/usr/sbin/so-elastic-stop > /dev/null 2>&1
 		echo "Installing Docker updates..."
-		apt-get install -y docker-ce
+		apt-get $APT_OPTIONS install -y docker-ce
 		echo "Starting Docker service..."
 		service docker start > /dev/null 2>&1
 		RESTART_CONTAINERS=yes
@@ -190,12 +200,12 @@ if apt-get dist-upgrade --assume-no |grep mysql-server >/dev/null; then
 	pkill perl > /dev/null 2>&1
 	echo "done."
 	echo $BANNER
-	apt-get install -y mysql-server mysql-server-core-5.5 mysql-server-5.5
+	apt-get $APT_OPTIONS install -y mysql-server mysql-server-core-5.5 mysql-server-5.5
 	REBOOT=yes
 fi
 
 # Force pfring-module to install before any kernel updates
-apt-get install -y securityonion-pfring-module | while read; do 
+apt-get $APT_OPTIONS install -y securityonion-pfring-module | while read; do 
 	echo "$REPLY" | grep -v "^Use 'apt-get autoremove' to remove them.$"
 done
 
@@ -215,7 +225,7 @@ echo $UPDATES | grep securityonion-bro >/dev/null && BRO=yes
 echo $UPDATES | grep -A1000 "The following NEW packages will be installed:" | grep -B1000 "The following packages will be upgraded:" | grep linux-image >/dev/null && REBOOT=yes
 
 # Do the actual upgrade
-apt-get -y dist-upgrade | while read; do 
+apt-get $APT_OPTIONS -y dist-upgrade | while read; do 
 	echo "$REPLY" | grep -v "^Use 'apt-get autoremove' to remove them.$"
 done
 
