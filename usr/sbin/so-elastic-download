@@ -2,7 +2,9 @@
 
 . /usr/sbin/so-elastic-common
 
-. /usr/sbin/so-elastic-download-pcaps
+header "Installing securityonion-samples-bro"
+apt-get install -y securityonion-samples-bro > /dev/null
+echo "Done!"
 
 header "Installing libapache2-mod-authnz-external"
 apt-get install -y libapache2-mod-authnz-external > /dev/null
