@@ -87,8 +87,10 @@ if [ $LOG -eq 1 ]; then
 fi
 
 if [ $SKIP -eq 1 ]; then
-	echo "Setting APT_OPTIONS to:"
+	echo "You ran soup with the -y option, so we're setting APT_OPTIONS to:"
 	echo $APT_OPTIONS
+	echo "For more information, please see:"
+	echo "https://debian-handbook.info/browse/stable/sect.package-meta-information.html#sidebar.questions-conffiles"
 fi
 
 #########################################
