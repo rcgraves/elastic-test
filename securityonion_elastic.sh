@@ -69,7 +69,6 @@ if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
 ELASTICDIR="/opt/elastic"
 mkdir -p $ELASTICDIR
 cd $ELASTICDIR
-PCAP_DIR="$ELASTICDIR/pcap"
 SRC="$ELASTICDIR/src"
 
 GITREPO="elastic-test"
