@@ -70,6 +70,7 @@ ELASTICDIR="/opt/elastic"
 mkdir -p $ELASTICDIR
 cd $ELASTICDIR
 PCAP_DIR="$ELASTICDIR/pcap"
+SRC="$ELASTICDIR/src"
 
 GITREPO="elastic-test"
 GITURL="https://github.com/Security-Onion-Solutions/$GITREPO.git"
@@ -95,15 +96,15 @@ fi
 header "Cloning git repo"
 apt-get update > /dev/null
 apt-get install -y git > /dev/null
-git clone $GITURL
-cp -av $GITREPO/usr/sbin/* /usr/sbin/
+git clone $GITURL src
+cp -av $SRC/usr/sbin/* /usr/sbin/
 chmod +x /usr/sbin/so-elastic-*
 echo "Done!"
 
 ELSA=NO
 [ -f /etc/nsm/securityonion.conf ] && . /etc/nsm/securityonion.conf
 if [ $ELSA == "YES" ]; then
-	. $GITREPO/scripts/securityonion_elastic_elsa
+	. $SRC/scripts/securityonion_elastic_elsa
 else
-	. $GITREPO/scripts/securityonion_elastic_new
+	. $SRC/scripts/securityonion_elastic_new
 fi
