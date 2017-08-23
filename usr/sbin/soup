@@ -91,6 +91,7 @@ if [ $SKIP -eq 1 ]; then
 	echo $APT_OPTIONS
 	echo "For more information, please see:"
 	echo "https://debian-handbook.info/browse/stable/sect.package-meta-information.html#sidebar.questions-conffiles"
+	echo
 fi
 
 #########################################
