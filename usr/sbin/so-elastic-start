@@ -128,10 +128,10 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 				echo "connected!"
 				# Compare current version of ES with previously stored version.
 				CURRENT_KIBANA_VERSION=$(curl -s "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT" | jq .version.number | sed 's/"//g')
-				STORED_KIBANA_VERSION=$(grep 'KIBANA_VERSION' /etc/nsm/securityonion.conf | cut -d'=' -f2 )
-				if [ "$CURRENT_KIBANA_VERSION" != "$STORED_KIBANA_VERSION" ]; then
-					sed -i "s/KIBANA_VERSION=.*/KIBANA_VERSION=$KIBANA_VERSION/" /etc/nsm/securityonion.conf
-					/usr/sbin/so-elastic-configure-kibana -r > /dev/null 2>&1
+				if [ "$CURRENT_KIBANA_VERSION" != "$KIBANA_VERSION" ]; then
+					# Apply Kibana config and, if successful, update the version in /etc/nsm/securityonion.conf
+					/usr/sbin/so-elastic-configure-kibana -r > /dev/null 2>&1 &&
+					sed -i "s/KIBANA_VERSION=.*/KIBANA_VERSION=$CURRENT_KIBANA_VERSION/" /etc/nsm/securityonion.conf
 				fi
 				break
 			else
