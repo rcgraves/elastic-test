@@ -106,7 +106,7 @@ LOGSTASH_OPTIONS=""
 # Kibana options
 KIBANA_ENABLED="yes"
 KIBANA_INDEX=.kibana
-KIBANA_VERSION=5.5.0
+KIBANA_VERSION=UNKNOWN
 KIBANA_DEFAULTAPPID="dashboard/94b52620-342a-11e7-9d52-4f090484f59e"
 KIBANA_OPTIONS=""
 
@@ -231,6 +231,9 @@ service ossec-hids-server restart
 echo "Done!"
 cd $ELASTICDIR
 
-. /usr/sbin/so-elastic-configure-kibana
+# so-elastic-start should have already called so-elastic-configure-kibana, so commenting this out for now
+#. /usr/sbin/so-elastic-configure-kibana
+
 . /usr/sbin/so-elastic-configure-elastalert
+
 echo "Done!"
