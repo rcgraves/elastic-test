@@ -231,8 +231,7 @@ service ossec-hids-server restart
 echo "Done!"
 cd $ELASTICDIR
 
-# so-elastic-start should have already called so-elastic-configure-kibana, so commenting this out for now
-#. /usr/sbin/so-elastic-configure-kibana
+. /usr/sbin/so-elastic-configure-kibana
 
 . /usr/sbin/so-elastic-configure-elastalert
 
