@@ -9,11 +9,15 @@ for FILE in /etc/nsm/securityonion.conf /etc/nsm/sensortab; do
 	fi
 done
 
+SOCONF="/etc/nsm/securityonion.conf"
+ELASTICONF="$SRC/etc/securityonion-elastic.conf"
+
 #Specify Docker network and create it
 header "Creating Docker network for Elastic Stack"
-DOCKERNET="so-elastic-net"
+DOCKERNET=`grep 'DOCKERNET' $ELASTICONF | cut -d "=" -f2 | sed 's/"//g'`
 if pgrep -f docker > /dev/null; then
-	docker network create $DOCKERNET --driver=bridge >/dev/null 2>&1
+        docker network create $DOCKERNET --driver=bridge >/dev/null 2>&1
+        echo $DOCKERNET
 fi
 
 header "Setting vm.max_map_count to 262144"
@@ -129,17 +133,16 @@ header "Starting Elastic Stack"
 #EOF
 #!/bin/bash
 while read i; do
-        option=$(echo $i | cut -d'=' -f1)
-        #echo $option
-        if ! grep -q "$option" /etc/nsm/securityonion.conf; then
+        option=$(echo $line | cut -d'=' -f1)
+        if ! grep -q "$option" $SOCONF; then
 
-                if echo "$i" | grep -q '#'; then
+                if echo "$line" | grep -q '#'; then
                         #echo 
-                        echo >> /etc/nsm/securityonion.conf
+                        echo >> $SOCONF
                 fi
-        echo "$i" >> /etc/nsm/securityonion.conf
+        echo "$line" >> $SOCONF
         fi
-done < $SRC/etc/securityonion-elastic.conf
+done < $ELASTICONF
 
 chmod +x /usr/sbin/so-elastic-*
 /usr/sbin/so-elastic-start
