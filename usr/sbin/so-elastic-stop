@@ -23,4 +23,5 @@ else
 	echo "Containers already stopped!"
 	echo
 fi
+
 /usr/sbin/so-elastic-remove

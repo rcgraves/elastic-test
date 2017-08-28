@@ -2,4 +2,9 @@
 
 . /usr/sbin/so-elastic-common
 
+. /etc/nsm/securityonion.conf
+
+# If Elasticsearch is not enabled, then exit immediately
+[ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit
+
 docker stats so-elasticsearch so-logstash so-kibana so-elastalert so-curator so-freqserver so-domainstats $@

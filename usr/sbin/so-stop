@@ -1,5 +1,8 @@
 #!/bin/bash
+
 . /usr/sbin/so-common
+
+. /etc/nsm/securityonion.conf
 
 echo
 header "Stopping NSM services..."
@@ -7,9 +10,11 @@ echo
 
 service nsm stop
 
+# If Elasticsearch is not enabled, then exit immediately
+[ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit
+
 echo
 header "Stopping Elastic stack..."
 echo
 
 /usr/sbin/so-elastic-stop
-

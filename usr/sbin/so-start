@@ -1,11 +1,17 @@
 #!/bin/bash
+
 . /usr/sbin/so-common
+
+. /etc/nsm/securityonion.conf
 
 echo
 header "Starting NSM services..."
 echo
 
 service nsm start
+
+# If Elasticsearch is not enabled, then exit immediately
+[ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit
 
 echo
 header "Starting Elastic stack..."
