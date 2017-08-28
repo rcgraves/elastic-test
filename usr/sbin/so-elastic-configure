@@ -139,7 +139,7 @@ while read i; do
                 fi
         echo "$i" >> /etc/nsm/securityonion.conf
         fi
-done < $SRC/etc/securityonion_elastic.conf
+done < $SRC/etc/securityonion-elastic.conf
 
 chmod +x /usr/sbin/so-elastic-*
 /usr/sbin/so-elastic-start
