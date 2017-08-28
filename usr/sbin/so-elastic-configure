@@ -132,15 +132,14 @@ header "Starting Elastic Stack"
 #DOMAIN_STATS_OPTIONS=""
 #EOF
 #!/bin/bash
-while read i; do
-        option=$(echo $line | cut -d'=' -f1)
-        if ! grep -q "$option" $SOCONF; then
+while read EACH_LINE; do
+        OPTION=$(echo $EACH_LINE | cut -d'=' -f1)
+        if ! grep -q "$OPTION" $SOCONF; then
 
-                if echo "$line" | grep -q '#'; then
-                        #echo 
+                if echo "$EACH_LINE" | grep -q '#'; then
                         echo >> $SOCONF
                 fi
-        echo "$line" >> $SOCONF
+        echo "$EACH_LINE" >> $SOCONF
         fi
 done < $ELASTICONF
 
