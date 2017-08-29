@@ -2,14 +2,6 @@
 
 . /usr/sbin/so-elastic-common
 
-header "Installing securityonion-samples-bro"
-apt-get install -y securityonion-samples-bro > /dev/null
-echo "Done!"
-
-header "Installing libapache2-mod-authnz-external"
-apt-get install -y libapache2-mod-authnz-external > /dev/null
-echo "Done!"
-
 header "Installing Docker"
 cp $SRC/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
 apt-get -y install apt-transport-https ca-certificates curl > /dev/null
@@ -30,4 +22,12 @@ header "Downloading Docker containers"
 for i in so-elasticsearch so-kibana so-logstash so-elastalert so-curator so-freqserver so-domainstats; do
 	docker pull --disable-content-trust=false $DOCKERHUB/$i
 done
+echo "Done!"
+
+header "Installing new packages"
+apt-get install -y securityonion-samples-bro libapache2-mod-authnz-external > /dev/null
+echo "Done!"
+
+header "Updating existing packages"
+apt-get install -y securityonion-setup securityonion-sostat > /dev/null
 echo "Done!"
