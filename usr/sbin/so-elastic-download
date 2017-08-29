@@ -4,6 +4,7 @@
 
 header "Adding securityonion/test PPA"
 add-apt-repository -y ppa:securityonion/test
+echo "Done!"
 
 header "Adding Docker repo"
 cp $SRC/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
@@ -12,9 +13,11 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 add-apt-repository        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
        $(lsb_release -cs) \
        stable"
+echo "Done!"
 
 header "Updating package list"
 apt-get update > /dev/null
+echo "Done!"
 
 header "Installing Docker"
 apt-get -y install docker-ce > /dev/null
