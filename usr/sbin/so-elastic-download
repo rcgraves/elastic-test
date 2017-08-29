@@ -2,14 +2,21 @@
 
 . /usr/sbin/so-elastic-common
 
-header "Installing Docker"
+header "Adding securityonion/test PPA"
+add-apt-repository -y ppa:securityonion/test
+
+header "Adding Docker repo"
 cp $SRC/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
 apt-get -y install apt-transport-https ca-certificates curl > /dev/null
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 add-apt-repository        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
        $(lsb_release -cs) \
        stable"
+
+header "Updating package list"
 apt-get update > /dev/null
+
+header "Installing Docker"
 apt-get -y install docker-ce > /dev/null
 echo "Done!"
 
