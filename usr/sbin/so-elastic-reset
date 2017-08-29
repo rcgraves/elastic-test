@@ -8,7 +8,7 @@
 
 # List indices
 echo
-curl -XGET '${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v&pretty'
+curl -XGET "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v&pretty"
 echo
 
 # Inform user we are about to delete all data
@@ -29,7 +29,7 @@ echo
 
 # Delete data
 echo "Deleting data..."
-curl -XDELETE '${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/logstash-*' > /dev/null 2>&1
+curl -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/logstash-*" > /dev/null 2>&1
 
 # Start syslog-ng
 echo
