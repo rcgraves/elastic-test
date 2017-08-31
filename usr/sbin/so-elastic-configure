@@ -101,22 +101,22 @@ while read EACH_LINE; do
 done < $ELASTICONF
 
 # Get total installed memory
-#TOTAL_MEM=`grep MemTotal /proc/meminfo | awk '{print $2}' | sed -r 's/.{3}$//'`
-TOTAL_MEM=4028
+TOTAL_MEM=`grep MemTotal /proc/meminfo | awk '{print $2}' | sed -r 's/.{3}$//'`
+
 # If total memory is less than 8GB, we keep the default of 600m for heap size
 if [ $TOTAL_MEM -lt 8000 ] ; then
         ES_HEAP_SIZE="600m"
+	LS_HEAP_SIZE="1g"
 elif [ $TOTAL_MEM -ge 124000 ]; then
 	# Set a max of 31GB for heap size
 	# https://www.elastic.co/guide/en/elasticsearch/guide/current/heap-sizing.html
 	ES_HEAP_SIZE="31000m"
+	LS_HEAP_SIZE="$ES_HEAP_SIZE"
 else
         # Set heap size to 25% of available memory
 	ES_HEAP_SIZE=$(($TOTAL_MEM / 4))"m"
+	LS_HEAP_SIZE="$ES_HEAP_SIZE"
 fi
-
-# We set the heap size for Logstash the same as that of Elasticsearch
-LS_HEAP_SIZE="$ES_HEAP_SIZE"
 
 sed -i "s/ELASTICSEARCH_HEAP.*/ELASTICSEARCH_HEAP=\"$ES_HEAP_SIZE\"/" $SOCONF
 sed -i "s/LOGSTASH_HEAP.*/LOGSTASH_HEAP=\"$LS_HEAP_SIZE\"/" $SOCONF
