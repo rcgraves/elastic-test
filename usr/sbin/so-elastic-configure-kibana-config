@@ -22,3 +22,6 @@ curl -s -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_IND
 curl -s -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}
 curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/kibana -d'{"template" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
 curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}/config/${KIBANA_VERSION} -d@$SRC/kibana/config.json; echo; echo
+
+# Cross cluster search
+curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -d'{"persistent": {"search": {"remote": {"master": {"seeds": ["127.0.0.1:9300"]}}}}}'
