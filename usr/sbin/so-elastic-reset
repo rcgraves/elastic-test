@@ -29,7 +29,7 @@ echo
 
 # Delete data
 echo "Deleting data..."
-curl -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/logstash-*" > /dev/null 2>&1
+curl -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/*:logstash-*" > /dev/null 2>&1
 
 # Start syslog-ng
 echo

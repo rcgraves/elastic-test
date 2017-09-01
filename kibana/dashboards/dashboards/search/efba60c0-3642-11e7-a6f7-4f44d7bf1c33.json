@@ -8,7 +8,7 @@
   "title": "OSSEC - Logs", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\"index\":\"logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"type:ossec\",\"analyze_wildcard\":true}},\"filter\":[]}"
+    "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"type:ossec\",\"analyze_wildcard\":true}},\"filter\":[]}"
   }, 
   "columns": [
     "alert_level", 
