@@ -8,7 +8,7 @@
   "title": "SMB - Logs", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"(type:bro_smb_mapping OR type:bro_smb_files)\",\"analyze_wildcard\":true}},\"filter\":[]}"
+    "searchSourceJSON": "{\"index\":\"logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"(type:bro_smb_mapping OR type:bro_smb_files)\",\"analyze_wildcard\":true}},\"filter\":[]}"
   }, 
   "columns": [
     "source_ip", 

@@ -1,5 +1,5 @@
 {
-  "template" : "*:logstash-*",
+  "template" : "logstash-*",
   "version" : 50001,
   "settings" : {
     "number_of_replicas": 0,

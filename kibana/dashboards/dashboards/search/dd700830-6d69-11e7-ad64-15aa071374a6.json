@@ -8,7 +8,7 @@
   "title": "Autoruns - Logs", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:autoruns\",\"analyze_wildcard\":true}}}"
+    "searchSourceJSON": "{\"index\":\"logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:autoruns\",\"analyze_wildcard\":true}}}"
   }, 
   "columns": [
     "entry", 

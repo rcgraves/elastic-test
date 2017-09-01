@@ -5,6 +5,6 @@
   "uiStateJSON": "{\n  \"vis\": {\n    \"params\": {\n      \"sort\": {\n        \"columnIndex\": null,\n        \"direction\": null\n      }\n    }\n  }\n}", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"type:bro_dns AND _exists_:parent_domain_frequency_score\",\n      \"analyze_wildcard\": true\n    }\n  },\n  \"filter\": []\n}"
+    "searchSourceJSON": "{\n  \"index\": \"logstash-*\",\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"type:bro_dns AND _exists_:parent_domain_frequency_score\",\n      \"analyze_wildcard\": true\n    }\n  },\n  \"filter\": []\n}"
   }
 }
