@@ -1947,8 +1947,6 @@ if [ "$ELSA" = "YES" ]; then
     	echo "95"
 	echo "# Please wait while configuring Elastic..." | tee -a $LOG
 	/usr/sbin/so-elastic-configure >> $LOG 2>&1
-	echo "finished so-elastic-configure" >> $LOG 2>&1
-	sleep 10s
 	if [ $SERVER -ne 1 ]; then
 		# We need to determine a few things from the server:
 		# DOCKER_INTERFACE, DOCKER_NETWORK, and REVERSE_PORT
@@ -2007,9 +2005,8 @@ if [ "$SERVERNAME" != "localhost" ]; then
 		ssh -i "$KEY" -t $SSH_USERNAME@$SERVERNAME sudo /bin/bash $SOSETUPSCP >> $LOG 2>&1
 	fi
 	# Cleanup
-	# disabling for testing purposes
-	#rm -f $SOSETUPSCP
-	#ssh -i "$KEY" -t $SSH_USERNAME@$SERVERNAME rm -f $SOSETUPSCP >> $LOG 2>&1
+	rm -f $SOSETUPSCP
+	ssh -i "$KEY" -t $SSH_USERNAME@$SERVERNAME rm -f $SOSETUPSCP >> $LOG 2>&1
 fi
 
 if [ $SERVER -ne 1 ] && [ "$ELSA" = "YES" ]; then
