@@ -1950,14 +1950,20 @@ if [ "$ELSA" = "YES" ]; then
 	if [ $SERVER -ne 1 ]; then
 		# We need to determine a few things from the server:
 		# DOCKER_INTERFACE, DOCKER_NETWORK, and REVERSE_PORT
+
+		# DOCKER_INTERFACE
 		SSH_CMD="sudo docker network inspect so-elastic-net | jq '.[0].IPAM.Config[0].Gateway'"
 		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 		DOCKER_INTERFACE=$(echo $SSH_OUTPUT | cut -d\" -f2)
 		echo "DOCKER_INTERFACE is $DOCKER_INTERFACE" >> $LOG 2>&1
+
+		# DOCKER_NETWORK
 		SSH_CMD="sudo docker network inspect so-elastic-net | jq '.[0].IPAM.Config[0].Subnet'"
 		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 		DOCKER_NETWORK=$(echo $SSH_OUTPUT | cut -d\" -f2)
 		echo "DOCKER_NETWORK is $DOCKER_NETWORK" >> $LOG 2>&1
+
+		# REVERSE_PORT
 		SSH_CMD="/usr/sbin/so-elastic-settings | jq '.persistent.search.remote' | grep ':500'"
 		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 		if [ "$SSH_OUTPUT" = "" ]; then
@@ -1971,6 +1977,15 @@ if [ "$ELSA" = "YES" ]; then
 			fi
 		fi
 		echo "REVERSE_PORT is $REVERSE_PORT" >> $LOG 2>&1
+
+    		# If REVERSE_PORT is not already in SSH_CONF, then store it for future use.
+		if grep "REVERSE_PORT=" $SSH_CONF >/dev/null 2>&1; then
+			echo "REVERSE_PORT already exists in $SSH_CONF." >> $LOG 2>&1
+		else
+			echo "REVERSE_PORT=$REVERSE_PORT" >> $SSH_CONF
+		fi
+
+		# Configure Elasticsearch
 		ELASTIC_CONFIG="/etc/elasticsearch/elasticsearch.yml"
 		echo "transport.bind_host: 0.0.0.0" >> $ELASTIC_CONFIG
 		echo "transport.publish_host: $DOCKER_INTERFACE" >> $ELASTIC_CONFIG
@@ -2010,19 +2025,13 @@ if [ "$SERVERNAME" != "localhost" ]; then
 fi
 
 if [ $SERVER -ne 1 ] && [ "$ELSA" = "YES" ]; then
-    # If REVERSE_PORT is not already in SSH_CONF, then store it for future use.
-    if grep "REVERSE_PORT=" $SSH_CONF >/dev/null 2>&1; then
-	echo "REVERSE_PORT already exists in $SSH_CONF." >> $LOG 2>&1
-    else
-	echo "REVERSE_PORT=$REVERSE_PORT" >> $SSH_CONF
-    fi
-
     # Since the securityonion service started before the reverse port
     # was determined, we need to tear down the SSH tunnel and restart it.
     # Kill autossh with SIGINT
     if pgrep autossh>/dev/null; then 
         kill -SIGINT `pgrep autossh`
         # Restart the autossh tunnel
+	source $SSH_CONF
         /usr/bin/autossh -M 0 -f -q -N -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3" -i "$KEY" -L 3306:127.0.0.1:3306 -R $DOCKER_INTERFACE:$REVERSE_PORT:localhost:9300 $SSH_USERNAME@$SERVERNAME
     fi
 fi
