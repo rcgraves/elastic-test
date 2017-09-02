@@ -32,7 +32,7 @@ IP=`ifconfig |grep "inet addr" | awk '{print $2}' |cut -d\: -f2 |grep -v "127.0.
 TITLE="Security Onion Setup ($HOSTNAME)"
 # File locations
 CONF="/etc/nsm/securityonion.conf"
-LOG=`mktemp /tmp/sosetup.log.XXXXXXXXXX`
+LOG=`mktemp /tmp/sosetup-elastic.log.XXXXXXXXXX`
 PP_CONF="/etc/nsm/pulledpork/pulledpork.conf"
 # URLs
 ET_URL="rules.emergingthreats.net"
