@@ -1986,7 +1986,7 @@ service ssh restart
 fi
 ufw allow proto tcp from $DOCKER_NETWORK to $DOCKER_INTERFACE port $REVERSE_PORT
 source /etc/nsm/securityonion.conf
-curl -XPUT http://\$ELASTICSEARCH_HOST:\$ELASTICSEARCH_PORT/_cluster/settings -d '{"persistent": {"search": {"remote": {"sensor1": {"seeds": ["$DOCKER_INTERFACE:$REVERSE_PORT"]}}}}}'
+curl -XPUT http://\$ELASTICSEARCH_HOST:\$ELASTICSEARCH_PORT/_cluster/settings -d '{"persistent": {"search": {"remote": {"$HOSTNAME": {"seeds": ["$DOCKER_INTERFACE:$REVERSE_PORT"]}}}}}'
 EOF
 	fi
 
