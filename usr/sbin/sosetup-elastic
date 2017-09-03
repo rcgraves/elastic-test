@@ -1273,7 +1273,7 @@ fi
 # Sguil Sensor(s) if necessary
 #########################################
 if [ $SENSOR -eq 1 ]; then
-echo "20"
+echo "15"
 echo "# Please wait while creating Sguil sensor(s)..." | tee -a $LOG
 BY2PORT=8000
 HOST_ORIG=`hostname`
@@ -1550,7 +1550,7 @@ fi
 #########################################
 # /etc/nsm/securityonion.conf
 #########################################
-echo "30"
+echo "20"
 echo "# Please wait while configuring $CONF..." | tee -a $LOG
 DATE=`date`
 IDS_ENGINE_LOWER=`echo ${IDS_ENGINE,,}`
@@ -1613,7 +1613,7 @@ EOF
 # Download rules using Pulledpork
 #########################################
 if [ "$SERVERNAME" = "localhost" ]; then
-	echo "40"
+	echo "25"
 	echo "# Please wait while configuring IDS Ruleset..." | tee -a $LOG
 	# Start from a clean slate (pulledpork.conf.master)
 	# Here are the rule_url directives in pulledpork.conf.master:
@@ -1683,7 +1683,7 @@ EOF
 	fi
 
 	if [ "$INTERNET" = "UP" ]; then
-		echo "45"
+		echo "30"
 		echo "# Please wait while executing PulledPork to download rules..." | tee -a $LOG
 		echo "LOCAL_NIDS_RULE_TUNING=no" >> $CONF
 		date > /var/log/nsm/pulledpork.log
@@ -1699,7 +1699,7 @@ fi
 #########################################
 SSH_DIR="/root/.ssh"
 SSH_CONF="$SSH_DIR/securityonion_ssh.conf"
-echo "50"
+echo "35"
 if [ -f $SSH_CONF ]; then
         # We are a SENSOR  
 	echo "# Please wait while stopping and disabling Apache..." | tee -a $LOG
@@ -1735,7 +1735,7 @@ fi
 #########################################
 # Configure Salt
 #########################################
-echo "70"
+echo "40"
 echo "# Please wait while configuring salt..." | tee -a $LOG
 if dpkg -l |grep "securityonion-onionsalt" |grep "ii" >/dev/null; then
 	if [ "$SALT" = "no" ]; then
@@ -1827,7 +1827,7 @@ fi
 #########################################
 # disable the snorby output in all barnyard config files
 sed -i 's|^output database: alert, mysql, user=root dbname=snorby host=127.0.0.1|#output database: alert, mysql, user=root dbname=snorby host=127.0.0.1|g' /etc/nsm/*/barnyard2*.conf >> $LOG 2>&1
-echo "80"
+echo "45"
 echo "# Please wait while starting all Security Onion services..." | tee -a $LOG
 /sbin/start securityonion >> $LOG 2>&1
 sleep 10s
@@ -1903,7 +1903,7 @@ fi
 # Configure ELSA
 #########################################
 if [ "$ELSA" = "YES" ]; then
-    echo "90"
+    echo "49"
     echo "# Please wait while configuring Elastic..." | tee -a $LOG
 
     # update LOG_SIZE_LIMIT
@@ -1941,24 +1941,38 @@ if [ "$ELSA" = "YES" ]; then
         echo "* Restarting syslog-ng" >> $LOG 2>&1
         service syslog-ng restart >> $LOG 2>&1
 
-    	echo "91"
+    	echo "50"
 	echo "# Please wait while downloading Elastic components..." | tee -a $LOG
 	/usr/sbin/so-elastic-download >> $LOG 2>&1
-    	echo "95"
+
+    	echo "75"
 	echo "# Please wait while configuring Elastic..." | tee -a $LOG
 	/usr/sbin/so-elastic-configure >> $LOG 2>&1
+
 	if [ $SERVER -ne 1 ]; then
+    		echo "85"
+		echo "# Please wait while stopping Apache web server..." | tee -a $LOG
+		service apache2 stop >> $LOG 2>&1
+
+    		echo "90"
+		echo "# Please wait while stopping and disabling Kibana..." | tee -a $LOG
+		docker stop so-kibana >> $LOG 2>&1
+		sed -i '|KIBANA_ENABLED="yes"|KIBANA_ENABLED="no"|g' /etc/nsm/securityonion.conf
+
+    		echo "95"
+		echo "# Please wait while performing final sensor configuration..." | tee -a $LOG
+
 		# We need to determine a few things from the master server:
 		# DOCKER_INTERFACE, DOCKER_NETWORK, and REVERSE_PORT
 
 		# DOCKER_INTERFACE
-		SSH_CMD="sudo docker network inspect so-elastic-net | jq '.[0].IPAM.Config[0].Gateway'"
+		SSH_CMD="/usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Gateway'"
 		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 		DOCKER_INTERFACE=$(echo $SSH_OUTPUT | cut -d\" -f2)
 		echo "DOCKER_INTERFACE is $DOCKER_INTERFACE" >> $LOG 2>&1
 
 		# DOCKER_NETWORK
-		SSH_CMD="sudo docker network inspect so-elastic-net | jq '.[0].IPAM.Config[0].Subnet'"
+		SSH_CMD="/usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Subnet'"
 		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 		DOCKER_NETWORK=$(echo $SSH_OUTPUT | cut -d\" -f2)
 		echo "DOCKER_NETWORK is $DOCKER_NETWORK" >> $LOG 2>&1
@@ -2034,13 +2048,11 @@ if [ "$SERVERNAME" != "localhost" ]; then
 fi
 
 if [ $SERVER -ne 1 ] && [ "$ELSA" = "YES" ]; then
-    # Since the securityonion service started before the reverse port
-    # was determined, we need to tear down the SSH tunnel and restart it.
-    # Kill autossh with SIGINT
-    if pgrep autossh>/dev/null; then 
-        kill -SIGINT `pgrep autossh`
-	/usr/sbin/so-autossh-start >> $LOG 2>&1
-    fi
+	# Now that the server side configuration is done, we need to tear down the ssh tunnel and restart it.
+	if pgrep autossh>/dev/null; then 
+		kill -SIGINT `pgrep autossh`
+		/usr/sbin/so-autossh-start >> $LOG 2>&1
+	fi
 fi
 }
 
