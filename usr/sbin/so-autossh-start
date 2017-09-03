@@ -1,0 +1,32 @@
+#!/bin/bash
+
+. /usr/sbin/so-common
+
+# Defaults
+SERVERALIVEINTERVAL="60"
+SERVERALIVECOUNTMAX="3"
+KEY="/root/.ssh/securityonion"
+ES_HOST="localhost"
+ES_TRANSPORT="9300"
+AUTOSSH_OPTIONS=""
+
+# Defaults can be overridden in config file
+CONFIG="/root/.ssh/securityonion_ssh.conf"
+
+# If config file not present, exit immediately
+[ -f ${CONFIG} ] || exit
+
+# If upgrading from ELSA, migrate ELSA_PORT to REVERSE_PORT
+sed -i 's|ELSA_PORT|REVERSE_PORT|g' ${CONFIG}
+
+# Load settings from config
+source ${CONFIG}
+
+export AUTOSSH_GATETIME=0
+/usr/bin/autossh -M 0 -f -q -N \
+	-o "ServerAliveInterval ${SERVERALIVEINTERVAL}" \
+	-o "ServerAliveCountMax ${SERVERALIVECOUNTMAX}" \
+	-i ${KEY} \
+	-R ${DOCKER_INTERFACE}:${REVERSE_PORT}:${ES_HOST}:${ES_TRANSPORT} \
+	${AUTOSSH_OPTIONS} \
+	${SSH_USERNAME}@${SERVERNAME}
