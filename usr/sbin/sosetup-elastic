@@ -1957,7 +1957,7 @@ if [ "$ELSA" = "YES" ]; then
     		echo "90"
 		echo "# Please wait while stopping and disabling Kibana..." | tee -a $LOG
 		docker stop so-kibana >> $LOG 2>&1
-		sed -i '|KIBANA_ENABLED="yes"|KIBANA_ENABLED="no"|g' /etc/nsm/securityonion.conf
+		sed -i 's|KIBANA_ENABLED="yes"|KIBANA_ENABLED="no"|g' /etc/nsm/securityonion.conf
 
     		echo "95"
 		echo "# Please wait while performing final sensor configuration..." | tee -a $LOG
