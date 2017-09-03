@@ -1966,13 +1966,13 @@ if [ "$ELSA" = "YES" ]; then
 		# DOCKER_INTERFACE, DOCKER_NETWORK, and REVERSE_PORT
 
 		# DOCKER_INTERFACE
-		SSH_CMD="/usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Gateway'"
+		SSH_CMD="sudo /usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Gateway'"
 		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 		DOCKER_INTERFACE=$(echo $SSH_OUTPUT | cut -d\" -f2)
 		echo "DOCKER_INTERFACE is $DOCKER_INTERFACE" >> $LOG 2>&1
 
 		# DOCKER_NETWORK
-		SSH_CMD="/usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Subnet'"
+		SSH_CMD="sudo /usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Subnet'"
 		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 		DOCKER_NETWORK=$(echo $SSH_OUTPUT | cut -d\" -f2)
 		echo "DOCKER_NETWORK is $DOCKER_NETWORK" >> $LOG 2>&1
