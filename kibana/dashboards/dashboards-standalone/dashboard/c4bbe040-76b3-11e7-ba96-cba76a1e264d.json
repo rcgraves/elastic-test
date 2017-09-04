@@ -1,0 +1,13 @@
+{
+  "hits": 0, 
+  "timeRestore": false, 
+  "description": "", 
+  "title": "Bro - Syslog", 
+  "uiStateJSON": "{\"P-2\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-5\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-6\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-7\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-8\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}}", 
+  "panelsJSON": "[{\"col\":1,\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"panelIndex\":1,\"row\":1,\"size_x\":2,\"size_y\":11,\"type\":\"visualization\"},{\"col\":3,\"id\":\"50c6b4c0-76b4-11e7-94e1-3d2ec4e57ed9\",\"panelIndex\":2,\"row\":1,\"size_x\":2,\"size_y\":2,\"type\":\"visualization\"},{\"col\":5,\"id\":\"92b202e0-76b4-11e7-94e1-3d2ec4e57ed9\",\"panelIndex\":3,\"row\":1,\"size_x\":8,\"size_y\":2,\"type\":\"visualization\"},{\"col\":1,\"columns\":[\"source_ip\",\"destination_ip\",\"destination_port\",\"uid\",\"_id\"],\"id\":\"269ca380-76b4-11e7-8c3e-cfcdd8c95d87\",\"panelIndex\":4,\"row\":13,\"size_x\":12,\"size_y\":6,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"col\":3,\"id\":\"6c60a280-76b5-11e7-94e1-3d2ec4e57ed9\",\"panelIndex\":5,\"row\":8,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"col\":6,\"id\":\"ae4e88b0-76b5-11e7-94e1-3d2ec4e57ed9\",\"panelIndex\":6,\"row\":8,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"col\":9,\"id\":\"ca9ffc10-76b5-11e7-94e1-3d2ec4e57ed9\",\"panelIndex\":7,\"row\":8,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"col\":9,\"id\":\"e9d5ae30-76b6-11e7-94e1-3d2ec4e57ed9\",\"panelIndex\":8,\"row\":3,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"col\":3,\"id\":\"346e5c30-76b7-11e7-94e1-3d2ec4e57ed9\",\"panelIndex\":9,\"row\":3,\"size_x\":6,\"size_y\":5,\"type\":\"visualization\"}]", 
+  "optionsJSON": "{\"darkTheme\":true}", 
+  "version": 1, 
+  "kibanaSavedObjectMeta": {
+    "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}],\"highlightAll\":true,\"version\":true}"
+  }
+}
