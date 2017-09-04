@@ -24,4 +24,5 @@ curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/kibana -
 curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}/config/${KIBANA_VERSION} -d@$SRC/kibana/config.json; echo; echo
 
 # Cross cluster search
-curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -d'{"persistent": {"search": {"remote": {"master": {"seeds": ["127.0.0.1:9300"]}}}}}'
+HOSTNAME=$(hostname)
+curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -d "{\"persistent\": {\"search\": {\"remote\": {\"$HOSTNAME\": {\"seeds\": [\"127.0.0.1:9300\"]}}}}}"
