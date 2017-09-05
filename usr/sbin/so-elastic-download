@@ -2,10 +2,6 @@
 
 . /usr/sbin/so-elastic-common
 
-header "Adding securityonion/test PPA"
-add-apt-repository -y ppa:securityonion/test
-echo "Done!"
-
 header "Adding Docker repo"
 cp $SRC/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
 apt-get -y install apt-transport-https ca-certificates curl > /dev/null
