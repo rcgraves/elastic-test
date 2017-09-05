@@ -8,7 +8,7 @@
   },
   "mappings" : {
     "_default_" : {
-      "_all" : {"enabled" : true, "norms" : false},
+      "_all" : {"enabled" : false, "norms" : false},
       "dynamic_templates" : [ {
         "message_field" : {
           "path_match" : "message",
@@ -31,8 +31,8 @@
         }
       } ],
       "properties" : {
-        "@timestamp": { "type": "date", "include_in_all": false },
-        "@version": { "type": "keyword", "include_in_all": false },
+        "@timestamp": { "type": "date" },
+        "@version": { "type": "keyword" },
 	"destination_ip" : { "type": "ip" },
 	"source_ip" : { "type": "ip" },
         "geoip"  : {
