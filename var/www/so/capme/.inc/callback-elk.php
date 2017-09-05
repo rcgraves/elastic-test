@@ -121,7 +121,7 @@ if ($sidsrc == "elk") {
 
 	// Submit the ES query
 	// TODO: have PHP query ES directly without shell_exec and curl
-	$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\",\"type\": \"phrase\"}}}}' 2>/dev/null";
+	$elk_command = "/usr/bin/curl -XGET 'localhost:9200/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\",\"type\": \"phrase\"}}}}' 2>/dev/null";
 	$elk_response = shell_exec($elk_command);
 
 	// Try to decode the response as JSON.
@@ -215,7 +215,7 @@ if ($sidsrc == "elk") {
 		// Now we to send those parameters back to ELK to see if we can find a matching bro_conn log
 		if ($errMsgELK == "") {
 			// TODO: have PHP query ES directly without shell_exec and curl
-			$elk_command = "/usr/bin/curl -XGET 'localhost:9200/_search?' -H 'Content-Type: application/json' -d'
+			$elk_command = "/usr/bin/curl -XGET 'localhost:9200/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
 {
   \"query\": {
     \"bool\": {
