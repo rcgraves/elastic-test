@@ -87,18 +87,37 @@ header "Configuring domain_stats"
 mkdir -p /var/log/domain_stats
 mkdir -p /var/log/domain_stats
 chown -R 1000:1000 /var/log/domain_stats
+echo "Contacting WHOIS server for connectivity..."
+echo
+# Check for whois connectivity
+whois google.com | grep 'Domain Name'
+if [ $? -eq 1 ]; then
+        echo
+        echo "Unable to reach WHOIS server...disabling DomainStats"
+        DS_ENABLED="no"
+else
+        DS_ENABLED="yes"
+fi
 echo "Done!"
 
 header "Adding Elastic Stack options to $SOCONF"
 while read EACH_LINE; do
-	OPTION=$(echo $EACH_LINE | cut -d'=' -f1)
-	if ! grep -q "$OPTION" $SOCONF; then
-		if echo "$EACH_LINE" | grep -q '#'; then
-			echo >> $SOCONF
-		fi
-	echo "$EACH_LINE" >> $SOCONF
-	fi
+        OPTION=$(echo $EACH_LINE | cut -d'=' -f1)
+        if ! grep -q "$OPTION" $SOCONF; then
+                if echo "$EACH_LINE" | grep -q '#'; then
+                        echo >> $SOCONF
+                fi
+        echo "$EACH_LINE" >> $SOCONF
+        fi
 done < $ELASTICONF
+
+if [ "$DS_ENABLED" == "no" ]; then
+        sed -i 's/^DOMAIN_STATS_ENABLED.*/DOMAIN_STATS_ENABLED="no"/' $SOCONF
+else
+        if [ "$DS_ENABLED" == "yes" ]; then
+                sed -i 's/^DOMAIN_STATS_ENABLED.*/DOMAIN_STATS_ENABLED="yes"/' $SOCONF
+        fi
+fi
 
 # Get total installed memory
 TOTAL_MEM=`grep MemTotal /proc/meminfo | awk '{print $2}' | sed -r 's/.{3}$//'`
