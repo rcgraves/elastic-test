@@ -1731,6 +1731,10 @@ if [ -f $SSH_CONF ]; then
 	# Sensors don't need the Apache web server, so stop and disable it
 	service apache2 stop >> $LOG 2>&1
 	update-rc.d -f apache2 disable >> $LOG 2>&1
+	echo "# Please wait while stopping and disabling mysql..." | tee -a $LOG
+	# Sensors don't need mysql, so stop and disable it
+	service mysql stop >> $LOG 2>&1
+	echo "manual" >> /etc/init/mysql.override
 else
 	# We are the MASTER.
 
