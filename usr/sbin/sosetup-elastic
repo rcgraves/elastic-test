@@ -1196,8 +1196,14 @@ service ossec-hids-server restart >> $LOG 2>&1
 # Stop all Sguil services and delete config
 #########################################
 echo "8"
-echo "# Please wait while stopping all NSM services..." | tee -a $LOG
-service nsm stop >> $LOG 2>&1
+echo "# Please wait while stopping services..." | tee -a $LOG
+# Need to delete Elasticsearch data before stopping Elasticsearch
+if [ -f $CONF ]; then
+	source $CONF
+	curl -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/logstash-*" > /dev/null 2>&1
+fi
+# Stop Elasticsearch and all other processes
+so-stop >> $LOG 2>&1
 pkill suricata
 pkill snort
 pkill autossh
