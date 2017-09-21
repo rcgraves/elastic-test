@@ -1,0 +1,21 @@
+{
+  "sort": [
+    "@timestamp", 
+    "desc"
+  ], 
+  "hits": 0, 
+  "description": "", 
+  "title": "Sysmon - Logs", 
+  "version": 1, 
+  "kibanaSavedObjectMeta": {
+    "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:sysmon\",\"analyze_wildcard\":true}}}"
+  }, 
+  "columns": [
+    "event_type", 
+    "source_ip", 
+    "source_port", 
+    "destination_ip", 
+    "destination_port", 
+    "_id"
+  ]
+}

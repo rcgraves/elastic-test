@@ -8,7 +8,7 @@
   "title": "ElastAlert", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\"index\":\"elastalert_status*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}"
+    "searchSourceJSON": "{\"index\":\"*:elastalert_status*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}"
   }, 
   "columns": [
     "rule_name", 

@@ -5,6 +5,6 @@
   "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
-    "searchSourceJSON": "{\"index\":\"elastalert_status*\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[]}"
+    "searchSourceJSON": "{\"index\":\"*:elastalert_status*\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[]}"
   }
 }

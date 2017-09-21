@@ -3,5 +3,5 @@
   "notExpandable": true, 
   "fieldFormatMap": "{\"match_body.source_ip\":{\"id\":\"url\",\"params\":{\"urlTemplate\":\"/app/kibana#/dashboard/68563ed0-34bf-11e7-9b32-bb903919ead9?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(columns:!(_source),index:'*:logstash-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'\\\"{{value}}\\\"')),sort:!('@timestamp',desc))\",\"labelTemplate\":\"{{value}}\"}},\"match_body.destination_ip\":{\"id\":\"url\",\"params\":{\"urlTemplate\":\"/app/kibana#/dashboard/68563ed0-34bf-11e7-9b32-bb903919ead9?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(columns:!(_source),index:'*:logstash-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'\\\"{{value}}\\\"')),sort:!('@timestamp',desc))\",\"labelTemplate\":\"{{value}}\"}}}", 
   "timeFieldName": "@timestamp", 
-  "title": "*:elastalert_status*"
+  "title": "elastalert_status*"
 }

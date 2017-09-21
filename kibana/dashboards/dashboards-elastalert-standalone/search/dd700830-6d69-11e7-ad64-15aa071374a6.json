@@ -1,0 +1,20 @@
+{
+  "sort": [
+    "@timestamp", 
+    "desc"
+  ], 
+  "hits": 0, 
+  "description": "", 
+  "title": "Autoruns - Logs", 
+  "version": 1, 
+  "kibanaSavedObjectMeta": {
+    "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:autoruns\",\"analyze_wildcard\":true}}}"
+  }, 
+  "columns": [
+    "entry", 
+    "entry_location", 
+    "image_path", 
+    "hostname", 
+    "_id"
+  ]
+}

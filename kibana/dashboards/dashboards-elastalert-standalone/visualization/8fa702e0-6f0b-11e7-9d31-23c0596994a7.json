@@ -1,0 +1,10 @@
+{
+  "visState": "{\"title\":\"SSL - Certificate Common Name Frequency Analysis\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"certificate_common_name_frequency_score\",\"customLabel\":\"Frequency Score\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"certificate_common_name.keyword\",\"size\":50,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"Common Name\"}}],\"listeners\":{}}", 
+  "description": "", 
+  "title": "SSL - Certificate Common Name Frequency Analysis", 
+  "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}", 
+  "version": 1, 
+  "kibanaSavedObjectMeta": {
+    "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_ssl AND _exists_:certificate_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+  }
+}
