@@ -29,8 +29,10 @@ header "Configuring ElasticSearch"
 mkdir -p /etc/elasticsearch
 mkdir -p /nsm/elasticsearch
 mkdir -p /var/log/elasticsearch
-chown -R 1000:1000 /nsm/elasticsearch
-chown -R 1000:1000 /var/log/elasticsearch
+groupadd --gid 930 elasticsearch
+adduser --uid 930 --gid 930 --home-dir /home/elasticsearch --no-create-home elasticsearch
+chown -R elasticsearch:elasticsearch /nsm/elasticsearch
+chown -R elasticsearch:elasticsearch /var/log/elasticsearch
 cp -av $SRC/etc/elasticsearch/* /etc/elasticsearch/
 if [ -f /etc/elasticsearch/elasticsearch.yml ]; then
         sed -i "s/cluster\.name.*/cluster\.name: \"$HOSTNAME\"/" /etc/elasticsearch/elasticsearch.yml
@@ -42,8 +44,10 @@ mkdir -p /nsm/logstash
 mkdir -p /var/log/logstash
 mkdir -p /etc/logstash/conf.d/
 mkdir -p /etc/logstash/optional/
-chown -R 1000:1000 /nsm/logstash
-chown -R 1000:1000 /var/log/logstash
+groupadd --gid 931 logstash
+adduser --uid 931 --gid 931 --home-dir /home/logstash --no-create-home logstash
+chown -R logstash:logstash /nsm/logstash
+chown -R logstash:logstash /var/log/logstash
 cp -av $SRC/configfiles/*.conf /etc/logstash/conf.d/
 cp -av $SRC/configfiles-setup_required/8*_postprocess_dns_*.conf /etc/logstash/optional/
 cp -av $SRC/configfiles-setup_required/85*_postprocess_freq_analysis_*.conf /etc/logstash/optional/
@@ -56,16 +60,20 @@ echo "Done!"
 header "Configuring Kibana"
 mkdir -p /etc/kibana
 mkdir -p /var/log/kibana
-chown -R 1000:1000 /etc/kibana
-chown -R 1000:1000 /var/log/kibana
+groupadd --gid 932 kibana
+adduser --uid 932 --gid 932 --home-dir /home/kibana --no-create-home kibana
+chown -R kibana:kibana /etc/kibana
+chown -R kibana:kibana /var/log/kibana
 cp -av $SRC/etc/kibana/* /etc/kibana/
 echo "Done!"
 
 header "Configuring Elastalert"
 mkdir -p /etc/elastalert/rules
 mkdir -p /var/log/elastalert
-chown -R 1000:1000 /etc/elastalert/rules
-chown -R 1000:1000 /var/log/elastalert
+groupadd --gid 933 elastalert
+adduser --uid 933 --gid 933 --home-dir /home/elastalert --no-create-home elastalert
+chown -R elastalert:elastalert /etc/elastalert/rules
+chown -R elastalert:elastalert /var/log/elastalert
 cp -av $SRC/etc/elastalert/rules/* /etc/elastalert/rules/
 echo "Done!"
 
@@ -73,8 +81,10 @@ header "Configuring Curator"
 mkdir -p /etc/curator/config
 mkdir -p /etc/curator/action
 mkdir -p /var/log/curator
-chown -R 1000:1000 /etc/curator
-chown -R 1000:1000 /var/log/curator
+groupadd --gid 934 curator
+adduser --uid 934 --gid 934 --home-dir /home/curator --no-create-home curator
+chown -R curator:curator /etc/curator
+chown -R curator:curator /var/log/curator
 cp -av $SRC/etc/curator/config/* /etc/curator/config/
 cp -av $SRC/etc/curator/action/* /etc/curator/action/
 cp -av $SRC/etc/curator/cron.d/* /etc/cron.d/
@@ -83,13 +93,17 @@ echo "Done!"
 header "Configuring freq_server"
 mkdir -p /var/log/freq_server
 mkdir -p /var/log/freq_server_dns
-chown -R 1000:1000 /var/log/freq_server
+groupadd --gid 935 freq_server
+adduser --uid 935 --gid 935 --home-dir /home/freq_server --no-create-home freq_server
+chown -R freq_server:freq_server /var/log/freq_server
 echo "Done!"
 
 header "Configuring domain_stats"
 mkdir -p /var/log/domain_stats
 mkdir -p /var/log/domain_stats
-chown -R 1000:1000 /var/log/domain_stats
+groupadd --gid 936 domain_stats
+adduser --uid 936 --gid 936 --home-dir /home/domain_stats --no-create-home domain_stats
+chown -R domain_stats:domain_stats /var/log/domain_stats
 echo "Contacting WHOIS server for connectivity..."
 echo
 # Check for whois connectivity
