@@ -20,6 +20,16 @@ for i in `seq 1 $SECONDS`; do
 done
 echo
 
+header "Migrating ELSA log_size_limit value"
+LOG_SIZE_LIMIT=$(grep log_size_limit /etc/elsa_node.conf | cut -d: -f2 | sed 's/ //' | sed 's/,//')
+LOG_SIZE_LIMIT_GB=LOG_SIZE_LIMIT/1000000000
+cat << EOF >> /etc/nsm/securityonion.conf
+
+# Log size limit (GB) for Elasticsearch logs
+LOG_SIZE_LIMIT=$LOG_SIZE_LIMIT_GB
+EOF
+
+
 header "Running experimental ELSA migration script"
 /usr/sbin/so-migrate-elsa-data-to-elastic -y
 
