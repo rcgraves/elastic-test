@@ -21,7 +21,7 @@ done
 echo
 
 header "Migrating ELSA log_size_limit value"
-LOG_SIZE_LIMIT=$(grep log_size_limit /etc/elsa_node.conf | cut -d: -f2 | sed 's/ //' | sed 's/,//')
+LOG_SIZE_LIMIT=$(grep -q 'log_size_limit' /etc/elsa_node.conf | cut -d: -f2 | sed 's/ //' | sed 's/,//')
 LOG_SIZE_LIMIT_GB=LOG_SIZE_LIMIT/1000000000
 cat << EOF >> /etc/nsm/securityonion.conf
 
