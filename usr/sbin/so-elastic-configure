@@ -265,6 +265,8 @@ cd $ELASTICDIR
 
 . /usr/sbin/so-elastic-configure-kibana
 
+. /usr/sbin/so-elastic-configure-curator
+
 . /usr/sbin/so-elastic-configure-elastalert
 
 echo "Done!"

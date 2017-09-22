@@ -1930,7 +1930,7 @@ EOF
 fi
 
 #########################################
-# Configure ELSA
+# Configure Elastic
 #########################################
 if [ "$ELASTIC" = "YES" ]; then
     echo "49"
@@ -1977,6 +1977,12 @@ if [ "$ELASTIC" = "YES" ]; then
 
     	echo "75"
 	echo "# Please wait while configuring Elastic..." | tee -a $LOG
+	cat << EOF >> /etc/nsm/securityonion.conf
+
+# Log size limit (GB) for Elasticsearch logs
+LOG_SIZE_LIMIT=$LOG_SIZE_LIMIT_GB
+EOF	
+
 	/usr/sbin/so-elastic-configure >> $LOG 2>&1
 
 	if [ $SERVER -ne 1 ]; then
