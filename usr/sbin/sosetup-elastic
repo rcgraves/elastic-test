@@ -1144,7 +1144,7 @@ fi
 # Begin function CONFIGURE_SERVICES
 #########################################
 function CONFIGURE_SERVICES() {
-echo "HEEEEEEYYYYYY!!!!!!"
+
 #########################################
 # Remove any tmp files from previous run
 #########################################
@@ -1735,7 +1735,7 @@ if [ -f $SSH_CONF ]; then
 	echo "# Please wait while stopping and disabling mysql..." | tee -a $LOG
 	# Sensors don't need mysql, so stop and disable it
 	service mysql stop >> $LOG 2>&1
-	echo "manual" >> /etc/init/mysql.override
+	echo "manual" > /etc/init/mysql.override
 else
 	# We are the MASTER.
 
