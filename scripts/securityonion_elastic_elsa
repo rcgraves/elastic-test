@@ -10,16 +10,6 @@ header "Processing final ELSA buffers"
 sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
 sh /opt/elsa/contrib/securityonion/contrib/securityonion-elsa-cron.sh
 
-. /usr/sbin/so-elastic-configure
-
-SECONDS=60
-header "Waiting $SECONDS seconds to allow Logstash to initialize"
-for i in `seq 1 $SECONDS`; do
-        sleep 1s
-        echo -n "."
-done
-echo
-
 header "Migrating ELSA log_size_limit value"
 LOG_SIZE_LIMIT=$(grep 'log_size_limit' /etc/elsa_node.conf | cut -d: -f2 | sed 's/ //' | sed 's/,//')
 LOG_SIZE_LIMIT_GB=$(($LOG_SIZE_LIMIT/1000000000))
@@ -29,6 +19,16 @@ cat << EOF >> /etc/nsm/securityonion.conf
 LOG_SIZE_LIMIT=$LOG_SIZE_LIMIT_GB
 EOF
 echo "Done!"
+
+. /usr/sbin/so-elastic-configure
+
+SECONDS=60
+header "Waiting $SECONDS seconds to allow Logstash to initialize"
+for i in `seq 1 $SECONDS`; do
+        sleep 1s
+        echo -n "."
+done
+echo
 
 header "Running experimental ELSA migration script"
 /usr/sbin/so-migrate-elsa-data-to-elastic -y
