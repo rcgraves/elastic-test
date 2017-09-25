@@ -1977,11 +1977,15 @@ if [ "$ELASTIC" = "YES" ]; then
 
     	echo "75"
 	echo "# Please wait while configuring Elastic..." | tee -a $LOG
-	cat << EOF >> /etc/nsm/securityonion.conf
+	if ! grep -q LOG_SIZE_LIMIT $CONF; then
+        cat << EOF >> $CONF
 
 # Log size limit (GB) for Elasticsearch logs
 LOG_SIZE_LIMIT=$LOG_SIZE_LIMIT_GB
-EOF	
+EOF
+	else
+        	sed "s/LOG_SIZE_LIMIT=.*/LOG_SIZE_LIMIT=$LOG_SIZE_LIMIT_GB/" $CONF
+	fi
 
 	/usr/sbin/so-elastic-configure >> $LOG 2>&1
 
@@ -1993,7 +1997,7 @@ EOF
     		echo "90"
 		echo "# Please wait while stopping and disabling Kibana..." | tee -a $LOG
 		docker stop so-kibana >> $LOG 2>&1
-		sed -i 's|KIBANA_ENABLED="yes"|KIBANA_ENABLED="no"|g' /etc/nsm/securityonion.conf
+		sed -i 's|KIBANA_ENABLED="yes"|KIBANA_ENABLED="no"|g' $CONF
 
     		echo "95"
 		echo "# Please wait while performing final sensor configuration..." | tee -a $LOG
