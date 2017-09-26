@@ -4,7 +4,7 @@
   "description": "", 
   "title": "README", 
   "uiStateJSON": "{}", 
-  "panelsJSON": "[{\"col\":1,\"id\":\"AV6-PHKnDwoBUzALqJ_c\",\"panelIndex\":1,\"row\":1,\"size_x\":12,\"size_y\":7,\"type\":\"visualization\"}]", 
+  "panelsJSON": "[{\"col\":3,\"id\":\"AV6-PHKnDwoBUzALqJ_c\",\"panelIndex\":1,\"row\":1,\"size_x\":10,\"size_y\":11,\"type\":\"visualization\"},{\"size_x\":2,\"size_y\":11,\"panelIndex\":2,\"type\":\"visualization\",\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"col\":1,\"row\":1}]", 
   "optionsJSON": "{\"darkTheme\":true}", 
   "version": 1, 
   "kibanaSavedObjectMeta": {
