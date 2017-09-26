@@ -29,8 +29,18 @@ header "Configuring ElasticSearch"
 mkdir -p /etc/elasticsearch
 mkdir -p /nsm/elasticsearch
 mkdir -p /var/log/elasticsearch
-groupadd --gid 930 elasticsearch
-useradd --uid 930 --gid 930 --home-dir /home/elasticsearch --no-create-home elasticsearch
+if [ `id -u elasticsearch` ]; then
+	echo "User 'elasticsearch' already exists!"
+else
+	if grep -q elasticsearch /etc/group; then
+		echo "Group 'elasticsearch' already exists!"
+	else
+		echo "Creating 'elasticsearch' group..."
+		groupadd --gid 930 elasticsearch
+	fi
+	echo "Creating 'elasticsearch' user..."
+	useradd --uid 930 --gid 930 --home-dir /home/elasticsearch --no-create-home elasticsearch
+fi
 chown -R elasticsearch:elasticsearch /nsm/elasticsearch
 chown -R elasticsearch:elasticsearch /var/log/elasticsearch
 cp -av $SRC/etc/elasticsearch/* /etc/elasticsearch/
@@ -44,8 +54,18 @@ mkdir -p /nsm/logstash
 mkdir -p /var/log/logstash
 mkdir -p /etc/logstash/conf.d/
 mkdir -p /etc/logstash/optional/
-groupadd --gid 931 logstash
-useradd --uid 931 --gid 931 --home-dir /home/logstash --no-create-home logstash
+if [ `id -u logstash` ]; then
+	echo "User 'logstash' already exists!"
+else
+	if grep -q logstash /etc/group; then
+		echo "Group 'logstash' already exists!"
+	else
+		echo "Creating 'logstash' group..."
+		groupadd --gid 931 logstash
+	fi
+	echo "Creating 'logstash' user..."
+	useradd --uid 931 --gid 931 --home-dir /home/logstash --no-create-home logstash
+fi
 chown -R logstash:logstash /nsm/logstash
 chown -R logstash:logstash /var/log/logstash
 cp -av $SRC/configfiles/*.conf /etc/logstash/conf.d/
@@ -60,8 +80,18 @@ echo "Done!"
 header "Configuring Kibana"
 mkdir -p /etc/kibana
 mkdir -p /var/log/kibana
-groupadd --gid 932 kibana
-useradd --uid 932 --gid 932 --home-dir /home/kibana --no-create-home kibana
+if [ `id -u kibana` ]; then
+	echo "User 'kibana' already exists!"
+else
+	if grep -q kibana /etc/group; then
+		echo "Group 'kibana' already exists!"
+	else
+		echo "Adding 'kibana' group..."
+		groupadd --gid 932 kibana
+	fi
+	echo "Creating 'kibana' user..."
+	useradd --uid 932 --gid 932 --home-dir /home/kibana --no-create-home kibana
+fi
 chown -R kibana:kibana /etc/kibana
 chown -R kibana:kibana /var/log/kibana
 cp -av $SRC/etc/kibana/* /etc/kibana/
@@ -70,8 +100,18 @@ echo "Done!"
 header "Configuring Elastalert"
 mkdir -p /etc/elastalert/rules
 mkdir -p /var/log/elastalert
-groupadd --gid 933 elastalert
-useradd --uid 933 --gid 933 --home-dir /home/elastalert --no-create-home elastalert
+if [ `id -u elastalert` ]; then
+	echo "User 'elastalert' already exists!"
+else
+	if grep -q elastalert /etc/group ;then
+		echo "Group 'elastalert' already exists!"
+	else
+		echo "Creating 'elastalert' group..."
+		groupadd --gid 933 elastalert
+	fi
+	echo "Creating 'elastalert' user..."
+	useradd --uid 933 --gid 933 --home-dir /home/elastalert --no-create-home elastalert
+fi
 chown -R elastalert:elastalert /etc/elastalert/rules
 chown -R elastalert:elastalert /var/log/elastalert
 cp -av $SRC/etc/elastalert/rules/* /etc/elastalert/rules/
@@ -81,8 +121,18 @@ header "Configuring Curator"
 mkdir -p /etc/curator/config
 mkdir -p /etc/curator/action
 mkdir -p /var/log/curator
-groupadd --gid 934 curator
-useradd --uid 934 --gid 934 --home-dir /home/curator --no-create-home curator
+if [ `id -u curator` ]; then
+	echo "User 'curator' already exists!"
+else
+	if grep -q curator /etc/group; then
+		echo "Group 'curator' already exists!"
+	else
+		echo "Creating 'curator' group..."
+		groupadd --gid 934 curator
+	fi
+	echo "Creating 'curator' user..."
+	useradd --uid 934 --gid 934 --home-dir /home/curator --no-create-home curator
+fi
 chown -R curator:curator /etc/curator
 chown -R curator:curator /var/log/curator
 cp -av $SRC/etc/curator/config/* /etc/curator/config/
@@ -93,16 +143,36 @@ echo "Done!"
 header "Configuring freq_server"
 mkdir -p /var/log/freq_server
 mkdir -p /var/log/freq_server_dns
-groupadd --gid 935 freq_server
-useradd --uid 935 --gid 935 --home-dir /home/freq_server --no-create-home freq_server
+if [ `id -u freq_server` ]; then
+	echo "User 'freq_server' already exists!"
+else
+	if grep -q freq_server /etc/group; then
+		echo "Group 'freq_server' already exists!"
+	else
+		echo "Creating 'freq_server' group..."
+		groupadd --gid 935 freq_server
+	fi
+	echo "Creating 'freq_server' user..."
+	useradd --uid 935 --gid 935 --home-dir /home/freq_server --no-create-home freq_server
+fi
 chown -R freq_server:freq_server /var/log/freq_server
 echo "Done!"
 
 header "Configuring domain_stats"
 mkdir -p /var/log/domain_stats
 mkdir -p /var/log/domain_stats
-groupadd --gid 936 domain_stats
-useradd --uid 936 --gid 936 --home-dir /home/domain_stats --no-create-home domain_stats
+if [ `id -u domain_stats` ]; then
+	echo "User 'domain_stats' already exists!"
+else
+	if grep -q domain_stats /etc/group; then
+		echo "Group 'domain_stats' already exists!"
+	else
+		echo "Creating 'domain_stats' group..."
+		groupadd --gid 936 domain_stats
+	fi
+	echo "Creating 'domain_stats' user..."
+	useradd --uid 936 --gid 936 --home-dir /home/domain_stats --no-create-home domain_stats
+fi
 chown -R domain_stats:domain_stats /var/log/domain_stats
 echo "Contacting WHOIS server for connectivity..."
 echo
