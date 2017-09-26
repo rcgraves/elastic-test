@@ -109,7 +109,7 @@ do
     echo "Loading search ${NAME}:"
     sed ${SED_STRING} ${file} > ${TMP_SED_FILE}
     ${CURL} -XPUT ${ELASTICSEARCH}/${KIBANA_INDEX}/search/${NAME} \
-        -d @${TMP_SED_FILE} || exit 1
+        -H'Content-Type: application/json' -d @${TMP_SED_FILE} || exit 1
     echo
 done
 rm ${TMP_SED_FILE}
@@ -119,7 +119,7 @@ do
     NAME=`basename ${file} .json`
     echo "Loading visualization ${NAME}:"
     ${CURL} -XPUT ${ELASTICSEARCH}/${KIBANA_INDEX}/visualization/${NAME} \
-        -d @${file} || exit 1
+        -H'Content-Type: application/json' -d @${file} || exit 1
     echo
 done
 
@@ -128,7 +128,7 @@ do
     NAME=`basename ${file} .json`
     echo "Loading dashboard ${NAME}:"
     ${CURL} -XPUT ${ELASTICSEARCH}/${KIBANA_INDEX}/dashboard/${NAME} \
-        -d @${file} || exit 1
+        -H'Content-Type: application/json' -d @${file} || exit 1
     echo
 done
 
@@ -138,6 +138,6 @@ do
     echo "Loading index pattern ${NAME}:"
 
     ${CURL} -XPUT ${ELASTICSEARCH}/${KIBANA_INDEX}/index-pattern/${NAME} \
-        -d @${file} || exit 1
+        -H'Content-Type: application/json' -d @${file} || exit 1
     echo
 done
