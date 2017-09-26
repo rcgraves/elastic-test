@@ -27,7 +27,7 @@ echo "Done!"
 
 header "Configuring users"
 UID_GID=930
-for USER in elasticsearch logstash kibana elastalert curator domainstats freqserver; do
+for USER in elasticsearch logstash kibana elastalert curator freqserver domainstats; do
 	if grep -q $USER /etc/group; then
 		echo "Group $USER already exists!"
 	else
