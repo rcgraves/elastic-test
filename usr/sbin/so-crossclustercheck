@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Config file
+CONF=/etc/nsm/securityonion.conf
+
+# If config doesn't exist, exit immediately
+if ! [ -f ${CONF} ]; then
+	exit 0
+fi
+
+# Import config
+. ${CONF}
+
+# If either Elasticsearch or Kibana are disabled, exit immediately
+if [ ${ELASTICSEARCH_ENABLED} != "yes" -o ${KIBANA_ENABLED} != "yes" ]; then
+	exit 0
+fi
+
+# Permanent listing of all cross cluster sensors, past and present
+FILE=/etc/nsm/crossclustertab
+
+# Log file to write output to
+LOG=/var/log/nsm/crossclustercheck.log
+
+# Retrieve a list of cross cluster sensors from Elasticsearch.
+# For each of the sensors in that list, add the sensor to a file if it's not already present in the file.
+for SENSOR in $(/usr/sbin/so-elastic-settings | jq -r ".persistent.search.remote | keys[]"); do
+	PORT=$(/usr/sbin/so-elastic-settings | jq -r ".persistent.search.remote.${SENSOR}.seeds[0]")
+	grep "${SENSOR} ${PORT}" ${FILE} >/dev/null 2>&1 || echo "${SENSOR} ${PORT}" >> ${FILE}
+done
+
+# Iterate over the file (all sensors, past and present).
+# For each sensor, check to see if we can connect to it.
+# Update Elasticsearch with the status of each.
+cat ${FILE} | while read HOSTNAME INT_PORT; do
+
+	# Split INT_PORT into its constituent parts
+	DOCKER_INTERFACE=$(echo ${INT_PORT} | cut -f1 -d:)
+	REVERSE_PORT=$(echo ${INT_PORT} | cut -f2 -d:)
+
+	# Use nc to test interface and port
+	CMD="nc -vz ${DOCKER_INTERFACE} ${REVERSE_PORT}"
+	${CMD} > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		# If we can't connect, set seeds to null (disable)
+		ARGS="{\"persistent\": {\"search\": {\"remote\": {\"${HOSTNAME}\": {\"seeds\": [null]}}}}}"
+	else
+		# If we can connect, set seeds to proper IP and port (enable)
+		ARGS="{\"persistent\": {\"search\": {\"remote\": {\"${HOSTNAME}\": {\"seeds\": [\"${DOCKER_INTERFACE}:${REVERSE_PORT}\"]}}}}}"
+	fi
+
+	# Send settings to Elasticsearch and collect any output
+	OUTPUT=$(curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -d "${ARGS}" -H "Content-Type: application/json" 2>/dev/null)
+
+	# Create a log entry with ISO8601 date stamp
+	DATE=$(date --iso-8601=seconds)
+	echo "${DATE} ${HOSTNAME} ${DOCKER_INTERFACE} ${REVERSE_PORT} ${OUTPUT}" >> ${LOG}
+done
