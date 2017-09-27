@@ -1,0 +1,7 @@
+#/etc/cron.d/crossclustercheck
+#
+#crontab entry to check cross cluster nodes
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/localbin:/sbin:/bin:/usr/sbin:/usr/bin
+* * * * * root /usr/sbin/so-crossclustercheck > /dev/null 2>&1
