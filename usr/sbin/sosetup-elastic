@@ -1199,11 +1199,8 @@ service ossec-hids-server restart >> $LOG 2>&1
 echo "8"
 echo "# Please wait while stopping services..." | tee -a $LOG
 # Need to delete Elasticsearch data before stopping Elasticsearch
-if [ -f $CONF ]; then
-	source $CONF
-	/usr/sbin/so-elastic-reset -y
-fi
-# Stop Elasticsearch and all other processesi
+/usr/sbin/so-elastic-reset -y
+# Stop Elasticsearch and all other processes
 so-stop >> $LOG 2>&1
 pkill suricata
 pkill snort
