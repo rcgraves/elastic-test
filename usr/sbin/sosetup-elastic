@@ -1201,13 +1201,15 @@ echo "# Please wait while stopping services..." | tee -a $LOG
 # Need to delete Elasticsearch data before stopping Elasticsearch
 if [ -f $CONF ]; then
 	source $CONF
-	curl -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/logstash-*" > /dev/null 2>&1
+	/usr/sbin/so-elastic-reset -y
 fi
-# Stop Elasticsearch and all other processes
+# Stop Elasticsearch and all other processesi
 so-stop >> $LOG 2>&1
 pkill suricata
 pkill snort
 pkill autossh
+# Delete Logstash queue data
+/usr/sbin/so-elastic-clear-queue -y
 # Make sure MySQL is running so that we can fully delete the NSM databases
 [ $SERVER -eq 1 ] && service mysql start >> $LOG 2>&1
 # Uncomment any disabled sensors so that we can fully delete them
