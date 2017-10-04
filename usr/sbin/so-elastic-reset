@@ -6,21 +6,57 @@
 # If Elasticsearch is not enabled, then exit immediately
 [ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit
 
-# List indices
-echo
-curl -XGET "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v&pretty"
-echo
+SKIP=0
 
-# Inform user we are about to delete all data
-echo
-echo "This script will delete all data (documents, indices, etc.) in the Elasticsearch database."
-echo
-echo "If you would like to proceed, please type "AGREE" and hit ENTER."
-echo
+#########################################
+# Options
+#########################################
+usage()
+{
+cat <<EOF
+Security Onion Elastic Reset
+  Options:
+  -h         This message
+  -y         Skip interactive mode
 
-# Read user input
-read INPUT
-if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
+EOF
+}
+
+while getopts "h:y" OPTION
+do
+        case $OPTION in
+                h)
+                        usage
+                        exit 0
+                        ;;
+                y)
+                        SKIP=1
+                        ;;
+                *)
+                        usage
+                        exit 0
+                        ;; 
+        esac
+done
+
+if [ $SKIP -ne 1 ]; then
+
+	# List indices
+	echo
+	curl -XGET "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v&pretty"
+	echo
+
+	# Inform user we are about to delete all data
+	echo
+	echo "This script will delete all data (documents, indices, etc.) in the Elasticsearch database."
+	echo
+	echo "If you would like to proceed, please type "AGREE" and hit ENTER."
+	echo
+
+	# Read user input
+	read INPUT
+	if [ "$INPUT" != "AGREE" ] ; then exit 0; fi
+fi
 
 # Stop syslog-ng
 echo
@@ -30,6 +66,7 @@ echo
 # Delete data
 echo "Deleting data..."
 curl -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/logstash-*" > /dev/null 2>&1
+curl -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/elastalert_status" > /dev/null 2>&1
 
 # Start syslog-ng
 echo
