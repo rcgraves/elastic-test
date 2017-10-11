@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 
 			// Redirect to desired page
 			if ( $esid != "") {
-			        header ("Location: elk.php?" . $parameters);
+			        header ("Location: elastic.php?" . $parameters);
 			} else {
 			        header ("Location: index.php?" . $parameters);
 			}

@@ -18,7 +18,7 @@ capME!
 </title>
 <style type="text/css" media="screen">@import ".css/capme.css";</style>
 <script type="text/javascript" src=".js/jq.js"></script>
-<script type="text/javascript" src=".js/elk.js"></script>
+<script type="text/javascript" src=".js/elastic.js"></script>
 </head>
 <body class=capme_body>
 <div class=top>
