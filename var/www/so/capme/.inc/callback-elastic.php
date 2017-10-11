@@ -82,9 +82,9 @@ if (filter_var($maxtranscriptbytes, FILTER_VALIDATE_INT, array("options" => arra
 }
 
 // Validate user input - sidsrc
-// elk is the only valid value
+// elastic is the only valid value
 $sidsrc = h2s($d[2]);
-if ( $sidsrc != 'elk' ) {
+if ( $sidsrc != 'elastic' ) {
 	invalidCallback("Invalid sidsrc.");
 }
 
@@ -107,7 +107,7 @@ sid	- sensor id
 */
 
 $sensor = "";
-if ($sidsrc == "elk") {
+if ($sidsrc == "elastic") {
 
 	/*
 	If ELK is enabled, then we need to:
@@ -121,27 +121,27 @@ if ($sidsrc == "elk") {
 
 	// Submit the ES query
 	// TODO: have PHP query ES directly without shell_exec and curl
-	$elk_command = "/usr/bin/curl -XGET 'localhost:9200/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\",\"type\": \"phrase\"}}}}' 2>/dev/null";
-	$elk_response = shell_exec($elk_command);
+	$elastic_command = "/usr/bin/curl -XGET 'localhost:9200/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\",\"type\": \"phrase\"}}}}' 2>/dev/null";
+	$elastic_response = shell_exec($elastic_command);
 
 	// Try to decode the response as JSON.
-	$elk_response_object = json_decode($elk_response, true);
+	$elastic_response_object = json_decode($elastic_response, true);
 
 	// Check for common error conditions.
 	if (json_last_error() !== JSON_ERROR_NONE) { 
 		$errMsgELK = "Couldn't decode JSON from initial ES query.";
-	} elseif ( ! isset($elk_response_object["hits"]["total"]) ) {
+	} elseif ( ! isset($elastic_response_object["hits"]["total"]) ) {
 		$errMsgELK = "Initial ES query didn't return a total number of hits.";
-	} elseif ( $elk_response_object["hits"]["total"] == "0") {
+	} elseif ( $elastic_response_object["hits"]["total"] == "0") {
 		$errMsgELK = "Initial ES query couldn't find this ID.";
-	/*} elseif ( $elk_response_object["hits"]["total"] != "1") {
+	/*} elseif ( $elastic_response_object["hits"]["total"] != "1") {
 		$errMsgELK = "Initial ES query returned multiple results.";*/
 	} else { 
 
 		// Looks good so far, so let's try to parse out the connection details.
 		// Let's first check to see if it's a Bro log that has a CID in the uid field.
-		if (isset($elk_response_object["hits"]["hits"][0]["_source"]["uid"]) ) {
-			$uid = $elk_response_object["hits"]["hits"][0]["_source"]["uid"];
+		if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["uid"]) ) {
+			$uid = $elastic_response_object["hits"]["hits"][0]["_source"]["uid"];
 			// A Bro CID should be alphanumeric and begin with the letter C
 			if (ctype_alnum($uid)) {
 				if (substr($uid,0,1)=="C") {
@@ -153,8 +153,8 @@ if ($sidsrc == "elk") {
 		// source_ip, source_port, destination_ip, and destination_port
 		if ( $bro_conn_query == "" ) {
 			// source_ip
-			if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
-				$sip = $elk_response_object["hits"]["hits"][0]["_source"]["source_ip"];
+			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
+				$sip = $elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"];
 				if (!filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
         				$errMsgELK = "Invalid source IP.";
 				}
@@ -163,8 +163,8 @@ if ($sidsrc == "elk") {
 			}
 
 			// source_port
-			if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_port"])) {
-				$spt = $elk_response_object["hits"]["hits"][0]["_source"]["source_port"];
+			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["source_port"])) {
+				$spt = $elastic_response_object["hits"]["hits"][0]["_source"]["source_port"];
 				if (filter_var($spt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
 				        $errMsgELK = "Invalid source port.";
 				}
@@ -173,8 +173,8 @@ if ($sidsrc == "elk") {
 			}
 
 			// destination_ip
-			if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
-				$dip = $elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
+			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
+				$dip = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
 				if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
         				$errMsgELK = "Invalid source IP.";
 				}
@@ -183,8 +183,8 @@ if ($sidsrc == "elk") {
 			}
 
 			// destination_port
-			if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_port"])) {
-				$dpt = $elk_response_object["hits"]["hits"][0]["_source"]["destination_port"];
+			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_port"])) {
+				$dpt = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_port"];
 				if (filter_var($dpt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
 				        $errMsgELK = "Invalid source port.";
 				}
@@ -197,7 +197,7 @@ if ($sidsrc == "elk") {
 				$bro_conn_query = "$sip AND $spt AND $dip AND $dpt";
 			}
 		}
-		$timestamp = $elk_response_object["hits"]["hits"][0]["_source"]["@timestamp"];
+		$timestamp = $elastic_response_object["hits"]["hits"][0]["_source"]["@timestamp"];
 		$timestamp_epoch = strtotime($timestamp);
 		$mintime=time() - 5 * 365 * 24 * 60 * 60;
 		$maxtime=time() + 5 * 365 * 24 * 60 * 60;
@@ -215,7 +215,7 @@ if ($sidsrc == "elk") {
 		// Now we to send those parameters back to ELK to see if we can find a matching bro_conn log
 		if ($errMsgELK == "") {
 			// TODO: have PHP query ES directly without shell_exec and curl
-			$elk_command = "/usr/bin/curl -XGET 'localhost:9200/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
+			$elastic_command = "/usr/bin/curl -XGET 'localhost:9200/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
 {
   \"query\": {
     \"bool\": {
@@ -239,29 +239,29 @@ if ($sidsrc == "elk") {
     }
   }
 }' 2>/dev/null";
-			$elk_response = shell_exec($elk_command);
+			$elastic_response = shell_exec($elastic_command);
 
 			// Try to decode the response as JSON.
-			$elk_response_object = json_decode($elk_response, true);
+			$elastic_response_object = json_decode($elastic_response, true);
 
 			// Check for common error conditions.
 			if (json_last_error() !== JSON_ERROR_NONE) { 
 				$errMsgELK = "Couldn't decode JSON from second ES query.";
-			} elseif ( ! isset($elk_response_object["hits"]["total"]) ) {
+			} elseif ( ! isset($elastic_response_object["hits"]["total"]) ) {
 				$errMsgELK = "Second ES query didn't return a total number of hits.";
-			} elseif ( $elk_response_object["hits"]["total"] == "0") {
+			} elseif ( $elastic_response_object["hits"]["total"] == "0") {
 				$errMsgELK = "Second ES query couldn't find this ID.";
-			/*} elseif ( $elk_response_object["hits"]["total"] != "1") {
+			/*} elseif ( $elastic_response_object["hits"]["total"] != "1") {
 				$errMsgELK = "Second ES query returned multiple matches.";*/
-			} elseif ( ! isset($elk_response_object["hits"]["hits"][0]["_source"]["protocol"]) ) {
+			} elseif ( ! isset($elastic_response_object["hits"]["hits"][0]["_source"]["protocol"]) ) {
 				$errMsgELK = "Second ES query didn't return a protocol field.";
-			} elseif ( !in_array($elk_response_object["hits"]["hits"][0]["_source"]["protocol"], array('tcp','udp'), TRUE)) {
+			} elseif ( !in_array($elastic_response_object["hits"]["hits"][0]["_source"]["protocol"], array('tcp','udp'), TRUE)) {
                 		$errMsgELK = "CapMe currently only supports TCP and UDP.";
 			} else { 
 				// In case we didn't parse out IP addresses and ports above, let's do that now
 				// source_ip
-				if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
-					$sip = $elk_response_object["hits"]["hits"][0]["_source"]["source_ip"];
+				if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
+					$sip = $elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"];
 					error_log($sip);
 					if (!filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
 	        				$errMsgELK = "Invalid source IP.";
@@ -271,8 +271,8 @@ if ($sidsrc == "elk") {
 				}
 
 				// source_port
-				if (isset($elk_response_object["hits"]["hits"][0]["_source"]["source_port"])) {
-					$spt = $elk_response_object["hits"]["hits"][0]["_source"]["source_port"];
+				if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["source_port"])) {
+					$spt = $elastic_response_object["hits"]["hits"][0]["_source"]["source_port"];
 					if (filter_var($spt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
 					        $errMsgELK = "Invalid source port.";
 					}
@@ -281,8 +281,8 @@ if ($sidsrc == "elk") {
 				}
 
 				// destination_ip
-				if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
-					$dip = $elk_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
+				if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
+					$dip = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
 					error_log($dip);
 					if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
         					$errMsgELK = "Invalid source IP.";
@@ -292,8 +292,8 @@ if ($sidsrc == "elk") {
 				}
 	
 				// destination_port
-				if (isset($elk_response_object["hits"]["hits"][0]["_source"]["destination_port"])) {
-					$dpt = $elk_response_object["hits"]["hits"][0]["_source"]["destination_port"];
+				if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_port"])) {
+					$dpt = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_port"];
 					if (filter_var($dpt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
 					        $errMsgELK = "Invalid source port.";
 					}
@@ -301,7 +301,7 @@ if ($sidsrc == "elk") {
 					$errMsgELK = "Missing destination port.";
 				}
 
-				$sensor = $elk_response_object["hits"]["hits"][0]["_source"]["sensor_name"];
+				$sensor = $elastic_response_object["hits"]["hits"][0]["_source"]["sensor_name"];
 				$timestamp = str_replace("T", " ", $timestamp);
 				$st = substr($timestamp, 0, -5);
 			} 
@@ -359,7 +359,7 @@ if ($err == 1) {
     $cmd = "../.scripts/$script \"$usr\" \"$sensor\" \"$st\" $sid $sip $dip $spt $dpt";
 
     // If the request came from ELK, check to see if the event is UDP.
-    if ($elk_response_object["hits"]["hits"][0]["_source"]["protocol"] == "udp") {
+    if ($elastic_response_object["hits"]["hits"][0]["_source"]["protocol"] == "udp") {
 	$proto=17;
     }
 
