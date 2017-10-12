@@ -217,7 +217,6 @@ if ($sidsrc == "elastic") {
 		if ($errMsgElastic == "") {
 			// TODO: have PHP query ES directly without shell_exec and curl
 			include_once('./inc/config.php');
-
 			$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
 
 {
