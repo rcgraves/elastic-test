@@ -15,6 +15,9 @@ echo
 echo "Starting containers:"
 echo
 
+# FREQSERVER
+# Does not need to publish any ports
+# All communication will happen on $DOCKERNET
 if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
 	echo -n "so-freqserver: "
 	if docker ps | grep -q so-freqserver; then
@@ -29,6 +32,9 @@ if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
 	fi
 fi
 
+# DOMAINSTATS
+# Does not need to publish any ports
+# All communication will happen on $DOCKERNET
 if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
 	echo -n "so-domainstats: "
 	if docker ps | grep -q so-domainstats; then
@@ -43,6 +49,8 @@ if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
 	fi
 fi
 
+# ELASTICSEARCH
+# Publish ports to localhost 127.0.0.1 ONLY
 if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 	echo -n "so-elasticsearch: "
 	
@@ -76,6 +84,8 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 	fi
 fi
 
+# LOGSTASH
+# Publish ports to localhost 127.0.0.1 ONLY
 if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 	echo -n "so-logstash: "
 	if docker ps | grep -q so-logstash; then
@@ -117,6 +127,8 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 	fi
 fi
 
+# KIBANA
+# Publish ports to localhost 127.0.0.1 ONLY
 if [ "$KIBANA_ENABLED" = "yes" ]; then
 	if docker ps | grep -q so-kibana; then
 		echo -n "so-kibana: "
@@ -168,6 +180,8 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 	fi
 fi
 
+# ELASTALERT
+# No published ports
 if [ "$ELASTALERT_ENABLED" = "yes" ]; then
         echo -n "so-elastalert: "
         if docker ps | grep -q so-elastalert; then
@@ -183,6 +197,8 @@ if [ "$ELASTALERT_ENABLED" = "yes" ]; then
 	fi
 fi	
 
+# CURATOR
+# No published ports
 if [ "$CURATOR_ENABLED" = "yes" ]; then
         echo -n "so-curator: "
         if docker ps | grep -q so-curator; then
