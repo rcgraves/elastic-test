@@ -143,7 +143,7 @@ if ($sidsrc == "elastic") {
 			list(, $new_str) = explode("=", $line);
 			$rm_whitespace = trim($new_str);
 			$elastic_port = trim($rm_whitespace, '"');
-			}
+		}
 	}
 
 	$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\",\"type\": \"phrase\"}}}}' 2>/dev/null";
