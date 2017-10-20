@@ -53,6 +53,7 @@ fi
 # Publish ports to localhost 127.0.0.1 ONLY
 if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 	echo -n "so-elasticsearch: "
+	
 	if docker ps | grep -q so-elasticsearch; then
 		echo "Already started!"
 	else

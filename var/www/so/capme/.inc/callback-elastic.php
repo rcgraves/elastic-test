@@ -121,7 +121,32 @@ if ($sidsrc == "elastic") {
 
 	// Submit the ES query
 	// TODO: have PHP query ES directly without shell_exec and curl
-	$elastic_command = "/usr/bin/curl -XGET 'localhost:9200/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\",\"type\": \"phrase\"}}}}' 2>/dev/null";
+	
+	// Determine Elastic hostname and port
+
+	// Define file from which to pull our values
+	$es_array = file("/etc/nsm/securityonion.conf");
+	
+	// Define the strings we are looking for
+	$host_string = "ELASTICSEARCH_HOST";
+	$port_string = "ELASTICSEARCH_PORT";
+
+	// Search for our strings
+	foreach($es_array as $line) {
+		// If we find a match, retrieve only the value and clean it up
+		if(strpos($line, $host_string) !== false) {
+			list(, $new_str) = explode("=", $line);
+			$rm_whitespace = trim($new_str);
+			$elastic_host = trim($rm_whitespace, '"');
+		}
+		if(strpos($line, $port_string) !== false) {
+			list(, $new_str) = explode("=", $line);
+			$rm_whitespace = trim($new_str);
+			$elastic_port = trim($rm_whitespace, '"');
+		}
+	}
+
+	$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\",\"type\": \"phrase\"}}}}' 2>/dev/null";
 	$elastic_response = shell_exec($elastic_command);
 
 	// Try to decode the response as JSON.
@@ -215,7 +240,9 @@ if ($sidsrc == "elastic") {
 		// Now we to send those parameters back to Elastic to see if we can find a matching bro_conn log
 		if ($errMsgElastic == "") {
 			// TODO: have PHP query ES directly without shell_exec and curl
-			$elastic_command = "/usr/bin/curl -XGET 'localhost:9200/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
+		
+			$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
+
 {
   \"query\": {
     \"bool\": {
