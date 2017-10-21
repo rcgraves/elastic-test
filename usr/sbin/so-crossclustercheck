@@ -34,10 +34,10 @@ fi
 # Retrieve a list of cross cluster sensors from Elasticsearch.
 # For each of the sensors in that list, add the sensor to a file if it's not already present in the file.
 URL="http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings"
-SENSORS=$(curl $CROSSCLUSTER_CURL_OPTIONS -XGET ${URL} 2>/dev/null | jq -r ".persistent.search.remote | keys[]")
+SENSORS=$(curl ${CROSSCLUSTER_CURL_OPTIONS} -XGET ${URL} 2>/dev/null | jq -r ".persistent.search.remote | keys[]")
 for SENSOR in ${SENSORS}; do
-	PORT=$(curl $CROSSCLUSTER_CURL_OPTIONS -XGET ${URL} 2>/dev/null | jq -r ".persistent.search.remote.${SENSOR}.seeds[0]")
-	if ! grep -q "${SENSOR} ${PORT}" ${CROSSCLUSTERTAB}; then
+	PORT=$(curl ${CROSSCLUSTER_CURL_OPTIONS} -XGET ${URL} 2>/dev/null | jq -r ".persistent.search.remote.${SENSOR}.seeds[0]")
+	if ! grep -q "${SENSOR} ${PORT}" ${CROSSCLUSTERTAB} >/dev/null 2>&1; then
 		echo "${SENSOR} ${PORT}" >> ${CROSSCLUSTERTAB}
 	fi
 done
@@ -62,7 +62,7 @@ cat ${CROSSCLUSTERTAB} | while read HOSTNAME INT_PORT; do
 	fi
 
 	# Send settings to Elasticsearch and collect any output
-	OUTPUT=$(curl $CROSSCLUSTER_CURL_OPTIONS -XPUT $URL -d "${ARGS}" -H "Content-Type: application/json" 2>/dev/null)
+	OUTPUT=$(curl ${CROSSCLUSTER_CURL_OPTIONS} -XPUT $URL -d "${ARGS}" -H "Content-Type: application/json" 2>/dev/null)
 
 	# Create a log entry with ISO8601 date stamp
 	DATE=$(date --iso-8601=seconds)

@@ -95,7 +95,6 @@ chown -R curator:curator /etc/curator
 chown -R curator:curator /var/log/curator
 cp -av $SRC/etc/curator/config/* /etc/curator/config/
 cp -av $SRC/etc/curator/action/* /etc/curator/action/
-#cp -av $SRC/etc/cron.d/* /etc/cron.d/
 echo "Done!"
 
 header "Configuring freq_server"
@@ -119,11 +118,6 @@ if [ $? -eq 1 ]; then
 else
         DS_ENABLED="yes"
 fi
-echo "Done!"
-
-header "Configuring cron jobs"
-#cp -av $SRC/etc/cron.d/* /etc/cron.d/
-cp -av $SRC/etc/cron.d/curator* /etc/cron.d/
 echo "Done!"
 
 ELSA=NO
@@ -284,4 +278,10 @@ cd $ELASTICDIR
 
 . /usr/sbin/so-elastic-configure-elastalert
 
+header "Configuring cron jobs"
+#cp -av $SRC/etc/cron.d/curator* /etc/cron.d/
+cp -av $SRC/etc/cron.d/* /etc/cron.d/
 echo "Done!"
+
+echo
+echo "All Done!"
