@@ -168,7 +168,7 @@ function ask() {
 #########################################
 TEXT="WARNINGS AND DISCLAIMERS!\n\
 \n\
-Experimental Mode is ALPHA, BLEEDING EDGE, and TOTALLY UNSUPPORTED!\n\
+Experimental Mode is BLEEDING EDGE and TOTALLY UNSUPPORTED!\n\
 If this breaks your system, you get to keep both pieces!\n\
 This is a work in progress and is in constant flux.\n\
 This is intended to build a quick prototype proof of concept so you can see what our\n\
