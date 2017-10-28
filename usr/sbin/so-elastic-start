@@ -134,7 +134,7 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
         	echo -n "Waiting for ElasticSearch..."
         	COUNT=0
 		ELASTICSEARCH_CONNECTED="no"
-		while [[ "$COUNT" -le 60 ]]; do
+		while [[ "$COUNT" -le 240 ]]; do
                 	curl --output /dev/null --silent --head --fail http://"$ELASTICSEARCH_HOST":"$ELASTICSEARCH_PORT"
 			if [ $? -eq 0 ]; then
 				ELASTICSEARCH_CONNECTED="yes"
