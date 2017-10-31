@@ -1966,9 +1966,11 @@ if [ "$ELASTIC" = "YES" ]; then
         echo "* Restarting syslog-ng" >> $LOG 2>&1
         service syslog-ng restart >> $LOG 2>&1
 
-    	echo "50"
-	echo "# Please wait while downloading Elastic components..." | tee -a $LOG
-	/usr/sbin/so-elastic-download >> $LOG 2>&1
+	if ! dpkg -L docker-ce >/dev/null 2>&1; then
+		echo "50"
+		echo "# Please wait while downloading Elastic components..." | tee -a $LOG
+		/usr/sbin/so-elastic-download >> $LOG 2>&1
+	fi
 
     	echo "75"
 	echo "# Please wait while configuring Elastic..." | tee -a $LOG
