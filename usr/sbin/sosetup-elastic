@@ -1731,10 +1731,6 @@ if [ -f $SSH_CONF ]; then
 	# Sensors don't need the Apache web server, so stop and disable it
 	service apache2 stop >> $LOG 2>&1
 	update-rc.d -f apache2 disable >> $LOG 2>&1
-	echo "# Please wait while stopping and disabling mysql..." | tee -a $LOG
-	# Sensors don't need mysql, so stop and disable it
-	service mysql stop >> $LOG 2>&1
-	echo "manual" > /etc/init/mysql.override
 else
 	# We are the MASTER.
 
@@ -1997,6 +1993,11 @@ EOF
 		echo "# Please wait while stopping and disabling Kibana..." | tee -a $LOG
 		docker stop so-kibana >> $LOG 2>&1
 		sed -i 's|KIBANA_ENABLED="yes"|KIBANA_ENABLED="no"|g' $CONF
+
+    		echo "93"
+		echo "# Please wait while stopping and disabling MySQL..." | tee -a $LOG
+		service mysql stop >> $LOG 2>&1
+		echo "manual" > /etc/init/mysql.override
 
     		echo "95"
 		echo "# Please wait while performing final sensor configuration..." | tee -a $LOG
