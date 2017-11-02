@@ -1936,47 +1936,47 @@ if [ "$ELASTIC" = "YES" ]; then
 	SYSLOGNGCONFDST="/etc/syslog-ng/syslog-ng.conf"
 
 	# Initialize HTTP_LOGS
-        HTTP_LOGS=""
+	HTTP_LOGS=""
 
 	# Get a list of sensors from /etc/nsm/sensortab
-        SENSORS=$(grep -v "^#" /etc/nsm/sensortab | cut -f 4)
+	SENSORS=$(grep -v "^#" /etc/nsm/sensortab | cut -f 4)
 
 	# Determine the number of sensor interfaces
-        COUNT=0
-        for token in $SENSORS; do
-                COUNT=$((COUNT+1))
-        done
+	COUNT=0
+	for token in $SENSORS; do
+		COUNT=$((COUNT+1))
+	done
 
 	# If master server only, copy syslog-ng.conf into place
-        if [ $COUNT -eq 0 ]; then
+	if [ $COUNT -eq 0 ]; then
 		cp $SYSLOGNGCONFSRC $SYSLOGNGCONFDST
 	fi
 
 	# If single sensor interface, we need to determine if Bro is running in standalone mode or cluster mode
-        if [ $COUNT -eq 1 ]; then
-                if grep "type=standalone" /opt/bro/etc/node.cfg > /dev/null; then
-                        echo "* Leaving syslog-ng.conf bro_http entry unmolested." >> $LOG 2>&1
+	if [ $COUNT -eq 1 ]; then
+		if grep "type=standalone" /opt/bro/etc/node.cfg > /dev/null; then
+			echo "* Leaving syslog-ng.conf bro_http entry unmolested." >> $LOG 2>&1
 			cp $SYSLOGNGCONFSRC $SYSLOGNGCONFDST
-                else
-                        echo "* Altering syslog-ng.conf bro_http entry for single interface cluster-mode" >> $LOG 2>&1
-                        # Pull the interface bro is listening for from node.cfg
-                        BRO_IFACE=$(grep "interface=" /opt/bro/etc/node.cfg | cut -d'=' -f2)
-                        # Alter syslog-ng.conf's entry for http
-                        sed -e "s|^\tfile(\"/nsm/bro/logs/current/http.log\".*|\tfile(\"/nsm/bro/logs/current/http_$BRO_IFACE.log\" flags(no-parse) program_override(\"bro_http\"));\n|" $SYSLOGNGCONFSRC > $SYSLOGNGCONFDST
-                fi
-        fi
+		else
+			echo "* Altering syslog-ng.conf bro_http entry for single interface cluster-mode" >> $LOG 2>&1
+			# Pull the interface bro is listening for from node.cfg
+			BRO_IFACE=$(grep "interface=" /opt/bro/etc/node.cfg | cut -d'=' -f2)
+			# Alter syslog-ng.conf's entry for http
+			sed -e "s|^\tfile(\"/nsm/bro/logs/current/http.log\".*|\tfile(\"/nsm/bro/logs/current/http_$BRO_IFACE.log\" flags(no-parse) program_override(\"bro_http\"));\n|" $SYSLOGNGCONFSRC > $SYSLOGNGCONFDST
+		fi
+	fi
 
 	# If multiple sensor interfaces, Bro must be running in cluster mode and we need to watch multiple http logs
-        if [ $COUNT -gt 1 ]; then
-                echo "* Altering syslog-ng.conf bro_http entries for multiple interfaces" >> $LOG 2>&1
-                for i in $SENSORS; do
-                        HTTP_LOGS=$HTTP_LOGS"\tfile(\"/nsm/bro/logs/current/http_$i.log\" flags(no-parse) program_override(\"bro_http\"));\n"
-                done
-                sed -e "s|^\tfile(\"/nsm/bro/logs/current/http.log\".*|$HTTP_LOGS|" $SYSLOGNGCONFSRC > $SYSLOGNGCONFDST
-        fi
+	if [ $COUNT -gt 1 ]; then
+		echo "* Altering syslog-ng.conf bro_http entries for multiple interfaces" >> $LOG 2>&1
+		for i in $SENSORS; do
+			HTTP_LOGS=$HTTP_LOGS"\tfile(\"/nsm/bro/logs/current/http_$i.log\" flags(no-parse) program_override(\"bro_http\"));\n"
+		done
+		sed -e "s|^\tfile(\"/nsm/bro/logs/current/http.log\".*|$HTTP_LOGS|" $SYSLOGNGCONFSRC > $SYSLOGNGCONFDST
+	fi
 
-        echo "* Restarting syslog-ng" >> $LOG 2>&1
-        service syslog-ng restart >> $LOG 2>&1
+	echo "* Restarting syslog-ng" >> $LOG 2>&1
+	service syslog-ng restart >> $LOG 2>&1
 
 	if ! dpkg -L docker-ce >/dev/null 2>&1; then
 		echo "50"
@@ -1984,7 +1984,7 @@ if [ "$ELASTIC" = "YES" ]; then
 		/usr/sbin/so-elastic-download >> $LOG 2>&1
 	fi
 
-    	echo "75"
+	echo "75"
 	echo "# Please wait while configuring Elastic..." | tee -a $LOG
 	if ! grep -q LOG_SIZE_LIMIT $CONF; then
         cat << EOF >> $CONF
