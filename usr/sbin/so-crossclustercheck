@@ -36,7 +36,7 @@ fi
 URL="http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings"
 SENSORS=$(curl ${CROSSCLUSTER_CURL_OPTIONS} -XGET ${URL} 2>/dev/null | jq -r ".persistent.search.remote | keys[]")
 for SENSOR in ${SENSORS}; do
-	PORT=$(curl ${CROSSCLUSTER_CURL_OPTIONS} -XGET ${URL} 2>/dev/null | jq -r ".persistent.search.remote.${SENSOR}.seeds[0]")
+	PORT=$(curl ${CROSSCLUSTER_CURL_OPTIONS} -XGET ${URL} 2>/dev/null | jq -r ".persistent.search.remote[\"${SENSOR}\"].seeds[0]")
 	if ! grep -q "${SENSOR} ${PORT}" ${CROSSCLUSTERTAB} >/dev/null 2>&1; then
 		echo "${SENSOR} ${PORT}" >> ${CROSSCLUSTERTAB}
 	fi
