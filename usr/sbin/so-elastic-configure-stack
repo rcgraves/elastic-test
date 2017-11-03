@@ -45,6 +45,7 @@ chown -R elasticsearch:elasticsearch /var/log/elasticsearch
 touch /etc/nsm/crossclustertab
 chown elasticsearch:elasticsearch /etc/nsm/crossclustertab 
 cp -av $SRC/etc/elasticsearch/* /etc/elasticsearch/
+cp -av $SRC/etc/logrotate.d/crossclustercheck /etc/logrotate.d/crossclustercheck
 if [ -f /etc/elasticsearch/elasticsearch.yml ]; then
         sed -i "s/cluster\.name.*/cluster\.name: \"$HOSTNAME\"/" /etc/elasticsearch/elasticsearch.yml
 fi
