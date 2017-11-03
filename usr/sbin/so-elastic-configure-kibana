@@ -5,3 +5,5 @@
 . /usr/sbin/so-elastic-configure-kibana-config
 
 . /usr/sbin/so-elastic-configure-kibana-dashboards
+
+. /usr/sbin/so-elastic-configure-kibana-shortcuts
