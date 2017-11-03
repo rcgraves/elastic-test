@@ -4,4 +4,4 @@
 
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-* * * * * root /usr/sbin/so-crossclustercheck > /dev/null 2>&1
+* * * * * elasticsearch /usr/sbin/so-crossclustercheck > /dev/null 2>&1

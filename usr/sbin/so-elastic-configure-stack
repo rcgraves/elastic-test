@@ -42,6 +42,8 @@ mkdir -p /nsm/elasticsearch
 mkdir -p /var/log/elasticsearch
 chown -R elasticsearch:elasticsearch /nsm/elasticsearch
 chown -R elasticsearch:elasticsearch /var/log/elasticsearch
+touch /etc/nsm/crossclustertab
+chown elasticsearch:elasticsearch /etc/nsm/crossclustertab 
 cp -av $SRC/etc/elasticsearch/* /etc/elasticsearch/
 if [ -f /etc/elasticsearch/elasticsearch.yml ]; then
         sed -i "s/cluster\.name.*/cluster\.name: \"$HOSTNAME\"/" /etc/elasticsearch/elasticsearch.yml

@@ -4,7 +4,7 @@
 CROSSCLUSTERTAB=/etc/nsm/crossclustertab
 
 # Log file to write output to
-CROSSCLUSTERLOG=/var/log/nsm/crossclustercheck.log
+CROSSCLUSTERLOG=/var/log/elasticsearch/crossclustercheck.log
 
 # Limit curl to 5 seconds
 CROSSCLUSTER_CURL_OPTIONS="--max-time 5"
