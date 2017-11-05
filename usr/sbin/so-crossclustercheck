@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# This script is disabled by default until Setup is run and /etc/nsm/securityonion.conf overrides this value
-CROSSCLUSTER_CHECK_ENABLED="no"
-
 # Permanent listing of all cross cluster sensors, past and present
 CROSSCLUSTERTAB=/etc/nsm/crossclustertab
 
@@ -11,6 +8,11 @@ CROSSCLUSTERLOG=/var/log/elasticsearch/crossclustercheck.log
 
 # Limit curl to 5 seconds
 CROSSCLUSTER_CURL_OPTIONS="--max-time 5"
+
+# This script is disabled by default until Setup is run and /etc/nsm/securityonion.conf overrides these values
+CROSSCLUSTER_CHECK_ENABLED="no"
+ELASTICSEARCH_ENABLED="no"
+KIBANA_ENABLED="no"
 
 # The default settings above can be overridden in the config file
 CONF=/etc/nsm/securityonion.conf
@@ -24,7 +26,7 @@ fi
 source ${CONF}
 
 # If crosscluster_check, Elasticsearch, or Kibana are disabled, exit immediately
-if [ ${ELASTICSEARCH_ENABLED} != "yes" -o ${KIBANA_ENABLED} != "yes" -o ${CROSSCLUSTER_CHECK_ENABLED} != "yes" ]; then
+if [ "${ELASTICSEARCH_ENABLED}" != "yes" -o "${KIBANA_ENABLED}" != "yes" -o "${CROSSCLUSTER_CHECK_ENABLED}" != "yes" ]; then
 	exit 0
 fi
 
