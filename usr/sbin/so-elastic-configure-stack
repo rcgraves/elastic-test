@@ -183,7 +183,7 @@ echo "Done!"
 
 header "Starting Elastic Stack"
 chmod +x /usr/sbin/so-elastic-*
-/usr/sbin/so-docker-start
+/usr/sbin/so-elastic-start
 echo "Done!"
 
 header "Configuring Elastic Stack to start on boot"

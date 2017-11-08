@@ -4,4 +4,4 @@
 
 /usr/sbin/so-elastic-stop
 echo
-/usr/sbin/so-docker-start
+/usr/sbin/so-elastic-start
