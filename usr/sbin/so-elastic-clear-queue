@@ -66,7 +66,7 @@ rm /nsm/logstash/queue/main/* > /dev/null 2>&1
 
 # Start Logstash and other services if not already started
 echo
-so-elastic-start
+so-docker-start
 echo
 
 # Message to user

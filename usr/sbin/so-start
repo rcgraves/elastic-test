@@ -17,4 +17,4 @@ echo
 header "Starting Elastic stack..."
 echo
 
-/usr/sbin/so-elastic-start
+/usr/sbin/so-docker-start
