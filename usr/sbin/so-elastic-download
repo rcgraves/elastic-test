@@ -7,7 +7,7 @@ function download {
 
 header "Adding Docker repo"
 cp $SRC/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
-apt -y install apt-transport-https ca-certificates curl > /dev/null
+apt-get -y install apt-transport-https ca-certificates curl > /dev/null
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 add-apt-repository        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
        $(lsb_release -cs) \
@@ -15,7 +15,7 @@ add-apt-repository        "deb [arch=amd64] https://download.docker.com/linux/ub
 echo "Done!"
 
 header "Updating package list"
-apt update > /dev/null
+apt-get update > /dev/null
 echo "Done!"
 
 header "Installing Docker"
@@ -23,7 +23,7 @@ header "Installing Docker"
 if [ $(dpkg -l | grep -q docker-ce) ]; then
 	:
 else
-	apt -y install docker-ce > /dev/null
+	apt-get -y install docker-ce > /dev/null
 fi
 echo "Done!"
 
@@ -43,7 +43,7 @@ for i in securityonion-samples-bro libapache2-mod-authnz-external; do
 	if dpkg -l | grep -q $i; then
 	:
 	else
-	apt install -y $i > /dev/null
+	apt-get install -y $i > /dev/null
 	fi
 done
 echo "Done!"
@@ -52,7 +52,7 @@ header "Updating existing packages"
 # Need to ensure we're running the latest versions of these packages
 # so don't just check to see if they've already been installed,
 # force the update
-apt install -y securityonion-setup securityonion-sostat
+apt-get install -y securityonion-setup securityonion-sostat
 echo "Done!"
 
 }
