@@ -1145,11 +1145,12 @@ fi
 function CONFIGURE_SERVICES() {
 
 #########################################
-# Remove any tmp files from previous run
+# Remove old files
 #########################################
 rm -f /tmp/GeoIP.dat
 rm -f /tmp/GeoLiteCity.dat
 rm -f /tmp/GeoLiteCity.dat.gz
+rm -f /etc/nsm/crossclustertab
 
 #########################################
 # Create files/dirs as necessary
