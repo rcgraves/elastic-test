@@ -1,0 +1,10 @@
+{
+  "visState": "{\"title\":\"Logstash  - Median Processing Time (Builder)\",\"type\":\"metrics\",\"params\":{\"id\":\"613db1b0-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"metric\",\"series\":[{\"id\":\"613db1b1-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"#68BC00\",\"split_mode\":\"everything\",\"metrics\":[{\"id\":\"613db1b2-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"percentile\",\"field\":\"logstash_time\",\"percentiles\":[{\"id\":\"a81019d0-c581-11e7-8d82-77b4f13a34df\",\"mode\":\"line\",\"shade\":0.2,\"value\":50}]}],\"seperate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\",\"terms_field\":\"logstash_time\",\"terms_size\":\"1000\",\"terms_order_by\":\"_count\",\"filter\":\"\",\"label\":\"Logstash  - Median Processing Time\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"*:logstash-*\",\"interval\":\"1y\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"show_legend\":1,\"background_color_rules\":[{\"value\":0,\"id\":\"631c5cc0-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"rgba(251,158,0,1)\",\"opperator\":\"gte\"}],\"drop_last_bucket\":0,\"filter\":\"\"},\"aggs\":[],\"listeners\":{}}", 
+  "description": "", 
+  "title": "Logstash  - Median Processing Time (Builder)", 
+  "uiStateJSON": "{}", 
+  "version": 1, 
+  "kibanaSavedObjectMeta": {
+    "searchSourceJSON": "{\"query\":{\"match_all\":{}},\"filter\":[]}"
+  }
+}
