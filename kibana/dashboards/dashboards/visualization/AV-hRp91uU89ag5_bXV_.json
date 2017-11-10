@@ -1,0 +1,10 @@
+{
+  "visState": "{\"title\":\"Total Number of Logs (Builder)\",\"type\":\"metrics\",\"params\":{\"id\":\"eff20c10-c55c-11e7-81ee-5d77075214c7\",\"type\":\"metric\",\"series\":[{\"id\":\"eff20c11-c55c-11e7-81ee-5d77075214c7\",\"color\":\"#68BC00\",\"split_mode\":\"everything\",\"metrics\":[{\"id\":\"eff20c12-c55c-11e7-81ee-5d77075214c7\",\"type\":\"count\"}],\"seperate_axis\":0,\"fontSize\":30,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\",\"label\":\"Total Number of Logs\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"*:logstash-*\",\"interval\":\"1y\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"show_legend\":1,\"background_color_rules\":[{\"value\":0,\"id\":\"f13d9ee0-c55c-11e7-81ee-5d77075214c7\",\"background_color\":null,\"color\":\"rgba(252,196,0,1)\",\"opperator\":\"gte\"}],\"drop_last_bucket\":0,\"filter\":\"\"},\"aggs\":[],\"listeners\":{}}", 
+  "description": "", 
+  "title": "Total Number of Logs (Builder)", 
+  "uiStateJSON": "{}", 
+  "version": 1, 
+  "kibanaSavedObjectMeta": {
+    "searchSourceJSON": "{\"query\":{\"match_all\":{}},\"filter\":[]}"
+  }
+}
