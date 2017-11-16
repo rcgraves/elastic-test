@@ -230,8 +230,8 @@ if ($sidsrc == "elastic") {
 		        $errMsgElastic = "Invalid start time.";
 		}
 		// Set a start time and end time for the search to allow for a little bit of clock drift amongst different log sources
-		$st = $timestamp_epoch - 600;
-		$et = $timestamp_epoch + 600;
+		$st = $timestamp_epoch - 1800;
+		$et = $timestamp_epoch + 1800;
 		// ES expects timestamps with millisecond precision
 		$st_es = $st * 1000;
 		$et_es = $et * 1000;
@@ -277,10 +277,6 @@ if ($sidsrc == "elastic") {
 				$errMsgElastic = "Second ES query didn't return a total number of hits.";
 			} elseif ( $elastic_response_object["hits"]["total"] == "0") {
 				$errMsgElastic = "Second ES query couldn't find this ID.";
-			} elseif ( ! isset($elastic_response_object["hits"]["hits"][0]["_source"]["protocol"]) ) {
-				$errMsgElastic = "Second ES query didn't return a protocol field.";
-			} elseif ( !in_array($elastic_response_object["hits"]["hits"][0]["_source"]["protocol"], array('tcp','udp'), TRUE)) {
-                		$errMsgElastic = "CapMe currently only supports TCP and UDP.";
 			} else {
 				
 				// Check to see how many hits we got back from our query
@@ -306,6 +302,13 @@ if ($sidsrc == "elastic") {
 				$min_val = min($delta_arr);
 				$key = array_search($min_val, $delta_arr);
 
+				// Check for more common error conditions
+				if ( ! isset($elastic_response_object["hits"]["hits"][$key]["_source"]["protocol"]) ) {
+					$errMsgElastic = "Second ES query didn't return a protocol field.";
+				} elseif ( !in_array($elastic_response_object["hits"]["hits"][$key]["_source"]["protocol"], array('tcp','udp'), TRUE)) {
+					$errMsgElastic = "CapMe currently only supports TCP and UDP.";
+				}
+				
 				// In case we didn't parse out IP addresses and ports above, let's do that now
 				// source_ip
 				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["source_ip"])) {
