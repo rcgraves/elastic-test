@@ -288,7 +288,7 @@ if ($sidsrc == "elastic") {
 				$num_records = $elastic_response_object["hits"]["total"];
 				$delta_arr = array();
 
-				// For each hit, we need to compare its timestamp to the timestamp of our original record (from which 					we pivoted).
+				// For each hit, we need to compare its timestamp to the timestamp of our original record (from which we pivoted).
 				for ( $i =0 ; $i < $num_records; $i++) {
                                         $record_ts = $elastic_response_object["hits"]["hits"][$i]["_source"]["timestamp"];
                                         if ($orig_ts > $record_ts){
