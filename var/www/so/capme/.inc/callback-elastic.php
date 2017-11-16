@@ -224,7 +224,6 @@ if ($sidsrc == "elastic") {
 		}
 		$timestamp = $elastic_response_object["hits"]["hits"][0]["_source"]["@timestamp"];
 		$timestamp_epoch = strtotime($timestamp);
-		$orig_ts = $timestamp_epoch;
 		$mintime=time() - 5 * 365 * 24 * 60 * 60;
 		$maxtime=time() + 5 * 365 * 24 * 60 * 60;
 		if (filter_var($timestamp_epoch, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$mintime, "max_range"=>$maxtime))) === false) {
@@ -291,11 +290,11 @@ if ($sidsrc == "elastic") {
 				// For each hit, we need to compare its timestamp to the timestamp of our original record (from which we pivoted).
 				for ( $i =0 ; $i < $num_records; $i++) {
                                         $record_ts = $elastic_response_object["hits"]["hits"][$i]["_source"]["timestamp"];
-                                        if ($orig_ts > $record_ts){
-                                                $delta = $orig_ts - $record_ts;
+                                        if ($timestamp_epoch > $record_ts){
+                                                $delta = $timestamp_epoch - $record_ts;
 					}
-                                        elseif ($orig_ts < $record_ts){
-                                                $delta = $record_ts - $orig_ts;
+                                        elseif ($timestamp_epoch < $record_ts){
+                                                $delta = $record_ts - $timestamp_epoch;
                                         }
 					else {
 						$delta = 0;
@@ -311,7 +310,6 @@ if ($sidsrc == "elastic") {
 				// source_ip
 				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["source_ip"])) {
 					$sip = $elastic_response_object["hits"]["hits"][$key]["_source"]["source_ip"];
-					error_log($sip);
 					if (!filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
 	        				$errMsgElastic = "Invalid source IP.";
 					}
@@ -332,7 +330,6 @@ if ($sidsrc == "elastic") {
 				// destination_ip
 				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["destination_ip"])) {
 					$dip = $elastic_response_object["hits"]["hits"][$key]["_source"]["destination_ip"];
-					error_log($dip);
 					if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
         					$errMsgElastic = "Invalid source IP.";
 					}
