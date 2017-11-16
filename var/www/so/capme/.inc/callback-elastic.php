@@ -230,9 +230,8 @@ if ($sidsrc == "elastic") {
 		        $errMsgElastic = "Invalid start time.";
 		}
 		// Set a start time and end time for the search to allow for a little bit of clock drift amongst different log sources
-		// TODO: Consider increasing this window and handling multiple results when necessary
-		$st = $timestamp_epoch - 300;
-		$et = $timestamp_epoch + 300;
+		$st = $timestamp_epoch - 1800;
+		$et = $timestamp_epoch + 1800;
 		// ES expects timestamps with millisecond precision
 		$st_es = $st * 1000;
 		$et_es = $et * 1000;
@@ -278,18 +277,42 @@ if ($sidsrc == "elastic") {
 				$errMsgElastic = "Second ES query didn't return a total number of hits.";
 			} elseif ( $elastic_response_object["hits"]["total"] == "0") {
 				$errMsgElastic = "Second ES query couldn't find this ID.";
-			/*} elseif ( $elastic_response_object["hits"]["total"] != "1") {
-				$errMsgElastic = "Second ES query returned multiple matches.";*/
-			} elseif ( ! isset($elastic_response_object["hits"]["hits"][0]["_source"]["protocol"]) ) {
-				$errMsgElastic = "Second ES query didn't return a protocol field.";
-			} elseif ( !in_array($elastic_response_object["hits"]["hits"][0]["_source"]["protocol"], array('tcp','udp'), TRUE)) {
-                		$errMsgElastic = "CapMe currently only supports TCP and UDP.";
-			} else { 
+			} else {
+				
+				// Check to see how many hits we got back from our query
+				$num_records = $elastic_response_object["hits"]["total"];
+				$delta_arr = array();
+
+				// For each hit, we need to compare its timestamp to the timestamp of our original record (from which we pivoted).
+				for ( $i =0 ; $i < $num_records; $i++) {
+                                        $record_ts = $elastic_response_object["hits"]["hits"][$i]["_source"]["timestamp"];
+                                        if ($timestamp_epoch > $record_ts){
+                                                $delta = $timestamp_epoch - $record_ts;
+					}
+                                        elseif ($timestamp_epoch < $record_ts){
+                                                $delta = $record_ts - $timestamp_epoch;
+                                        }
+					else {
+						$delta = 0;
+					}
+                                        $delta_arr[$i] = $delta;
+                                }
+				
+				// Get the key for the hit with the smallest delta
+				$min_val = min($delta_arr);
+				$key = array_search($min_val, $delta_arr);
+
+				// Check for more common error conditions
+				if ( ! isset($elastic_response_object["hits"]["hits"][$key]["_source"]["protocol"]) ) {
+					$errMsgElastic = "Second ES query didn't return a protocol field.";
+				} elseif ( !in_array($elastic_response_object["hits"]["hits"][$key]["_source"]["protocol"], array('tcp','udp'), TRUE)) {
+					$errMsgElastic = "CapMe currently only supports TCP and UDP.";
+				}
+				
 				// In case we didn't parse out IP addresses and ports above, let's do that now
 				// source_ip
-				if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
-					$sip = $elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"];
-					error_log($sip);
+				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["source_ip"])) {
+					$sip = $elastic_response_object["hits"]["hits"][$key]["_source"]["source_ip"];
 					if (!filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
 	        				$errMsgElastic = "Invalid source IP.";
 					}
@@ -298,8 +321,8 @@ if ($sidsrc == "elastic") {
 				}
 
 				// source_port
-				if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["source_port"])) {
-					$spt = $elastic_response_object["hits"]["hits"][0]["_source"]["source_port"];
+				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["source_port"])) {
+					$spt = $elastic_response_object["hits"]["hits"][$key]["_source"]["source_port"];
 					if (filter_var($spt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
 					        $errMsgElastic = "Invalid source port.";
 					}
@@ -308,9 +331,8 @@ if ($sidsrc == "elastic") {
 				}
 
 				// destination_ip
-				if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
-					$dip = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
-					error_log($dip);
+				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["destination_ip"])) {
+					$dip = $elastic_response_object["hits"]["hits"][$key]["_source"]["destination_ip"];
 					if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
         					$errMsgElastic = "Invalid source IP.";
 					}
@@ -319,8 +341,8 @@ if ($sidsrc == "elastic") {
 				}
 	
 				// destination_port
-				if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_port"])) {
-					$dpt = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_port"];
+				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["destination_port"])) {
+					$dpt = $elastic_response_object["hits"]["hits"][$key]["_source"]["destination_port"];
 					if (filter_var($dpt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
 					        $errMsgElastic = "Invalid source port.";
 					}
@@ -328,7 +350,7 @@ if ($sidsrc == "elastic") {
 					$errMsgElastic = "Missing destination port.";
 				}
 
-				$sensor = $elastic_response_object["hits"]["hits"][0]["_source"]["sensor_name"];
+				$sensor = $elastic_response_object["hits"]["hits"][$key]["_source"]["sensor_name"];
 				$timestamp = str_replace("T", " ", $timestamp);
 				$st = substr($timestamp, 0, -5);
 			} 
@@ -386,7 +408,7 @@ if ($err == 1) {
     $cmd = "../.scripts/$script \"$usr\" \"$sensor\" \"$st\" $sid $sip $dip $spt $dpt";
 
     // If the request came from Elastic, check to see if the event is UDP.
-    if ($elastic_response_object["hits"]["hits"][0]["_source"]["protocol"] == "udp") {
+    if ($elastic_response_object["hits"]["hits"][$key]["_source"]["protocol"] == "udp") {
 	$proto=17;
     }
 
