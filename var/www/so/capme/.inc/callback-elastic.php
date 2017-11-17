@@ -256,7 +256,7 @@ if ($sidsrc == "elastic") {
 			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
 				$dip = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
 				if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        				$errMsgElastic = "Invalid source IP.";
+        				$errMsgElastic = "Invalid destination IP.";
 				}
 			} else {
 				$errMsgElastic = "Missing destination IP.";
@@ -266,7 +266,7 @@ if ($sidsrc == "elastic") {
 			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_port"])) {
 				$dpt = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_port"];
 				if (filter_var($dpt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
-				        $errMsgElastic = "Invalid source port.";
+				        $errMsgElastic = "Invalid destination port.";
 				}
 			} else {
 				$errMsgElastic = "Missing destination port.";
@@ -364,7 +364,7 @@ if ($sidsrc == "elastic") {
 				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["destination_ip"])) {
 					$dip = $elastic_response_object["hits"]["hits"][$key]["_source"]["destination_ip"];
 					if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        					$errMsgElastic = "Invalid source IP.";
+        					$errMsgElastic = "Invalid destination IP.";
 					}
 				} else {
 					$errMsgElastic = "Missing destination IP.";
@@ -374,7 +374,7 @@ if ($sidsrc == "elastic") {
 				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["destination_port"])) {
 					$dpt = $elastic_response_object["hits"]["hits"][$key]["_source"]["destination_port"];
 					if (filter_var($dpt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
-					        $errMsgElastic = "Invalid source port.";
+					        $errMsgElastic = "Invalid destination port.";
 					}
 				} else {
 					$errMsgElastic = "Missing destination port.";
