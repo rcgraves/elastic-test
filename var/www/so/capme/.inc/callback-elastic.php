@@ -236,7 +236,11 @@ if ($sidsrc == "elastic") {
 			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
 				$sip = $elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"];
 				if (!filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        				$errMsgElastic = "Invalid source IP.";
+					if (filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+						$errMsgElastic = "Source IP is IPV6!  CapMe currently only supports IPV4.";
+					} else {
+						$errMsgElastic = "Invalid source IP.";
+					}
 				}
 			} else {
 				$errMsgElastic = "Missing source IP.";
@@ -256,7 +260,11 @@ if ($sidsrc == "elastic") {
 			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
 				$dip = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
 				if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        				$errMsgElastic = "Invalid destination IP.";
+					if (filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+                                                $errMsgElastic = "Destination IP is IPV6!  CapMe currently only supports IPV4.";
+                                        } else {
+                                                $errMsgElastic = "Invalid destination IP.";
+                                        }
 				}
 			} else {
 				$errMsgElastic = "Missing destination IP.";
@@ -344,7 +352,11 @@ if ($sidsrc == "elastic") {
 				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["source_ip"])) {
 					$sip = $elastic_response_object["hits"]["hits"][$key]["_source"]["source_ip"];
 					if (!filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-	        				$errMsgElastic = "Invalid source IP.";
+						if (filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+                                                        $errMsgElastic = "Source IP is IPV6!  CapMe currently only supports IPV4.";
+                                                } else {
+                                                        $errMsgElastic = "Invalid source IP.";
+                                                }
 					}
 				} else {
 					$errMsgElastic = "Missing source IP.";
@@ -364,7 +376,11 @@ if ($sidsrc == "elastic") {
 				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["destination_ip"])) {
 					$dip = $elastic_response_object["hits"]["hits"][$key]["_source"]["destination_ip"];
 					if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        					$errMsgElastic = "Invalid destination IP.";
+						if (filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+							$errMsgElastic = "Destination IP is IPV6!  CapMe currently only supports IPV4.";
+						} else {
+							$errMsgElastic = "Invalid destination IP.";
+						}
 					}
 				} else {
 					$errMsgElastic = "Missing destination IP.";
