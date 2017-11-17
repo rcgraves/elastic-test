@@ -97,7 +97,7 @@ if (!( $xscript == 'auto' || $xscript == 'tcpflow' || $xscript == 'bro' || $xscr
 
 // Defaults
 $err = 0;
-$bro_conn_query = $st = $et = $fmtd = $debug = $errMsg = $errMsgElastic = '';
+$bro_query = $st = $et = $fmtd = $debug = $errMsg = $errMsgElastic = '';
 
 /*
 We need to determine 3 pieces of data:
@@ -170,13 +170,31 @@ if ($sidsrc == "elastic") {
 			// A Bro CID should be alphanumeric and begin with the letter C
 			if (ctype_alnum($uid)) {
 				if (substr($uid,0,1)=="C") {
-					$bro_conn_query = $uid;
+					$type = "bro_conn";
+					$bro_query = $uid;
 				}
 			}
-		} 
+		// Let's check to see if it is a Bro X509 log
+		} elseif (isset($elastic_response_object["hits"]["hits"][0]["_source"]["id"]) ) {
+			$id = $elastic_response_object["hits"]["hits"][0]["_source"]["id"];
+			if (ctype_alnum($id)) {
+                                if (substr($id,0,1)=="F") {
+                                        $type = "bro_files";
+					$bro_query = $id;
+                                }
+                        }
+		} elseif (isset($elastic_response_object["hits"]["hits"][0]["_source"]["fuid"]) ) {
+			$fuid = $elastic_response_object["hits"]["hits"][0]["_source"]["fuid"];
+                        if (ctype_alnum($fuid)) {
+                                if (substr($fuid,0,1)=="F") {
+                                        $type = "bro_files";
+					$bro_query = $fuid;
+                                }
+                        }
+		}
 		// If it wasn't a Bro log with CID, then let's manually parse out
 		// source_ip, source_port, destination_ip, and destination_port
-		if ( $bro_conn_query == "" ) {
+		if ( $bro_query == "" ) {
 			// source_ip
 			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
 				$sip = $elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"];
@@ -219,7 +237,7 @@ if ($sidsrc == "elastic") {
 
 			// If all four of those fields looked OK, then build a query to send to Elasticsearch
 			if ($errMsgElastic == "") {
-				$bro_conn_query = "$sip AND $spt AND $dip AND $dpt";
+				$bro_query = "$sip AND $spt AND $dip AND $dpt";
 			}
 		}
 		$timestamp = $elastic_response_object["hits"]["hits"][0]["_source"]["@timestamp"];
@@ -239,7 +257,6 @@ if ($sidsrc == "elastic") {
 		// Now we to send those parameters back to Elastic to see if we can find a matching bro_conn log
 		if ($errMsgElastic == "") {
 			// TODO: have PHP query ES directly without shell_exec and curl
-		
 			$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
 
 {
@@ -248,7 +265,7 @@ if ($sidsrc == "elastic") {
       \"must\": [
         {
           \"query_string\": {
-            \"query\": \"type:bro_conn AND $bro_conn_query\",
+            \"query\": \"type:$type AND $bro_query\",
             \"analyze_wildcard\": true
           }
         },
@@ -269,7 +286,7 @@ if ($sidsrc == "elastic") {
 
 			// Try to decode the response as JSON.
 			$elastic_response_object = json_decode($elastic_response, true);
-
+			
 			// Check for common error conditions.
 			if (json_last_error() !== JSON_ERROR_NONE) { 
 				$errMsgElastic = "Couldn't decode JSON from second ES query.";
@@ -278,7 +295,40 @@ if ($sidsrc == "elastic") {
 			} elseif ( $elastic_response_object["hits"]["total"] == "0") {
 				$errMsgElastic = "Second ES query couldn't find this ID.";
 			} else {
-				
+				// If we received a bro_files record back, we need to grab the CID and query ES again
+				if ( $elastic_response_object["hits"]["hits"][0]["_source"]["type"] == "bro_files" ) {
+					$type = "bro_conn";
+					$bro_query = $elastic_response_object["hits"]["hits"][0]["_source"]["uid"];
+					$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
+
+{
+  \"query\": {
+    \"bool\": {
+      \"must\": [
+        {
+          \"query_string\": {
+            \"query\": \"type:$type AND $bro_query\",
+            \"analyze_wildcard\": true
+          }
+        },
+        {
+          \"range\": {
+            \"@timestamp\": {
+              \"gte\": $st_es,
+              \"lte\": $et_es,
+              \"format\": \"epoch_millis\"
+            }
+          }
+        }
+      ]
+    }
+  }
+}' 2>/dev/null";
+					// Let's run our command again
+					$elastic_response = shell_exec($elastic_command);
+                        		// Try to decode the response as JSON.
+					$elastic_response_object = json_decode($elastic_response, true);
+				}
 				// Check to see how many hits we got back from our query
 				$num_records = $elastic_response_object["hits"]["total"];
 				$delta_arr = array();
@@ -296,13 +346,12 @@ if ($sidsrc == "elastic") {
 						$delta = 0;
 					}
                                         $delta_arr[$i] = $delta;
-                                }
+				}
 				
 				// Get the key for the hit with the smallest delta
 				$min_val = min($delta_arr);
 				$key = array_search($min_val, $delta_arr);
-
-				// Check for more common error conditions
+				
 				if ( ! isset($elastic_response_object["hits"]["hits"][$key]["_source"]["protocol"]) ) {
 					$errMsgElastic = "Second ES query didn't return a protocol field.";
 				} elseif ( !in_array($elastic_response_object["hits"]["hits"][$key]["_source"]["protocol"], array('tcp','udp'), TRUE)) {
@@ -351,6 +400,7 @@ if ($sidsrc == "elastic") {
 				}
 
 				$sensor = $elastic_response_object["hits"]["hits"][$key]["_source"]["sensor_name"];
+				//$errMsgElastic = "$sensor";
 				$timestamp = str_replace("T", " ", $timestamp);
 				$st = substr($timestamp, 0, -5);
 			} 
