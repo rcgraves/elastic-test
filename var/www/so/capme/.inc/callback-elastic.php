@@ -67,6 +67,43 @@ function cliscript($cmd, $pwd) {
     return explode("\n", $_raw);
 }
 
+// Gets the appropriate Bro Conn record from ES and returns a JSON object
+function elastic_command(){
+global $elastic_command, $elastic_host, $elastic_port, $type, $bro_query, $st_es, $et_es, $elastic_response, $elastic_response_object;
+
+$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
+
+{
+  \"query\": {
+    \"bool\": {
+      \"must\": [
+        {
+          \"query_string\": {
+            \"query\": \"type:$type AND $bro_query\",
+            \"analyze_wildcard\": true
+          }
+        },
+        {
+          \"range\": {
+            \"@timestamp\": {
+              \"gte\": $st_es,
+              \"lte\": $et_es,
+              \"format\": \"epoch_millis\"
+            }
+          }
+        }
+      ]
+    }
+  }
+}' 2>/dev/null";
+
+// TODO: have PHP query ES directly without shell_exec and curl
+$elastic_response = shell_exec($elastic_command);
+
+// Try to decode the response as JSON.
+$elastic_response_object = json_decode($elastic_response, true);
+}
+
 // Validate user input - Elasticsearch ID (numbers, letters, underscores, hyphens)
 $esid	= h2s($d[0]);
 $aValid = array('-', '_'); 
@@ -237,6 +274,7 @@ if ($sidsrc == "elastic") {
 
 			// If all four of those fields looked OK, then build a query to send to Elasticsearch
 			if ($errMsgElastic == "") {
+				$type = "bro_conn";
 				$bro_query = "$sip AND $spt AND $dip AND $dpt";
 			}
 		}
@@ -253,39 +291,10 @@ if ($sidsrc == "elastic") {
 		// ES expects timestamps with millisecond precision
 		$st_es = $st * 1000;
 		$et_es = $et * 1000;
-
+		
 		// Now we to send those parameters back to Elastic to see if we can find a matching bro_conn log
 		if ($errMsgElastic == "") {
-			// TODO: have PHP query ES directly without shell_exec and curl
-			$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
-
-{
-  \"query\": {
-    \"bool\": {
-      \"must\": [
-        {
-          \"query_string\": {
-            \"query\": \"type:$type AND $bro_query\",
-            \"analyze_wildcard\": true
-          }
-        },
-        {
-          \"range\": {
-            \"@timestamp\": {
-              \"gte\": $st_es,
-              \"lte\": $et_es,
-              \"format\": \"epoch_millis\"
-            }
-          }
-        }
-      ]
-    }
-  }
-}' 2>/dev/null";
-			$elastic_response = shell_exec($elastic_command);
-
-			// Try to decode the response as JSON.
-			$elastic_response_object = json_decode($elastic_response, true);
+			elastic_command();
 			
 			// Check for common error conditions.
 			if (json_last_error() !== JSON_ERROR_NONE) { 
@@ -299,35 +308,7 @@ if ($sidsrc == "elastic") {
 				if ( $elastic_response_object["hits"]["hits"][0]["_source"]["type"] == "bro_files" ) {
 					$type = "bro_conn";
 					$bro_query = $elastic_response_object["hits"]["hits"][0]["_source"]["uid"];
-					$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
-
-{
-  \"query\": {
-    \"bool\": {
-      \"must\": [
-        {
-          \"query_string\": {
-            \"query\": \"type:$type AND $bro_query\",
-            \"analyze_wildcard\": true
-          }
-        },
-        {
-          \"range\": {
-            \"@timestamp\": {
-              \"gte\": $st_es,
-              \"lte\": $et_es,
-              \"format\": \"epoch_millis\"
-            }
-          }
-        }
-      ]
-    }
-  }
-}' 2>/dev/null";
-					// Let's run our command again
-					$elastic_response = shell_exec($elastic_command);
-                        		// Try to decode the response as JSON.
-					$elastic_response_object = json_decode($elastic_response, true);
+					elastic_command();
 				}
 				// Check to see how many hits we got back from our query
 				$num_records = $elastic_response_object["hits"]["total"];
@@ -400,7 +381,6 @@ if ($sidsrc == "elastic") {
 				}
 
 				$sensor = $elastic_response_object["hits"]["hits"][$key]["_source"]["sensor_name"];
-				//$errMsgElastic = "$sensor";
 				$timestamp = str_replace("T", " ", $timestamp);
 				$st = substr($timestamp, 0, -5);
 			} 
