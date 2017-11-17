@@ -317,6 +317,15 @@ if ($sidsrc == "elastic") {
 					$type = "bro_conn";
 					$bro_query = $elastic_response_object["hits"]["hits"][0]["_source"]["uid"];
 					elastic_command();
+					
+					// Check for common error conditions.
+					if (json_last_error() !== JSON_ERROR_NONE) {
+						$errMsgElastic = "Couldn't decode JSON from second ES query.";
+					} elseif ( ! isset($elastic_response_object["hits"]["total"]) ) {
+						$errMsgElastic = "Second ES query didn't return a total number of hits.";
+					} elseif ( $elastic_response_object["hits"]["total"] == "0") {
+						$errMsgElastic = "Second ES query couldn't find this ID.";
+					}
 				}
 				// Check to see how many hits we got back from our query
 				$num_records = $elastic_response_object["hits"]["total"];
