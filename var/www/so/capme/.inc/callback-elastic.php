@@ -68,8 +68,7 @@ function cliscript($cmd, $pwd) {
 }
 
 // Gets the appropriate Bro Conn record from ES and returns a JSON object
-function elastic_command(){
-global $elastic_command, $elastic_host, $elastic_port, $type, $bro_query, $st_es, $et_es, $elastic_response, $elastic_response_object;
+function elastic_command($elastic_host, $elastic_port, $type, $bro_query, $st_es, $et_es) {
 
 $elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
 
@@ -102,6 +101,9 @@ $elastic_response = shell_exec($elastic_command);
 
 // Try to decode the response as JSON.
 $elastic_response_object = json_decode($elastic_response, true);
+
+// Return object
+return $elastic_response_object;
 }
 
 // Validate user input - Elasticsearch ID (numbers, letters, underscores, hyphens)
@@ -302,8 +304,7 @@ if ($sidsrc == "elastic") {
 	
 		// If bro_files, we need to query Elastic and get the log
 		if ($errMsgElastic == "" && $type == "bro_files") {
-			elastic_command();
-			
+			$elastic_response_object = elastic_command($elastic_host, $elastic_port, $type, $bro_query, $st_es, $et_es);
 			// Check for common error conditions.
 			if (json_last_error() !== JSON_ERROR_NONE) { 
 				$errMsgElastic = "Couldn't decode JSON from second ES query.";
@@ -321,8 +322,7 @@ if ($sidsrc == "elastic") {
 		}
 		// Now we to send those parameters back to Elastic to see if we can find a matching bro_conn log
 		if ($errMsgElastic == "") {
-			elastic_command();
-			
+			$elastic_response_object = elastic_command($elastic_host, $elastic_port, $type, $bro_query, $st_es, $et_es);
 			// Check for common error conditions.
 			if (json_last_error() !== JSON_ERROR_NONE) {
 				$errMsgElastic = "Couldn't decode JSON from second ES query.";
