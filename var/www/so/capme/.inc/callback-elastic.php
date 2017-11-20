@@ -299,9 +299,9 @@ if ($sidsrc == "elastic") {
 		// ES expects timestamps with millisecond precision
 		$st_es = $st * 1000;
 		$et_es = $et * 1000;
-		
-		// Now we to send those parameters back to Elastic to see if we can find a matching bro_conn log
-		if ($errMsgElastic == "") {
+	
+		// If bro_files, we need to query Elastic and get the log
+		if ($errMsgElastic == "" && $type == "bro_files") {
 			elastic_command();
 			
 			// Check for common error conditions.
@@ -311,22 +311,26 @@ if ($sidsrc == "elastic") {
 				$errMsgElastic = "Second ES query didn't return a total number of hits.";
 			} elseif ( $elastic_response_object["hits"]["total"] == "0") {
 				$errMsgElastic = "Second ES query couldn't find this ID.";
-			} else {
-				// If we received a bro_files record back, we need to grab the CID and query ES again
+                        } else {
+                                // If we received a bro_files record back, we need to grab the CID and get ready to query ES again
 				if ( $elastic_response_object["hits"]["hits"][0]["_source"]["type"] == "bro_files" ) {
 					$type = "bro_conn";
 					$bro_query = $elastic_response_object["hits"]["hits"][0]["_source"]["uid"];
-					elastic_command();
-					
-					// Check for common error conditions.
-					if (json_last_error() !== JSON_ERROR_NONE) {
-						$errMsgElastic = "Couldn't decode JSON from second ES query.";
-					} elseif ( ! isset($elastic_response_object["hits"]["total"]) ) {
-						$errMsgElastic = "Second ES query didn't return a total number of hits.";
-					} elseif ( $elastic_response_object["hits"]["total"] == "0") {
-						$errMsgElastic = "Second ES query couldn't find this ID.";
-					}
 				}
+			}
+		}
+		// Now we to send those parameters back to Elastic to see if we can find a matching bro_conn log
+		if ($errMsgElastic == "") {
+			elastic_command();
+			
+			// Check for common error conditions.
+			if (json_last_error() !== JSON_ERROR_NONE) {
+				$errMsgElastic = "Couldn't decode JSON from second ES query.";
+			} elseif ( ! isset($elastic_response_object["hits"]["total"]) ) {
+				$errMsgElastic = "Second ES query didn't return a total number of hits.";
+			} elseif ( $elastic_response_object["hits"]["total"] == "0") {
+				$errMsgElastic = "Second ES query couldn't find this ID.";
+			} else {
 				// Check to see how many hits we got back from our query
 				$num_records = $elastic_response_object["hits"]["total"];
 				$delta_arr = array();
