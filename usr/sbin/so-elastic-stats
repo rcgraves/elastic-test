@@ -5,13 +5,14 @@
 . /etc/nsm/securityonion.conf
 
 # If Elasticsearch is not enabled, then exit immediately
-[ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit
+[ "${ELASTICSEARCH_ENABLED}" != "yes" ]	&& exit
 
+# Build a list of enabled services
 LIST="so-elasticsearch"
-[ "${LOGSTASH_ENABLED}"="yes" ]         && LIST="$LIST so-logstash"
-[ "${KIBANA_ENABLED}"="yes" ]           && LIST="$LIST so-kibana"
-[ "${ELASTALERT_ENABLED}"="yes" ]       && LIST="$LIST so-elastalert"
-[ "${CURATOR_ENABLED}"="yes" ]          && LIST="$LIST so-curator"
-[ "${FREQSERVER_ENABLED}"="yes" ]       && LIST="$LIST so-freqserver"
-[ "${DOMAINSTATS_ENABLED}"="yes" ]      && LIST="$LIST so-domainstats"
+[ "${LOGSTASH_ENABLED}" == "yes" ]         && LIST="$LIST so-logstash"
+[ "${KIBANA_ENABLED}" == "yes" ]           && LIST="$LIST so-kibana"
+[ "${ELASTALERT_ENABLED}" == "yes" ]       && LIST="$LIST so-elastalert"
+[ "${CURATOR_ENABLED}" == "yes" ]          && LIST="$LIST so-curator"
+[ "${FREQSERVER_ENABLED}" == "yes" ]       && LIST="$LIST so-freqserver"
+[ "${DOMAINSTATS_ENABLED}" == "yes" ]      && LIST="$LIST so-domainstats"
 docker stats $LIST $@
