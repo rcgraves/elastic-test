@@ -67,6 +67,45 @@ function cliscript($cmd, $pwd) {
     return explode("\n", $_raw);
 }
 
+// Gets the appropriate Bro Conn record from ES and returns a JSON object
+function elastic_command($elastic_host, $elastic_port, $type, $bro_query, $st_es, $et_es) {
+
+$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
+
+{
+  \"query\": {
+    \"bool\": {
+      \"must\": [
+        {
+          \"query_string\": {
+            \"query\": \"type:$type AND $bro_query\",
+            \"analyze_wildcard\": true
+          }
+        },
+        {
+          \"range\": {
+            \"@timestamp\": {
+              \"gte\": $st_es,
+              \"lte\": $et_es,
+              \"format\": \"epoch_millis\"
+            }
+          }
+        }
+      ]
+    }
+  }
+}' 2>/dev/null";
+
+// TODO: have PHP query ES directly without shell_exec and curl
+$elastic_response = shell_exec($elastic_command);
+
+// Try to decode the response as JSON.
+$elastic_response_object = json_decode($elastic_response, true);
+
+// Return object
+return $elastic_response_object;
+}
+
 // Validate user input - Elasticsearch ID (numbers, letters, underscores, hyphens)
 $esid	= h2s($d[0]);
 $aValid = array('-', '_'); 
@@ -97,7 +136,7 @@ if (!( $xscript == 'auto' || $xscript == 'tcpflow' || $xscript == 'bro' || $xscr
 
 // Defaults
 $err = 0;
-$bro_conn_query = $st = $et = $fmtd = $debug = $errMsg = $errMsgElastic = '';
+$bro_query = $st = $et = $fmtd = $debug = $errMsg = $errMsgElastic = '';
 
 /*
 We need to determine 3 pieces of data:
@@ -170,18 +209,40 @@ if ($sidsrc == "elastic") {
 			// A Bro CID should be alphanumeric and begin with the letter C
 			if (ctype_alnum($uid)) {
 				if (substr($uid,0,1)=="C") {
-					$bro_conn_query = $uid;
+					$type = "bro_conn";
+					$bro_query = $uid;
 				}
 			}
-		} 
+		// Let's check to see if it is a Bro X509 log
+		} elseif (isset($elastic_response_object["hits"]["hits"][0]["_source"]["id"]) ) {
+			$id = $elastic_response_object["hits"]["hits"][0]["_source"]["id"];
+			if (ctype_alnum($id)) {
+                                if (substr($id,0,1)=="F") {
+                                        $type = "bro_files";
+					$bro_query = $id;
+                                }
+                        }
+		} elseif (isset($elastic_response_object["hits"]["hits"][0]["_source"]["fuid"]) ) {
+			$fuid = $elastic_response_object["hits"]["hits"][0]["_source"]["fuid"];
+                        if (ctype_alnum($fuid)) {
+                                if (substr($fuid,0,1)=="F") {
+                                        $type = "bro_files";
+					$bro_query = $fuid;
+                                }
+                        }
+		}
 		// If it wasn't a Bro log with CID, then let's manually parse out
 		// source_ip, source_port, destination_ip, and destination_port
-		if ( $bro_conn_query == "" ) {
+		if ( $bro_query == "" ) {
 			// source_ip
 			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"])) {
 				$sip = $elastic_response_object["hits"]["hits"][0]["_source"]["source_ip"];
 				if (!filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        				$errMsgElastic = "Invalid source IP.";
+					if (filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+						$errMsgElastic = "Source IP is IPV6!  CapMe currently only supports IPV4.";
+					} else {
+						$errMsgElastic = "Invalid source IP.";
+					}
 				}
 			} else {
 				$errMsgElastic = "Missing source IP.";
@@ -201,7 +262,11 @@ if ($sidsrc == "elastic") {
 			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"])) {
 				$dip = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_ip"];
 				if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        				$errMsgElastic = "Invalid source IP.";
+					if (filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+                                                $errMsgElastic = "Destination IP is IPV6!  CapMe currently only supports IPV4.";
+                                        } else {
+                                                $errMsgElastic = "Invalid destination IP.";
+                                        }
 				}
 			} else {
 				$errMsgElastic = "Missing destination IP.";
@@ -211,7 +276,7 @@ if ($sidsrc == "elastic") {
 			if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["destination_port"])) {
 				$dpt = $elastic_response_object["hits"]["hits"][0]["_source"]["destination_port"];
 				if (filter_var($dpt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
-				        $errMsgElastic = "Invalid source port.";
+				        $errMsgElastic = "Invalid destination port.";
 				}
 			} else {
 				$errMsgElastic = "Missing destination port.";
@@ -219,7 +284,8 @@ if ($sidsrc == "elastic") {
 
 			// If all four of those fields looked OK, then build a query to send to Elasticsearch
 			if ($errMsgElastic == "") {
-				$bro_conn_query = "$sip AND $spt AND $dip AND $dpt";
+				$type = "bro_conn";
+				$bro_query = "$sip AND $spt AND $dip AND $dpt";
 			}
 		}
 		$timestamp = $elastic_response_object["hits"]["hits"][0]["_source"]["@timestamp"];
@@ -235,41 +301,10 @@ if ($sidsrc == "elastic") {
 		// ES expects timestamps with millisecond precision
 		$st_es = $st * 1000;
 		$et_es = $et * 1000;
-
-		// Now we to send those parameters back to Elastic to see if we can find a matching bro_conn log
-		if ($errMsgElastic == "") {
-			// TODO: have PHP query ES directly without shell_exec and curl
-		
-			$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
-
-{
-  \"query\": {
-    \"bool\": {
-      \"must\": [
-        {
-          \"query_string\": {
-            \"query\": \"type:bro_conn AND $bro_conn_query\",
-            \"analyze_wildcard\": true
-          }
-        },
-        {
-          \"range\": {
-            \"@timestamp\": {
-              \"gte\": $st_es,
-              \"lte\": $et_es,
-              \"format\": \"epoch_millis\"
-            }
-          }
-        }
-      ]
-    }
-  }
-}' 2>/dev/null";
-			$elastic_response = shell_exec($elastic_command);
-
-			// Try to decode the response as JSON.
-			$elastic_response_object = json_decode($elastic_response, true);
-
+	
+		// If bro_files, we need to query Elastic and get the log
+		if ($errMsgElastic == "" && $type == "bro_files") {
+			$elastic_response_object = elastic_command($elastic_host, $elastic_port, $type, $bro_query, $st_es, $et_es);
 			// Check for common error conditions.
 			if (json_last_error() !== JSON_ERROR_NONE) { 
 				$errMsgElastic = "Couldn't decode JSON from second ES query.";
@@ -277,8 +312,25 @@ if ($sidsrc == "elastic") {
 				$errMsgElastic = "Second ES query didn't return a total number of hits.";
 			} elseif ( $elastic_response_object["hits"]["total"] == "0") {
 				$errMsgElastic = "Second ES query couldn't find this ID.";
+                        } else {
+                                // If we received a bro_files record back, we need to grab the CID and get ready to query ES again
+				if ( $elastic_response_object["hits"]["hits"][0]["_source"]["type"] == "bro_files" ) {
+					$type = "bro_conn";
+					$bro_query = $elastic_response_object["hits"]["hits"][0]["_source"]["uid"];
+				}
+			}
+		}
+		// Now we to send those parameters back to Elastic to see if we can find a matching bro_conn log
+		if ($errMsgElastic == "") {
+			$elastic_response_object = elastic_command($elastic_host, $elastic_port, $type, $bro_query, $st_es, $et_es);
+			// Check for common error conditions.
+			if (json_last_error() !== JSON_ERROR_NONE) {
+				$errMsgElastic = "Couldn't decode JSON from second ES query.";
+			} elseif ( ! isset($elastic_response_object["hits"]["total"]) ) {
+				$errMsgElastic = "Second ES query didn't return a total number of hits.";
+			} elseif ( $elastic_response_object["hits"]["total"] == "0") {
+				$errMsgElastic = "Second ES query couldn't find this ID.";
 			} else {
-				
 				// Check to see how many hits we got back from our query
 				$num_records = $elastic_response_object["hits"]["total"];
 				$delta_arr = array();
@@ -296,13 +348,12 @@ if ($sidsrc == "elastic") {
 						$delta = 0;
 					}
                                         $delta_arr[$i] = $delta;
-                                }
+				}
 				
 				// Get the key for the hit with the smallest delta
 				$min_val = min($delta_arr);
 				$key = array_search($min_val, $delta_arr);
-
-				// Check for more common error conditions
+				
 				if ( ! isset($elastic_response_object["hits"]["hits"][$key]["_source"]["protocol"]) ) {
 					$errMsgElastic = "Second ES query didn't return a protocol field.";
 				} elseif ( !in_array($elastic_response_object["hits"]["hits"][$key]["_source"]["protocol"], array('tcp','udp'), TRUE)) {
@@ -314,7 +365,11 @@ if ($sidsrc == "elastic") {
 				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["source_ip"])) {
 					$sip = $elastic_response_object["hits"]["hits"][$key]["_source"]["source_ip"];
 					if (!filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-	        				$errMsgElastic = "Invalid source IP.";
+						if (filter_var($sip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+                                                        $errMsgElastic = "Source IP is IPV6!  CapMe currently only supports IPV4.";
+                                                } else {
+                                                        $errMsgElastic = "Invalid source IP.";
+                                                }
 					}
 				} else {
 					$errMsgElastic = "Missing source IP.";
@@ -334,7 +389,11 @@ if ($sidsrc == "elastic") {
 				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["destination_ip"])) {
 					$dip = $elastic_response_object["hits"]["hits"][$key]["_source"]["destination_ip"];
 					if (!filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        					$errMsgElastic = "Invalid source IP.";
+						if (filter_var($dip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+							$errMsgElastic = "Destination IP is IPV6!  CapMe currently only supports IPV4.";
+						} else {
+							$errMsgElastic = "Invalid destination IP.";
+						}
 					}
 				} else {
 					$errMsgElastic = "Missing destination IP.";
@@ -344,7 +403,7 @@ if ($sidsrc == "elastic") {
 				if (isset($elastic_response_object["hits"]["hits"][$key]["_source"]["destination_port"])) {
 					$dpt = $elastic_response_object["hits"]["hits"][$key]["_source"]["destination_port"];
 					if (filter_var($dpt, FILTER_VALIDATE_INT, array("options" => array("min_range"=>0, "max_range"=>65535))) === false) {
-					        $errMsgElastic = "Invalid source port.";
+					        $errMsgElastic = "Invalid destination port.";
 					}
 				} else {
 					$errMsgElastic = "Missing destination port.";
