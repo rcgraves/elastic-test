@@ -13,6 +13,6 @@ LIST="so-elasticsearch"
 [ "${KIBANA_ENABLED}" == "yes" ]           && LIST="$LIST so-kibana"
 [ "${ELASTALERT_ENABLED}" == "yes" ]       && LIST="$LIST so-elastalert"
 [ "${CURATOR_ENABLED}" == "yes" ]          && LIST="$LIST so-curator"
-[ "${FREQSERVER_ENABLED}" == "yes" ]       && LIST="$LIST so-freqserver"
-[ "${DOMAINSTATS_ENABLED}" == "yes" ]      && LIST="$LIST so-domainstats"
+[ "${FREQ_SERVER_ENABLED}" == "yes" ]       && LIST="$LIST so-freqserver"
+[ "${DOMAIN_STATS_ENABLED}" == "yes" ]      && LIST="$LIST so-domainstats"
 docker stats $LIST $@
