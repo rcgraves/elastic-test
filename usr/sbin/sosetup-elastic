@@ -1012,7 +1012,7 @@ fi
 # Ask whether or not to use Elastic
 #########################################
 if [ $CUSTOM -eq 1 ]; then
-TEXT="The Elastic Stack is a platform for data ingestion, formatting, and visua;ization.\n\
+TEXT="The Elastic Stack is a platform for data ingestion, formatting, and visualization.\n\
 built on ElasticSearch, Logstash, and Kibana.  Our customized stack also includes \n\
 the use of DomainStats, FreqServer, Curator, and Elastalert.\n\
 \n\
@@ -1198,15 +1198,14 @@ service ossec-hids-server restart >> $LOG 2>&1
 #########################################
 echo "8"
 echo "# Please wait while stopping services..." | tee -a $LOG
-# Need to delete Elasticsearch data before stopping Elasticsearch
-/usr/sbin/so-elastic-reset -y
 # Stop Elasticsearch and all other processes
 so-stop >> $LOG 2>&1
 pkill suricata
 pkill snort
 pkill autossh
-# Delete Logstash queue data
-/usr/sbin/so-elastic-clear-queue -y
+# Delete any Elasticsearch or Logstash data
+rm -rf /nsm/elasticsearch/nodes
+rm -rf /nsm/logstash/queue/main/*
 # Make sure MySQL is running so that we can fully delete the NSM databases
 [ $SERVER -eq 1 ] && service mysql start >> $LOG 2>&1
 # Uncomment any disabled sensors so that we can fully delete them
