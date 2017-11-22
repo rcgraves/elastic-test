@@ -4,13 +4,12 @@
 
 . /etc/nsm/securityonion.conf
 
-# ELASTALERT
-# No published ports
 if [ "$ELASTALERT_ENABLED" = "yes" ]; then
         echo -n "so-elastalert: "
         if docker ps | grep -q so-elastalert; then
                 echo "Already started!"
         else
+		# No published ports
                 docker run --name=so-elastalert \
                         --detach \
                         --volume /etc/elastalert/rules:/etc/elastalert/rules/ \

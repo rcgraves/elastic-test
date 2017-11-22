@@ -4,7 +4,6 @@
 
 . /etc/nsm/securityonion.conf
 
-# Publish ports to localhost 127.0.0.1 ONLY
 if [ "$KIBANA_ENABLED" = "yes" ]; then
         if docker ps | grep -q so-kibana; then
                 echo -n "so-kibana: "
@@ -41,6 +40,7 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
                 if docker ps | grep -q so-kibana; then
                         echo "Already started!"
                 else
+			# Publish ports to localhost 127.0.0.1 ONLY
                         docker run --name=so-kibana \
                                 --detach \
                                 --env "KIBANA_DEFAULTAPPID=$KIBANA_DEFAULTAPPID" \

@@ -119,18 +119,6 @@ echo "Done!"
 header "Configuring domain_stats"
 mkdir -p /var/log/domain_stats
 chown -R domainstats:domainstats /var/log/domain_stats
-echo "Contacting WHOIS server for connectivity..."
-echo
-
-# Check for whois connectivity
-whois google.com | grep 'Domain Name'
-if [ $? -eq 1 ]; then
-        echo
-        echo "Unable to reach WHOIS server...disabling DomainStats"
-        DS_ENABLED="no"
-else
-        DS_ENABLED="yes"
-fi
 echo "Done!"
 
 ELSA=NO
@@ -146,16 +134,27 @@ while read EACH_LINE; do
                 if echo "$EACH_LINE" | grep -q '#'; then
                         echo >> $SOCONF
                 fi
-        echo "$EACH_LINE" >> $SOCONF
+		echo "$EACH_LINE" >> $SOCONF
         fi
 done < $ELASTICONF
 
-if [ "$DS_ENABLED" == "no" ]; then
-        sed -i 's/^DOMAIN_STATS_ENABLED.*/DOMAIN_STATS_ENABLED="no"/' $SOCONF
-else
-        if [ "$DS_ENABLED" == "yes" ]; then
+# domain_stats and freq_server are now disabled by default
+# If running Setup in Evaluation Mode, enable freq_server and
+# check to see if we can safely enable domain_stats
+if pgrep sosetup >/dev/null && grep "^type=standalone$" /opt/bro/etc/node.cfg > /dev/null 2>&1; then
+	# Enable freq_server
+	sed -i 's/^FREQ_SERVER_ENABLED.*/FREQ_SERVER_ENABLED="yes"/' $SOCONF
+
+	# Check for whois connectivity to see if we can enable domain_stats
+	echo "Contacting WHOIS server for connectivity..."
+	echo
+	whois google.com | grep 'Domain Name'
+	if [ $? -eq 1 ]; then
+        	echo
+	        echo "Unable to reach WHOIS server...disabling DomainStats"
+	else
                 sed -i 's/^DOMAIN_STATS_ENABLED.*/DOMAIN_STATS_ENABLED="yes"/' $SOCONF
-        fi
+	fi
 fi
 
 # Get total installed memory

@@ -4,12 +4,12 @@
 
 . /etc/nsm/securityonion.conf
 
-# No published ports
 if [ "$CURATOR_ENABLED" = "yes" ]; then
         echo -n "so-curator: "
         if docker ps | grep -q so-curator; then
                 echo "Already started!"
         else
+		# No published ports
                 docker run --name=so-curator \
                         --detach \
                         --volume /etc/curator/config/curator.yml:/etc/curator/config/curator.yml:ro \

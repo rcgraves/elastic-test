@@ -4,7 +4,6 @@
 
 . /etc/nsm/securityonion.conf
 
-# Publish ports to localhost 127.0.0.1 ONLY
 if [ "$LOGSTASH_ENABLED" = "yes" ]; then
         echo -n "so-logstash: "
         if docker ps | grep -q so-logstash; then
@@ -24,6 +23,8 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                         rm -f /etc/logstash/conf.d/8007_postprocess_dns_top1m_tagging.conf
                         rm -f /etc/logstash/conf.d/8008_postprocess_dns_whois_age.conf
                 fi
+
+		# Publish ports to localhost 127.0.0.1 ONLY
                 docker run --name=so-logstash \
                         --detach \
                         --env LS_JAVA_OPTS="-Xms$LOGSTASH_HEAP -Xmx$LOGSTASH_HEAP" \
@@ -45,4 +46,3 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                         docker network connect --alias logstash $DOCKERNET so-logstash
         fi
 fi
-
