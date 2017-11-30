@@ -17,6 +17,8 @@ until curl -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/
 	sleep 1s;
 done
 
+#sleep 5s
+
 # KIBANA_VERSION in /etc/nsm/securityonion.conf may not actually reflect the current Kibana version
 # Two possible cases:
 # 1. In the case of a new installation, KIBANA_VERSION is explicitly set to "UNKNOWN"
@@ -25,12 +27,17 @@ done
 KIBANA_VERSION=$(curl -s http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT | jq .version.number | sed 's/"//g')
 
 # Delete existing Kibana config
-curl -s -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}/config/${KIBANA_VERSION}
-curl -s -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}
+#curl -s -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}/config/${KIBANA_VERSION}
+#curl -s -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}
 
-# Apply Kibana config and template
+# Apply Kibana template
 curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/kibana -H'Content-Type: application/json' -d'{"template" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
-curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}/config/${KIBANA_VERSION} -H'Content-Type: application/json' -d@$SRC/kibana/config.json; echo; echo
+
+# Apply Kibana config
+# Old method
+#curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}/config/${KIBANA_VERSION} -H'Content-Type: application/json' -d@$SRC/kibana/config.json; echo; echo
+# New method
+curl -XPUT -H "Content-Type: application/json" -H "kbn-xsrf: $KIBANA_VERSION" http://localhost:5601/api/saved_objects/config/$KIBANA_VERSION -d@$SRC/kibana/config.json
 
 # Apply cross cluster search seed info for local Elasticsearch instance
 HOSTNAME=$(hostname)
