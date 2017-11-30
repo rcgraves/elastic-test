@@ -15,7 +15,10 @@ fi
 
 # Configure Docker bridge ip
 if [ ! -f /etc/docker/daemon.json ]; then
-        cp $SRC/etc/docker/daemon.json /etc/docker/daemon.json
+        if [ ! -d /etc/docker ]; then
+		mkdir /etc/docker
+	fi
+	cp $SRC/etc/docker/daemon.json /etc/docker/daemon.json
 else
         DOCKER_BRIDGE=`grep 'DOCKER_BRIDGE' $SOCONF | cut -d "=" -f2 | sed 's/"//g'`
 	sed -i "s|\"bip\": .*|\"bip\": \"$DOCKER_BRIDGE\"|" /etc/docker/daemon.json
