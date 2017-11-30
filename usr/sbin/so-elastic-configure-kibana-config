@@ -7,17 +7,15 @@
 header "Configuring Kibana"
 MAX_WAIT=240
 
-# Check to see if server is available
+# Check to see if Elasticsearch is available
 until curl -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/health > /dev/null ; do
 	wait_step=$(( ${wait_step} + 1 ))
 	if [ ${wait_step} -gt ${MAX_WAIT} ]; then
-		echo "ERROR: elasticsearch server not available for more than ${MAX_WAIT} seconds."
+		echo "ERROR: Elasticsearch not available for more than ${MAX_WAIT} seconds."
 		exit 5
 	fi
 	sleep 1s;
 done
-
-#sleep 5s
 
 # KIBANA_VERSION in /etc/nsm/securityonion.conf may not actually reflect the current Kibana version
 # Two possible cases:
@@ -26,17 +24,21 @@ done
 # Therefore, we need to get the current version from Elasticsearch
 KIBANA_VERSION=$(curl -s http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT | jq .version.number | sed 's/"//g')
 
-# Delete existing Kibana config
-#curl -s -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}/config/${KIBANA_VERSION}
-#curl -s -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}
-
 # Apply Kibana template
 curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/kibana -H'Content-Type: application/json' -d'{"template" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
 
+# Check to see if Kibana is available
+wait_step=0
+until curl -s -XGET http://localhost:5601/ > /dev/null ; do
+	wait_step=$(( ${wait_step} + 1 ))
+	if [ ${wait_step} -gt ${MAX_WAIT} ]; then
+		echo "ERROR: Kibana not available for more than ${MAX_WAIT} seconds."
+		exit 5
+	fi
+	sleep 1s;
+done
+
 # Apply Kibana config
-# Old method
-#curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${KIBANA_INDEX}/config/${KIBANA_VERSION} -H'Content-Type: application/json' -d@$SRC/kibana/config.json; echo; echo
-# New method
 curl -XPUT -H "Content-Type: application/json" -H "kbn-xsrf: $KIBANA_VERSION" http://localhost:5601/api/saved_objects/config/$KIBANA_VERSION -d@$SRC/kibana/config.json
 
 # Apply cross cluster search seed info for local Elasticsearch instance

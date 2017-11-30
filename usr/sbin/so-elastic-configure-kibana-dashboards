@@ -6,12 +6,12 @@
 
 header "Configuring Kibana dashboards"
 
-# Check to see if Elasticsearch is available
+# Check to see if Kibana is available
 max_wait=240
-until curl -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/health > /dev/null ; do
+until curl -s -XGET http://localhost:5601/ > /dev/null ; do
 	wait_step=$(( ${wait_step} + 1 ))
 	if [ ${wait_step} -gt ${max_wait} ]; then
-		echo "ERROR: elasticsearch server not available for more than ${max_wait} seconds."
+		echo "ERROR: Kibana not available for more than ${max_wait} seconds."
 		exit 5
 	fi
 	sleep 1s;
