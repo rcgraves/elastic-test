@@ -18,6 +18,6 @@ until curl -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/
 done
 
 # Load dashboards, visualizations, index pattern(s), etc.
-cd $SRC/kibana/dashboards/
-sh load.sh
-cd $ELASTICDIR
+for i in /opt/elastic/src/kibana/dashboards/*.json; do
+	curl -XPOST localhost:5601/api/kibana/dashboards/import -H 'kbn-xsrf:true' -H 'Content-type:application/json' -d @$i
+done
