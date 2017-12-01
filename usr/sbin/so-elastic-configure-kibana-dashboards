@@ -19,5 +19,5 @@ done
 
 # Load dashboards, visualizations, index pattern(s), etc.
 for i in /opt/elastic/src/kibana/dashboards/*.json; do
-	curl -XPOST localhost:5601/api/kibana/dashboards/import -H 'kbn-xsrf:true' -H 'Content-type:application/json' -d @$i
+	curl -XPOST localhost:5601/api/kibana/dashboards/import?force=true -H 'kbn-xsrf:true' -H 'Content-type:application/json' -d @$i
 done
