@@ -13,6 +13,19 @@ if pgrep -f docker > /dev/null; then
         echo $DOCKERNET
 fi
 
+# Configure Docker bridge ip
+if [ ! -f /etc/docker/daemon.json ]; then
+        if [ ! -d /etc/docker ]; then
+		mkdir /etc/docker
+	fi
+	cp $SRC/etc/docker/daemon.json /etc/docker/daemon.json
+else
+        DOCKER_BRIDGE=`grep 'DOCKER_BRIDGE' $SOCONF | cut -d "=" -f2 | sed 's/"//g'`
+	sed -i "s|\"bip\": .*|\"bip\": \"$DOCKER_BRIDGE\"|" /etc/docker/daemon.json
+fi
+
+service docker restart
+
 header "Setting vm.max_map_count to 262144"
 sysctl -w vm.max_map_count=262144
 cp $SRC/etc/sysctl.d/* /etc/sysctl.d/
