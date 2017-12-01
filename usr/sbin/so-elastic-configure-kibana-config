@@ -44,6 +44,7 @@ curl -XPUT -H "Content-Type: application/json" -H "kbn-xsrf: $KIBANA_VERSION" ht
 # Apply cross cluster search seed info for local Elasticsearch instance
 HOSTNAME=$(hostname)
 curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -H'Content-Type: application/json' -d "{\"persistent\": {\"search\": {\"remote\": {\"$HOSTNAME\": {\"seeds\": [\"127.0.0.1:9300\"]}}}}}"
+echo
 
 # Finally, update KIBANA_VERSION in securityonion.conf to reflect the current Kibana version
 sed -i "s/KIBANA_VERSION=.*/KIBANA_VERSION=$KIBANA_VERSION/" /etc/nsm/securityonion.conf

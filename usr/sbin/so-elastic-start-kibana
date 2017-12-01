@@ -46,9 +46,9 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
                                 $DOCKERHUB/so-kibana
                                 docker network connect --alias kibana $DOCKERNET so-kibana
                         # Compare current version of ES with previously stored version.
-			#sleep 5s
                         CURRENT_KIBANA_VERSION=$(curl -s "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT" | jq .version.number | sed 's/"//g')
                         if [ "$CURRENT_KIBANA_VERSION" != "$KIBANA_VERSION" ]; then
+				echo "Configuring Kibana, please wait..."
                                 /usr/sbin/so-elastic-configure-kibana > /dev/null 2>&1
                         fi
                 fi
