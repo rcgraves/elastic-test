@@ -89,7 +89,6 @@ done
 cp -av $SRC/configfiles/*.conf /etc/logstash/conf.d/
 cp -av $SRC/configfiles-setup_required/8*_postprocess_dns_*.conf /etc/logstash/optional/
 cp -av $SRC/configfiles-setup_required/85*_postprocess_freq_analysis_*.conf /etc/logstash/optional/
-cp -av $SRC/configfiles/*.conf /etc/logstash/conf.d/
 cp -av $SRC/etc/logstash/* /etc/logstash/
 cp -av $SRC/lib/dictionaries /lib/
 #cp -rf $SRC/grok-patterns /lib/
