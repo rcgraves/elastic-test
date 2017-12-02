@@ -66,13 +66,18 @@ cp -av $SRC/etc/elasticsearch/log4j2.properties /etc/elasticsearch/log4j2.proper
 
 ES_YAML="/etc/elasticsearch/elasticsearch.yml"
 ES_YAML_BAK="/etc/elasticsearch/elasticsearch.yml.bak"
-
-[ -f "$ES_YAML" ] && cp -av $ES_YAML $ES_YAML_BAK
-cp -av $SRC/$ES_YAML $ES_YAML
-# Preserve transport settings if present
-for i in $(grep transport $ES_YAML_BAK); do
+if [ ! -f "$ES_YAML" ]; then
+	# If no config, create it
+	cp -av $SRC/$ES_YAML $ES_YAML
+else
+	# If config exists, back it up, write the new config file, and then transfer transport settings
+	cp -av $ES_YAML $ES_YAML_BAK
+	cp -av $SRC/$ES_YAML $ES_YAML
+	# Preserve transport settings if present
+	for i in $(grep transport $ES_YAML_BAK); do
 		echo $i >> $ES_YAML
-done
+	done
+fi
 
 # Set cluster name
 sed -i "s/cluster\.name.*/cluster\.name: \"$HOSTNAME\"/" $ES_YAML
