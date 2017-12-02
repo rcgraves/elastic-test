@@ -40,7 +40,7 @@ for USER in elasticsearch logstash kibana elastalert curator freqserver domainst
                 echo "Creating $USER group..."
                 groupadd --gid $UID_GID $USER
         fi
-        if $(id -u $USER > /dev/null 2>&1`); then
+        if $(id -u $USER > /dev/null 2>&1); then
                 echo "User $USER already exists!"
         else
                 echo "Creating $USER user..."
