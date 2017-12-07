@@ -1,0 +1,27 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+SOCONF="/etc/nsm/securityonion.conf"
+ELASTICONF="$SRC/etc/securityonion-elastic.conf"
+
+#Specify Docker network and create it
+header "Creating Docker network for Elastic Stack"
+DOCKERNET=`grep 'DOCKERNET' $ELASTICONF | cut -d "=" -f2 | sed 's/"//g'`
+if pgrep -f docker > /dev/null; then
+        docker network create $DOCKERNET --driver=bridge >/dev/null 2>&1
+        echo $DOCKERNET
+fi
+
+# Configure Docker bridge ip
+if [ ! -f /etc/docker/daemon.json ]; then
+        if [ ! -d /etc/docker ]; then
+                mkdir /etc/docker
+        fi
+        cp $SRC/etc/docker/daemon.json /etc/docker/daemon.json
+else
+        DOCKER_BRIDGE=`grep 'DOCKER_BRIDGE' $SOCONF | cut -d "=" -f2 | sed 's/"//g'`
+        sed -i "s|\"bip\": .*|\"bip\": \"$DOCKER_BRIDGE\"|" /etc/docker/daemon.json
+fi
+
+service docker restart
