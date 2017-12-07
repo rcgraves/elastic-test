@@ -9,6 +9,9 @@ for FILE in /etc/nsm/securityonion.conf /etc/nsm/sensortab; do
 	fi
 done
 
+# Configure Elastic network
+. /usr/sbin/so-elastic-configure-network
+
 # Configure initial Elastic components
 . /usr/sbin/so-elastic-configure-stack
 
