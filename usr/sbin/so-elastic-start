@@ -14,7 +14,7 @@
 # Configure iptables and ufw
 # we need to ensure proper rules are in place before starting containers
 if ! iptables -L DOCKER-USER -v | grep -q DROP.*all.*\!docker0.*docker0; then 
-	sudo iptables -I DOCKER-USER ! -i docker0 -o docker0 -j DROP
+	iptables -I DOCKER-USER ! -i docker0 -o docker0 -j DROP
 fi
 if ! grep -q "DOCKER-USER" /etc/ufw/after.rules; then	
 	sed -i "/BROADCAST/{N;s/$/\n# Configure Docker rules\n# \/usr\/sbin\/so-allow will add new rules here for access to ports exposed by Docker containers\n-N DOCKER-USER\n-A DOCKER-USER ! -i docker0 -o docker0 -j DROP\n/}" /etc/ufw/after.rules
