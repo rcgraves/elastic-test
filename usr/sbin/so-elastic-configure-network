@@ -20,8 +20,12 @@ if [ ! -f /etc/docker/daemon.json ]; then
         fi
         cp $SRC/etc/docker/daemon.json /etc/docker/daemon.json
 else
-        DOCKER_BRIDGE=`grep 'DOCKER_BRIDGE' $SOCONF | cut -d "=" -f2 | sed 's/"//g'`
-        sed -i "s|\"bip\": .*|\"bip\": \"$DOCKER_BRIDGE\"|" /etc/docker/daemon.json
+	. $SOCONF
+	if [ -n $DOCKER_BRIDGE ]; then
+		DOCKER_DAEMON_BRIDGE=`grep bip /etc/docker/daemon.json | awk '{print $2}' | sed 's/"//g'`
+		if [ "$DOCKER_BRIDGE" != "$DOCKER_DAEMON_BRIDGE"]; then
+			sed -i "s|\"bip\": .*|\"bip\": \"$DOCKER_BRIDGE\"|" /etc/docker/daemon.json
+			service docker restart
+		fi
+	fi
 fi
-
-service docker restart
