@@ -26,6 +26,7 @@ KIBANA_VERSION=$(curl -s http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT | jq .ve
 
 # Apply Kibana template
 curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/kibana -H'Content-Type: application/json' -d'{"template" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
+echo
 
 # Check to see if Kibana is available
 wait_step=0
