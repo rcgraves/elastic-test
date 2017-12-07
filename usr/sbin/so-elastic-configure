@@ -39,8 +39,7 @@ cd $ELASTICDIR
 . /usr/sbin/so-elastic-configure-curator
 
 # Configure Elastalert
-# Moving this to run right before elastalert is started
-#. /usr/sbin/so-elastic-configure-elastalert
+. /usr/sbin/so-elastic-configure-elastalert
 
 # Configure cron jobs
 . /usr/sbin/so-elastic-configure-cron

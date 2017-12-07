@@ -41,6 +41,7 @@ done
 
 # Apply Kibana config
 curl -XPUT -H "Content-Type: application/json" -H "kbn-xsrf: $KIBANA_VERSION" http://localhost:5601/api/saved_objects/config/$KIBANA_VERSION -d@$SRC/kibana/config.json
+echo
 
 # Apply cross cluster search seed info for local Elasticsearch instance
 HOSTNAME=$(hostname)
