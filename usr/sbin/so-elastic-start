@@ -17,10 +17,8 @@ if ! iptables -L DOCKER-USER -v | grep -q DROP.*all.*\!docker0.*docker0; then
 	iptables -I DOCKER-USER ! -i docker0 -o docker0 -j DROP
 fi
 if ! grep -q "DOCKER-USER" /etc/ufw/after.rules; then	
-	sed -i "/BROADCAST/{N;s/$/\n# Configure Docker rules\n# \/usr\/sbin\/so-allow will add new rules here for access to ports exposed by Docker containers\n-N DOCKER-USER\n-A DOCKER-USER ! -i docker0 -o docker0 -j DROP\n/}" /etc/ufw/after.rules
+	sed -i "/BROADCAST/{N;s/$/\n# Configure Docker rules\n# \/usr\/sbin\/so-allow will add new rules here for access to ports exposed by Docker containers\n-N DOCKER-USER\n-I DOCKER-USER ! -i docker0 -o docker0 -m state --state RELATED,ESTABLISHED -j ACCEPT\n-A DOCKER-USER ! -i docker0 -o docker0 -j DROP\n/}" /etc/ufw/after.rules
 fi
-
-
 
 echo
 echo "Starting containers:"
