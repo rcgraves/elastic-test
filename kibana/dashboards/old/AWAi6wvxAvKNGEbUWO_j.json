@@ -2,6 +2,27 @@
   "version": "5.6.4",
   "objects": [
     {
+      "id": "41ec0ca0-6f13-11e7-86c8-a1b6db3b051a",
+      "type": "visualization",
+      "version": 5,
+      "attributes": {
+        "visState": "{\"title\":\"DNS - Baby Domain Requests\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"highest_registered_domain.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Domain\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"creation_date\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"_term\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "DNS - Baby Domain Requests",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "savedSearchId": "fce833e0-6f12-11e7-86c8-a1b6db3b051a",
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[]}"
+        }
+      },
+      "size_x": 10,
+      "size_y": 11,
+      "panelIndex": 1,
+      "col": 3,
+      "row": 1
+    },
+    {
       "id": "b3b449d0-3429-11e7-9d52-4f090484f59e",
       "type": "visualization",
       "version": 162,
@@ -15,77 +36,14 @@
           "searchSourceJSON": "{\"query\":{\"query_string\":{\"query\":\"*\"}},\"filter\":[]}"
         }
       },
-      "col": 1,
-      "panelIndex": 2,
-      "row": 1,
       "size_x": 2,
-      "size_y": 11
+      "size_y": 11,
+      "panelIndex": 2,
+      "col": 1,
+      "row": 1
     },
     {
-      "id": "9cffd160-363f-11e7-a6f7-4f44d7bf1c33",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - Log Count Over Time\",\"type\":\"line\",\"params\":{\"grid\":{\"categoryLines\":false,\"style\":{\"color\":\"#eee\"}},\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"type\":\"category\",\"position\":\"bottom\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\"},\"labels\":{\"show\":true,\"truncate\":100},\"title\":{\"text\":\"@timestamp per 12 hours\"}}],\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"name\":\"LeftAxis-1\",\"type\":\"value\",\"position\":\"left\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\",\"mode\":\"normal\"},\"labels\":{\"show\":true,\"rotate\":0,\"filter\":false,\"truncate\":100},\"title\":{\"text\":\"Count\"}}],\"seriesParams\":[{\"show\":true,\"mode\":\"normal\",\"type\":\"line\",\"drawLinesBetweenPoints\":true,\"showCircles\":true,\"interpolate\":\"linear\",\"lineWidth\":2,\"data\":{\"id\":\"1\",\"label\":\"Count\"},\"valueAxis\":\"ValueAxis-1\"}],\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"showCircles\":true,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - Log Count Over Time",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      },
-      "col": 5,
-      "panelIndex": 3,
-      "row": 1,
-      "size_x": 8,
-      "size_y": 2
-    },
-    {
-      "id": "45c4ae10-380c-11e7-a1cc-ebc6a7e70e84",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - OS (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"os.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - OS (Pie Chart)",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      },
-      "col": 8,
-      "panelIndex": 5,
-      "row": 3,
-      "size_x": 5,
-      "size_y": 4
-    },
-    {
-      "id": "807da390-380c-11e7-a1cc-ebc6a7e70e84",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - Subsystem (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"subsystem.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - Subsystem (Pie Chart)",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      },
-      "col": 3,
-      "panelIndex": 7,
-      "row": 3,
-      "size_x": 5,
-      "size_y": 4
-    },
-    {
-      "id": "66288140-342e-11e7-9e93-53b62e1857b2",
+      "id": "fce833e0-6f12-11e7-86c8-a1b6db3b051a",
       "type": "search",
       "version": 3,
       "attributes": {
@@ -95,93 +53,27 @@
         ],
         "hits": 0,
         "description": "",
-        "title": "PE - Logs",
+        "title": "DNS - Domains with creation date < 3 months",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:bro_pe\",\"analyze_wildcard\":true}}}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"type:bro_dns AND _exists_:creation_date AND creation_date:[now-3M TO now]\",\"analyze_wildcard\":true}},\"filter\":[]}"
         },
         "columns": [
-          "message",
-          "fuid",
-          "_id"
+          "_source"
         ]
       },
-      "col": 1,
-      "columns": [
-        "message",
-        "fuid",
-        "_id"
-      ],
-      "panelIndex": 8,
-      "row": 12,
       "size_x": 12,
-      "size_y": 7,
+      "size_y": 9,
+      "panelIndex": 3,
+      "col": 1,
+      "row": 12,
+      "columns": [
+        "_source"
+      ],
       "sort": [
         "@timestamp",
         "desc"
       ]
-    },
-    {
-      "id": "4e56b4d0-416f-11e7-9850-b78558d0ac17",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - Section Name\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"section_names.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - Section Name",
-        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
-        "version": 1,
-        "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      },
-      "col": 8,
-      "panelIndex": 9,
-      "row": 7,
-      "size_x": 5,
-      "size_y": 5
-    },
-    {
-      "id": "7de76e10-6e1f-11e7-b553-7f80727663c1",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - Machine\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"machine.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Machine\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - Machine",
-        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
-        "version": 1,
-        "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      },
-      "col": 3,
-      "panelIndex": 10,
-      "row": 7,
-      "size_x": 5,
-      "size_y": 5
-    },
-    {
-      "id": "AV-iHtMMuU89ag5_bbj4",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - Log Count (Builder)\",\"type\":\"metrics\",\"params\":{\"axis_formatter\":\"number\",\"axis_position\":\"left\",\"background_color_rules\":[{\"color\":\"rgba(251,158,0,1)\",\"id\":\"631c5cc0-c578-11e7-89f7-f9b51b5d4b2f\",\"opperator\":\"gte\",\"value\":0}],\"drop_last_bucket\":0,\"filter\":\"\",\"id\":\"613db1b0-c578-11e7-89f7-f9b51b5d4b2f\",\"index_pattern\":\"*:logstash-*\",\"interval\":\"1y\",\"series\":[{\"axis_position\":\"right\",\"chart_type\":\"line\",\"color\":\"#68BC00\",\"fill\":0.5,\"filter\":\"type:bro_pe\",\"formatter\":\"number\",\"id\":\"613db1b1-c578-11e7-89f7-f9b51b5d4b2f\",\"label\":\"PE - Log Count\",\"line_width\":1,\"metrics\":[{\"field\":null,\"id\":\"613db1b2-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"count\"}],\"point_size\":1,\"seperate_axis\":0,\"split_mode\":\"filter\",\"stacked\":\"none\",\"terms_field\":\"sensor_name.keyword\",\"terms_order_by\":null,\"terms_size\":\"1000\"}],\"show_legend\":1,\"time_field\":\"@timestamp\",\"type\":\"metric\"},\"aggs\":[],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - Log Count (Builder)",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"query\":{\"match_all\":{}},\"filter\":[]}"
-        }
-      },
-      "size_x": 2,
-      "size_y": 2,
-      "panelIndex": 11,
-      "col": 3,
-      "row": 1
     },
     {
       "id": "*:logstash-*",
@@ -196,20 +88,20 @@
       }
     },
     {
-      "id": "8a10e380-3583-11e7-a588-05992195c551",
+      "id": "AWAi6wvxAvKNGEbUWO_j",
       "type": "dashboard",
-      "version": 3,
+      "version": 4,
       "attributes": {
+        "title": "Baby Domains",
         "hits": 0,
-        "timeRestore": false,
         "description": "",
-        "title": "Bro - PE",
-        "uiStateJSON": "{\"P-10\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-3\":{\"vis\":{\"legendOpen\":false}},\"P-9\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-1\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}}}",
-        "panelsJSON": "[{\"col\":1,\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"panelIndex\":2,\"row\":1,\"size_x\":2,\"size_y\":11,\"type\":\"visualization\"},{\"col\":5,\"id\":\"9cffd160-363f-11e7-a6f7-4f44d7bf1c33\",\"panelIndex\":3,\"row\":1,\"size_x\":8,\"size_y\":2,\"type\":\"visualization\"},{\"col\":8,\"id\":\"45c4ae10-380c-11e7-a1cc-ebc6a7e70e84\",\"panelIndex\":5,\"row\":3,\"size_x\":5,\"size_y\":4,\"type\":\"visualization\"},{\"col\":3,\"id\":\"807da390-380c-11e7-a1cc-ebc6a7e70e84\",\"panelIndex\":7,\"row\":3,\"size_x\":5,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"columns\":[\"message\",\"fuid\",\"_id\"],\"id\":\"66288140-342e-11e7-9e93-53b62e1857b2\",\"panelIndex\":8,\"row\":12,\"size_x\":12,\"size_y\":7,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"col\":8,\"id\":\"4e56b4d0-416f-11e7-9850-b78558d0ac17\",\"panelIndex\":9,\"row\":7,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"col\":3,\"id\":\"7de76e10-6e1f-11e7-b553-7f80727663c1\",\"panelIndex\":10,\"row\":7,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"size_x\":2,\"size_y\":2,\"panelIndex\":11,\"type\":\"visualization\",\"id\":\"AV-iHtMMuU89ag5_bbj4\",\"col\":3,\"row\":1}]",
+        "panelsJSON": "[{\"size_x\":10,\"size_y\":11,\"panelIndex\":1,\"type\":\"visualization\",\"id\":\"41ec0ca0-6f13-11e7-86c8-a1b6db3b051a\",\"col\":3,\"row\":1},{\"size_x\":2,\"size_y\":11,\"panelIndex\":2,\"type\":\"visualization\",\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"col\":1,\"row\":1},{\"size_x\":12,\"size_y\":9,\"panelIndex\":3,\"type\":\"search\",\"id\":\"fce833e0-6f12-11e7-86c8-a1b6db3b051a\",\"col\":1,\"row\":12,\"columns\":[\"_source\"],\"sort\":[\"@timestamp\",\"desc\"]}]",
         "optionsJSON": "{\"darkTheme\":true}",
+        "uiStateJSON": "{\"P-1\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}}",
         "version": 1,
+        "timeRestore": false,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}],\"highlightAll\":true,\"version\":true}"
+          "searchSourceJSON": "{\"filter\":[{\"query\":{\"match_all\":{}}}],\"highlightAll\":true,\"version\":true}"
         }
       }
     }

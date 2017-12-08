@@ -1,10 +1,10 @@
 {
-  "version": "5.6.4",
+  "version": "5.6.5",
   "objects": [
     {
       "id": "4f6f3440-6d62-11e7-8ddb-e71eb260f4a3",
       "type": "dashboard",
-      "version": 3,
+      "version": 1,
       "attributes": {
         "hits": 0,
         "timeRestore": false,

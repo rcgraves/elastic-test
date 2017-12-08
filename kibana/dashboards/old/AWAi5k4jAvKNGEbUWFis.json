@@ -2,6 +2,166 @@
   "version": "5.6.4",
   "objects": [
     {
+      "id": "7f1f00a0-6f04-11e7-b253-211f64f37eda",
+      "type": "visualization",
+      "version": 5,
+      "attributes": {
+        "visState": "{\"title\":\"DNS - Highest Registered Domain Frequency Analysis\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"highest_registered_domain_frequency_score\",\"customLabel\":\"Frequency Score\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"highest_registered_domain.keyword\",\"size\":50,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"Domain\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "DNS - Highest Registered Domain Frequency Analysis",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_dns AND _exists_:highest_registered_domain_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        }
+      },
+      "col": 3,
+      "panelIndex": 1,
+      "row": 1,
+      "size_x": 10,
+      "size_y": 5
+    },
+    {
+      "id": "7d1ede50-6f19-11e7-86c8-a1b6db3b051a",
+      "type": "visualization",
+      "version": 5,
+      "attributes": {
+        "visState": "{\"title\":\"HTTP - Virtual Host Frequency Analysis\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"virtual_host_frequency_score\",\"customLabel\":\"Frequency Score\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"virtual_host.keyword\",\"size\":50,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"Virtual Host\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "HTTP - Virtual Host Frequency Analysis",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_http AND _exists_:virtual_host_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        }
+      },
+      "col": 1,
+      "panelIndex": 2,
+      "row": 12,
+      "size_x": 12,
+      "size_y": 6
+    },
+    {
+      "id": "8fa702e0-6f0b-11e7-9d31-23c0596994a7",
+      "type": "visualization",
+      "version": 5,
+      "attributes": {
+        "visState": "{\"title\":\"SSL - Certificate Common Name Frequency Analysis\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"certificate_common_name_frequency_score\",\"customLabel\":\"Frequency Score\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"certificate_common_name.keyword\",\"size\":50,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"Common Name\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "SSL - Certificate Common Name Frequency Analysis",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_ssl AND _exists_:certificate_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        }
+      },
+      "col": 7,
+      "panelIndex": 4,
+      "row": 18,
+      "size_x": 6,
+      "size_y": 6
+    },
+    {
+      "id": "a83f17c0-6f0b-11e7-9d31-23c0596994a7",
+      "type": "visualization",
+      "version": 5,
+      "attributes": {
+        "visState": "{\"title\":\"SSL - Certificate Issuer Common Name Frequency Analysis\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"issuer_common_name_frequency_score\",\"customLabel\":\"Frequency Score\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"issuer_common_name.keyword\",\"size\":50,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"Issuer Common Name\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "SSL - Certificate Issuer Common Name Frequency Analysis",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_ssl AND _exists_:issuer_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        }
+      },
+      "col": 1,
+      "panelIndex": 5,
+      "row": 18,
+      "size_x": 6,
+      "size_y": 6
+    },
+    {
+      "id": "c2e54c20-6f0b-11e7-9d31-23c0596994a7",
+      "type": "visualization",
+      "version": 5,
+      "attributes": {
+        "visState": "{\"title\":\"SSL - Certificate Server Name Frequency Analysis\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"server_name_frequency_score\",\"customLabel\":\"Frequency Score\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"server_name.keyword\",\"size\":50,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"Server Name\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "SSL - Certificate Server Name Frequency Analysis",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_ssl AND _exists_:server_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        }
+      },
+      "col": 7,
+      "panelIndex": 6,
+      "row": 24,
+      "size_x": 6,
+      "size_y": 6
+    },
+    {
+      "id": "e03ba1d0-6f0a-11e7-83d2-adea2f314dc5",
+      "type": "visualization",
+      "version": 5,
+      "attributes": {
+        "visState": "{\"title\":\"X.509 - Certificate Common Name Frequency Analysis\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"certificate_common_name_frequency_score\",\"customLabel\":\"Frequency Score\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"certificate_common_name.keyword\",\"size\":50,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"Common Name\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "X.509 - Certificate Common Name Frequency Analysis",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_x509 AND _exists_:certificate_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        }
+      },
+      "col": 1,
+      "panelIndex": 7,
+      "row": 24,
+      "size_x": 6,
+      "size_y": 6
+    },
+    {
+      "id": "acd38970-6f0a-11e7-83d2-adea2f314dc5",
+      "type": "visualization",
+      "version": 5,
+      "attributes": {
+        "visState": "{\"title\":\"X.509 - Certificate Issuer Frequency Analysis\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"issuer_common_name_frequency_score\",\"customLabel\":\"Frequency Score\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"issuer_common_name.keyword\",\"size\":50,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"Issuer\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "X.509 - Certificate Issuer Frequency Analysis",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_x509 AND _exists_:issuer_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        }
+      },
+      "col": 7,
+      "panelIndex": 8,
+      "row": 30,
+      "size_x": 6,
+      "size_y": 6
+    },
+    {
+      "id": "c3f244c0-6f0a-11e7-83d2-adea2f314dc5",
+      "type": "visualization",
+      "version": 5,
+      "attributes": {
+        "visState": "{\"title\":\"X.509 - Certificate Issuer Organization Frequency Analysis\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"issuer_organization_frequency_score\",\"customLabel\":\"Frequency Score\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"issuer_organization.keyword\",\"size\":50,\"order\":\"asc\",\"orderBy\":\"1\",\"customLabel\":\"Issuer Organization\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "X.509 - Certificate Issuer Organization Frequency Analysis",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_x509 AND _exists_:issuer_organization_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+        }
+      },
+      "col": 1,
+      "panelIndex": 9,
+      "row": 30,
+      "size_x": 6,
+      "size_y": 6
+    },
+    {
       "id": "b3b449d0-3429-11e7-9d52-4f090484f59e",
       "type": "visualization",
       "version": 162,
@@ -16,78 +176,15 @@
         }
       },
       "col": 1,
-      "panelIndex": 2,
+      "panelIndex": 10,
       "row": 1,
       "size_x": 2,
       "size_y": 11
     },
     {
-      "id": "9cffd160-363f-11e7-a6f7-4f44d7bf1c33",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - Log Count Over Time\",\"type\":\"line\",\"params\":{\"grid\":{\"categoryLines\":false,\"style\":{\"color\":\"#eee\"}},\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"type\":\"category\",\"position\":\"bottom\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\"},\"labels\":{\"show\":true,\"truncate\":100},\"title\":{\"text\":\"@timestamp per 12 hours\"}}],\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"name\":\"LeftAxis-1\",\"type\":\"value\",\"position\":\"left\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\",\"mode\":\"normal\"},\"labels\":{\"show\":true,\"rotate\":0,\"filter\":false,\"truncate\":100},\"title\":{\"text\":\"Count\"}}],\"seriesParams\":[{\"show\":true,\"mode\":\"normal\",\"type\":\"line\",\"drawLinesBetweenPoints\":true,\"showCircles\":true,\"interpolate\":\"linear\",\"lineWidth\":2,\"data\":{\"id\":\"1\",\"label\":\"Count\"},\"valueAxis\":\"ValueAxis-1\"}],\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"showCircles\":true,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - Log Count Over Time",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      },
-      "col": 5,
-      "panelIndex": 3,
-      "row": 1,
-      "size_x": 8,
-      "size_y": 2
-    },
-    {
-      "id": "45c4ae10-380c-11e7-a1cc-ebc6a7e70e84",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - OS (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"os.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - OS (Pie Chart)",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      },
-      "col": 8,
-      "panelIndex": 5,
-      "row": 3,
-      "size_x": 5,
-      "size_y": 4
-    },
-    {
-      "id": "807da390-380c-11e7-a1cc-ebc6a7e70e84",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - Subsystem (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"subsystem.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - Subsystem (Pie Chart)",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      },
-      "col": 3,
-      "panelIndex": 7,
-      "row": 3,
-      "size_x": 5,
-      "size_y": 4
-    },
-    {
-      "id": "66288140-342e-11e7-9e93-53b62e1857b2",
+      "id": "aa05e920-3433-11e7-8867-29a39c0f86b2",
       "type": "search",
-      "version": 3,
+      "version": 11,
       "attributes": {
         "sort": [
           "@timestamp",
@@ -95,93 +192,57 @@
         ],
         "hits": 0,
         "description": "",
-        "title": "PE - Logs",
+        "title": "All Logs",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:bro_pe\",\"analyze_wildcard\":true}}}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}}}"
         },
         "columns": [
-          "message",
-          "fuid",
+          "source_ip",
+          "source_port",
+          "destination_ip",
+          "destination_port",
+          "uid",
           "_id"
         ]
       },
       "col": 1,
       "columns": [
-        "message",
-        "fuid",
+        "source_ip",
+        "source_port",
+        "destination_ip",
+        "destination_port",
+        "uid",
         "_id"
       ],
-      "panelIndex": 8,
-      "row": 12,
+      "panelIndex": 11,
+      "row": 36,
       "size_x": 12,
-      "size_y": 7,
+      "size_y": 20,
       "sort": [
         "@timestamp",
         "desc"
       ]
     },
     {
-      "id": "4e56b4d0-416f-11e7-9850-b78558d0ac17",
+      "id": "c9f5d3a0-6f05-11e7-b253-211f64f37eda",
       "type": "visualization",
       "version": 5,
       "attributes": {
-        "visState": "{\"title\":\"PE - Section Name\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"section_names.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
+        "visState": "{\n  \"title\": \"DNS - Parent Domain Frequency Analysis\",\n  \"type\": \"table\",\n  \"params\": {\n    \"perPage\": 10,\n    \"showPartialRows\": false,\n    \"showMeticsAtAllLevels\": false,\n    \"sort\": {\n      \"columnIndex\": null,\n      \"direction\": null\n    },\n    \"showTotal\": false,\n    \"totalFunc\": \"sum\"\n  },\n  \"aggs\": [\n    {\n      \"id\": \"1\",\n      \"enabled\": true,\n      \"type\": \"min\",\n      \"schema\": \"metric\",\n      \"params\": {\n        \"field\": \"parent_domain_frequency_score\",\n        \"customLabel\": \"Frequency Score\"\n      }\n    },\n    {\n      \"id\": \"2\",\n      \"enabled\": true,\n      \"type\": \"terms\",\n      \"schema\": \"bucket\",\n      \"params\": {\n        \"field\": \"highest_registered_domain.keyword\",\n        \"size\": 50,\n        \"order\": \"asc\",\n        \"orderBy\": \"1\",\n        \"customLabel\": \"Domain\"\n      }\n    }\n  ],\n  \"listeners\": {}\n}",
         "description": "",
-        "title": "PE - Section Name",
-        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "title": "DNS - Parent Domain Frequency Analysis",
+        "uiStateJSON": "{\n  \"vis\": {\n    \"params\": {\n      \"sort\": {\n        \"columnIndex\": null,\n        \"direction\": null\n      }\n    }\n  }\n}",
         "version": 1,
-        "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      },
-      "col": 8,
-      "panelIndex": 9,
-      "row": 7,
-      "size_x": 5,
-      "size_y": 5
-    },
-    {
-      "id": "7de76e10-6e1f-11e7-b553-7f80727663c1",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - Machine\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"machine.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Machine\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - Machine",
-        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
-        "version": 1,
-        "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
+          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"type:bro_dns AND _exists_:parent_domain_frequency_score\",\n      \"analyze_wildcard\": true\n    }\n  },\n  \"filter\": []\n}"
         }
       },
       "col": 3,
-      "panelIndex": 10,
-      "row": 7,
-      "size_x": 5,
-      "size_y": 5
-    },
-    {
-      "id": "AV-iHtMMuU89ag5_bbj4",
-      "type": "visualization",
-      "version": 5,
-      "attributes": {
-        "visState": "{\"title\":\"PE - Log Count (Builder)\",\"type\":\"metrics\",\"params\":{\"axis_formatter\":\"number\",\"axis_position\":\"left\",\"background_color_rules\":[{\"color\":\"rgba(251,158,0,1)\",\"id\":\"631c5cc0-c578-11e7-89f7-f9b51b5d4b2f\",\"opperator\":\"gte\",\"value\":0}],\"drop_last_bucket\":0,\"filter\":\"\",\"id\":\"613db1b0-c578-11e7-89f7-f9b51b5d4b2f\",\"index_pattern\":\"*:logstash-*\",\"interval\":\"1y\",\"series\":[{\"axis_position\":\"right\",\"chart_type\":\"line\",\"color\":\"#68BC00\",\"fill\":0.5,\"filter\":\"type:bro_pe\",\"formatter\":\"number\",\"id\":\"613db1b1-c578-11e7-89f7-f9b51b5d4b2f\",\"label\":\"PE - Log Count\",\"line_width\":1,\"metrics\":[{\"field\":null,\"id\":\"613db1b2-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"count\"}],\"point_size\":1,\"seperate_axis\":0,\"split_mode\":\"filter\",\"stacked\":\"none\",\"terms_field\":\"sensor_name.keyword\",\"terms_order_by\":null,\"terms_size\":\"1000\"}],\"show_legend\":1,\"time_field\":\"@timestamp\",\"type\":\"metric\"},\"aggs\":[],\"listeners\":{}}",
-        "description": "",
-        "title": "PE - Log Count (Builder)",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"query\":{\"match_all\":{}},\"filter\":[]}"
-        }
-      },
-      "size_x": 2,
-      "size_y": 2,
-      "panelIndex": 11,
-      "col": 3,
-      "row": 1
+      "panelIndex": 12,
+      "row": 6,
+      "size_x": 10,
+      "size_y": 6
     },
     {
       "id": "*:logstash-*",
@@ -196,20 +257,20 @@
       }
     },
     {
-      "id": "8a10e380-3583-11e7-a588-05992195c551",
+      "id": "AWAi5k4jAvKNGEbUWFis",
       "type": "dashboard",
       "version": 3,
       "attributes": {
+        "title": "Frequency Analysis",
         "hits": 0,
-        "timeRestore": false,
         "description": "",
-        "title": "Bro - PE",
-        "uiStateJSON": "{\"P-10\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-3\":{\"vis\":{\"legendOpen\":false}},\"P-9\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-1\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}}}",
-        "panelsJSON": "[{\"col\":1,\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"panelIndex\":2,\"row\":1,\"size_x\":2,\"size_y\":11,\"type\":\"visualization\"},{\"col\":5,\"id\":\"9cffd160-363f-11e7-a6f7-4f44d7bf1c33\",\"panelIndex\":3,\"row\":1,\"size_x\":8,\"size_y\":2,\"type\":\"visualization\"},{\"col\":8,\"id\":\"45c4ae10-380c-11e7-a1cc-ebc6a7e70e84\",\"panelIndex\":5,\"row\":3,\"size_x\":5,\"size_y\":4,\"type\":\"visualization\"},{\"col\":3,\"id\":\"807da390-380c-11e7-a1cc-ebc6a7e70e84\",\"panelIndex\":7,\"row\":3,\"size_x\":5,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"columns\":[\"message\",\"fuid\",\"_id\"],\"id\":\"66288140-342e-11e7-9e93-53b62e1857b2\",\"panelIndex\":8,\"row\":12,\"size_x\":12,\"size_y\":7,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"col\":8,\"id\":\"4e56b4d0-416f-11e7-9850-b78558d0ac17\",\"panelIndex\":9,\"row\":7,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"col\":3,\"id\":\"7de76e10-6e1f-11e7-b553-7f80727663c1\",\"panelIndex\":10,\"row\":7,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"size_x\":2,\"size_y\":2,\"panelIndex\":11,\"type\":\"visualization\",\"id\":\"AV-iHtMMuU89ag5_bbj4\",\"col\":3,\"row\":1}]",
+        "panelsJSON": "[{\"col\":3,\"id\":\"7f1f00a0-6f04-11e7-b253-211f64f37eda\",\"panelIndex\":1,\"row\":1,\"size_x\":10,\"size_y\":5,\"type\":\"visualization\"},{\"col\":1,\"id\":\"7d1ede50-6f19-11e7-86c8-a1b6db3b051a\",\"panelIndex\":2,\"row\":12,\"size_x\":12,\"size_y\":6,\"type\":\"visualization\"},{\"col\":7,\"id\":\"8fa702e0-6f0b-11e7-9d31-23c0596994a7\",\"panelIndex\":4,\"row\":18,\"size_x\":6,\"size_y\":6,\"type\":\"visualization\"},{\"col\":1,\"id\":\"a83f17c0-6f0b-11e7-9d31-23c0596994a7\",\"panelIndex\":5,\"row\":18,\"size_x\":6,\"size_y\":6,\"type\":\"visualization\"},{\"col\":7,\"id\":\"c2e54c20-6f0b-11e7-9d31-23c0596994a7\",\"panelIndex\":6,\"row\":24,\"size_x\":6,\"size_y\":6,\"type\":\"visualization\"},{\"col\":1,\"id\":\"e03ba1d0-6f0a-11e7-83d2-adea2f314dc5\",\"panelIndex\":7,\"row\":24,\"size_x\":6,\"size_y\":6,\"type\":\"visualization\"},{\"col\":7,\"id\":\"acd38970-6f0a-11e7-83d2-adea2f314dc5\",\"panelIndex\":8,\"row\":30,\"size_x\":6,\"size_y\":6,\"type\":\"visualization\"},{\"col\":1,\"id\":\"c3f244c0-6f0a-11e7-83d2-adea2f314dc5\",\"panelIndex\":9,\"row\":30,\"size_x\":6,\"size_y\":6,\"type\":\"visualization\"},{\"col\":1,\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"panelIndex\":10,\"row\":1,\"size_x\":2,\"size_y\":11,\"type\":\"visualization\"},{\"col\":1,\"columns\":[\"source_ip\",\"source_port\",\"destination_ip\",\"destination_port\",\"uid\",\"_id\"],\"id\":\"aa05e920-3433-11e7-8867-29a39c0f86b2\",\"panelIndex\":11,\"row\":36,\"size_x\":12,\"size_y\":20,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"col\":3,\"id\":\"c9f5d3a0-6f05-11e7-b253-211f64f37eda\",\"panelIndex\":12,\"row\":6,\"size_x\":10,\"size_y\":6,\"type\":\"visualization\"}]",
         "optionsJSON": "{\"darkTheme\":true}",
+        "uiStateJSON": "{\"P-1\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-2\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-4\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-5\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-6\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-7\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-8\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-9\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-12\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}}",
         "version": 1,
+        "timeRestore": false,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}],\"highlightAll\":true,\"version\":true}"
+          "searchSourceJSON": "{\"filter\":[{\"query\":{\"match_all\":{}}}],\"highlightAll\":true,\"version\":true}"
         }
       }
     }
