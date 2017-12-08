@@ -9,7 +9,6 @@ if [ "$ELASTALERT_ENABLED" = "yes" ]; then
         if docker ps | grep -q so-elastalert; then
                 echo "Already started!"
         else
-		/usr/sbin/so-elastic-configure-elastalert
 		# No published ports
                 docker run --name=so-elastalert \
                         --detach \
