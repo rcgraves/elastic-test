@@ -113,7 +113,9 @@ iptbl_stats() {
         echo "# Docker Rules #"
         echo "################"
         echo
-        iptables -L DOCKER-USER | grep ACCEPT
+	echo "To                   Action From"
+	echo "--                   ------ ----"
+	iptables -vL DOCKER-USER |grep ACCEPT |grep -v "state RELATED,ESTABLISHED" |awk '{print $11,$4,$7,$3,$6,$8}'
 
 }
 
@@ -146,53 +148,38 @@ echo "Here's the firewall rule we're about to add:"
 if [[ "$category" == "elastic" ]]; then
         ufw_after_rules="-I DOCKER-USER ! -i docker0 -o docker0 -s $address -p tcp --dport $port -j ACCEPT"
 	rule="sudo iptables $ufw_after_rules"
-	echo $rule
-	echo
-	echo "To continue and add this rule, press Enter."
-	echo "Otherwise, press Ctrl-c to exit."
-	read input
-
-	#########################################
-	# Run the command to add the firewall rule
-	#########################################
-	$rule
-
-	# Add rule to /etc/ufw/after.rules
-	sed -i "/-N DOCKER-USER/a $ufw_after_rules" /etc/ufw/after.rules
-
-	echo "Rule has been added."
-	echo
-	echo "Here is the entire firewall ruleset:"
-	ufw status
-	iptbl_stats
-	
-	if [[ "$device" != *"Logstash"*   ]]; then
-		sed -i "s/$publish_ip\.*/$publish_ip=\"0.0.0.0\"/" /etc/nsm/securityonion.conf
-	fi
 else
 	rule="sudo ufw allow $proto from $address to any port $port"
-
-	echo $rule
-	if [ "$device" == "analyst" ]; then
-        	echo
-		echo "We're also whitelisting $address in /var/ossec/etc/ossec.conf to prevent OSSEC Active Response from blocking it.  Keep in mind, the OSSEC server will be restarted once configuration is complete." 
-	fi
-	echo
-	echo "To continue and add this rule, press Enter."
-	echo "Otherwise, press Ctrl-c to exit."
-	read input
-
-	#########################################
-	# Run the command to add the firewall rule
-	#########################################
-	$rule
-
-	echo "Rule has been added."
-	echo
-	echo "Here is the entire firewall ruleset:"
-	ufw status
 fi
+echo $rule
 echo
+
+if [ "$device" == "analyst" ]; then
+	echo "We're also whitelisting $address in /var/ossec/etc/ossec.conf to prevent OSSEC Active Response from blocking it.  Keep in mind, the OSSEC server will be restarted once configuration is complete." 
+       	echo
+fi
+echo "To continue and add this rule, press Enter."
+echo "Otherwise, press Ctrl-c to exit."
+read input
+
+#########################################
+# Run the command to add the firewall rule
+#########################################
+$rule
+
+if [[ "$category" == "elastic" ]]; then
+	# Add rule to /etc/ufw/after.rules
+	sed -i "/-N DOCKER-USER/a $ufw_after_rules" /etc/ufw/after.rules
+fi
+
+echo "Rule has been added."
+echo
+echo "Here is the entire firewall ruleset:"
+echo
+ufw status
+iptbl_stats
+echo
+	
 if [ "$device" == "analyst" ]; then
         if ! grep -q "<white_list>$address</white_list>" /var/ossec/etc/ossec.conf ; then
                 DATE=`date`
@@ -205,4 +192,3 @@ if [ "$device" == "analyst" ]; then
                 service ossec-hids-server restart
         fi
 fi
-echo
