@@ -2023,13 +2023,13 @@ EOF
 		echo "DOCKER_NETWORK is $DOCKER_NETWORK" >> $LOG 2>&1
 
 		# REVERSE_PORT
-		SSH_CMD="/usr/sbin/so-elastic-settings | jq '.persistent.search.remote' | grep ':500'"
+		SSH_CMD="cat /etc/nsm/crossclustertab | cut -d: -f2 | grep '^5'"
 		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 		if [ "$SSH_OUTPUT" = "" ]; then
 			echo "Found no other sensors." >> $LOG 2>&1
 			REVERSE_PORT=50000
 		else
-			HIGHEST_REVERSE_PORT=$(echo $SSH_OUTPUT | cut -d: -f2 | cut -d\" -f1 | sort | tail -1)
+			HIGHEST_REVERSE_PORT=$(echo $SSH_OUTPUT | sort | tail -1)
 			echo "HIGHEST_REVERSE_PORT is $HIGHEST_REVERSE_PORT" >> $LOG 2>&1
 			if [ ${HIGHEST_REVERSE_PORT} -gt 49999 ] && [ ${HIGHEST_REVERSE_PORT} -lt 59999 ]; then
 				let REVERSE_PORT=HIGHEST_REVERSE_PORT+1
