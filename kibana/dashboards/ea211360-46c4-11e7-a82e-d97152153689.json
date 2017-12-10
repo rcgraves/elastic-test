@@ -56,7 +56,7 @@
         "title": "Connections - Logs",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"highlightAll\": true,\n  \"version\": true,\n  \"filter\": [],\n  \"size\":10,\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"type:bro_conn\",\n      \"analyze_wildcard\": true\n    }\n  }\n}"
+          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"highlightAll\": true,\n  \"version\": true,\n  \"filter\": [],\n  \"size\":10,\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"event_type:bro_conn\",\n      \"analyze_wildcard\": true\n    }\n  }\n}"
         },
         "columns": [
           "source_ip",

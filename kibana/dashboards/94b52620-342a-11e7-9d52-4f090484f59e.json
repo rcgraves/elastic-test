@@ -173,7 +173,7 @@
       "type": "visualization",
       "version": 1,
       "attributes": {
-        "visState": "{\"title\":\"Overview - Alert Summary (Bar Chart)\",\"type\":\"histogram\",\"params\":{\"addLegend\":true,\"addTimeMarker\":false,\"addTooltip\":true,\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"labels\":{\"rotate\":0,\"show\":true,\"truncate\":100},\"position\":\"bottom\",\"scale\":{\"type\":\"linear\"},\"show\":true,\"style\":{},\"title\":{},\"type\":\"category\"}],\"defaultYExtents\":false,\"drawLinesBetweenPoints\":true,\"grid\":{\"categoryLines\":false,\"style\":{\"color\":\"#eee\"}},\"interpolate\":\"linear\",\"legendPosition\":\"right\",\"orderBucketsBySum\":false,\"radiusRatio\":9,\"scale\":\"linear\",\"seriesParams\":[{\"data\":{\"id\":\"1\",\"label\":\"Count\"},\"drawLinesBetweenPoints\":true,\"mode\":\"stacked\",\"show\":\"true\",\"showCircles\":true,\"type\":\"histogram\",\"valueAxis\":\"ValueAxis-1\"}],\"setYExtents\":false,\"showCircles\":true,\"times\":[],\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"labels\":{\"filter\":false,\"rotate\":0,\"show\":true,\"truncate\":100},\"name\":\"LeftAxis-1\",\"position\":\"left\",\"scale\":{\"mode\":\"normal\",\"type\":\"linear\"},\"show\":true,\"style\":{},\"title\":{},\"type\":\"value\"}]},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"filters\",\"schema\":\"segment\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"type:bro_notice\"}}},\"label\":\"Bro Notices\"},{\"input\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"type:ossec\"}}},\"label\":\"OSSEC Alerts\"},{\"input\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"type:snort\"}}},\"label\":\"NIDS Alerts\"}]}}],\"listeners\":{}}",
+        "visState": "{\"title\":\"Overview - Alert Summary (Bar Chart)\",\"type\":\"histogram\",\"params\":{\"addLegend\":true,\"addTimeMarker\":false,\"addTooltip\":true,\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"labels\":{\"rotate\":0,\"show\":true,\"truncate\":100},\"position\":\"bottom\",\"scale\":{\"type\":\"linear\"},\"show\":true,\"style\":{},\"title\":{},\"type\":\"category\"}],\"defaultYExtents\":false,\"drawLinesBetweenPoints\":true,\"grid\":{\"categoryLines\":false,\"style\":{\"color\":\"#eee\"}},\"interpolate\":\"linear\",\"legendPosition\":\"right\",\"orderBucketsBySum\":false,\"radiusRatio\":9,\"scale\":\"linear\",\"seriesParams\":[{\"data\":{\"id\":\"1\",\"label\":\"Count\"},\"drawLinesBetweenPoints\":true,\"mode\":\"stacked\",\"show\":\"true\",\"showCircles\":true,\"type\":\"histogram\",\"valueAxis\":\"ValueAxis-1\"}],\"setYExtents\":false,\"showCircles\":true,\"times\":[],\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"labels\":{\"filter\":false,\"rotate\":0,\"show\":true,\"truncate\":100},\"name\":\"LeftAxis-1\",\"position\":\"left\",\"scale\":{\"mode\":\"normal\",\"type\":\"linear\"},\"show\":true,\"style\":{},\"title\":{},\"type\":\"value\"}]},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"filters\",\"schema\":\"segment\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"event_type:bro_notice\"}}},\"label\":\"Bro Notices\"},{\"input\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"event_type:ossec\"}}},\"label\":\"OSSEC Alerts\"},{\"input\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"event_type:snort\"}}},\"label\":\"NIDS Alerts\"}]}}],\"listeners\":{}}",
         "description": "",
         "title": "Overview - Alert Summary (Bar Chart)",
         "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
@@ -316,7 +316,7 @@
       "type": "visualization",
       "version": 2,
       "attributes": {
-        "visState": "{\"title\":\"Notices - Log Count (Builder)\",\"type\":\"metrics\",\"params\":{\"id\":\"613db1b0-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"metric\",\"series\":[{\"id\":\"613db1b1-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"#68BC00\",\"split_mode\":\"filter\",\"metrics\":[{\"id\":\"613db1b2-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"count\",\"field\":null}],\"seperate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\",\"terms_field\":\"sensor_name.keyword\",\"terms_size\":\"1000\",\"terms_order_by\":null,\"filter\":\"type:bro_notice\",\"label\":\"Notices  - Log Count\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"*:logstash-*\",\"interval\":\"1y\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"show_legend\":1,\"background_color_rules\":[{\"value\":0,\"id\":\"631c5cc0-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"rgba(251,158,0,1)\",\"opperator\":\"gte\"}],\"drop_last_bucket\":0,\"filter\":\"\"},\"aggs\":[],\"listeners\":{}}",
+        "visState": "{\"title\":\"Notices - Log Count (Builder)\",\"type\":\"metrics\",\"params\":{\"id\":\"613db1b0-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"metric\",\"series\":[{\"id\":\"613db1b1-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"#68BC00\",\"split_mode\":\"filter\",\"metrics\":[{\"id\":\"613db1b2-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"count\",\"field\":null}],\"seperate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\",\"terms_field\":\"sensor_name.keyword\",\"terms_size\":\"1000\",\"terms_order_by\":null,\"filter\":\"event_type:bro_notice\",\"label\":\"Notices  - Log Count\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"*:logstash-*\",\"interval\":\"1y\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"show_legend\":1,\"background_color_rules\":[{\"value\":0,\"id\":\"631c5cc0-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"rgba(251,158,0,1)\",\"opperator\":\"gte\"}],\"drop_last_bucket\":0,\"filter\":\"\"},\"aggs\":[],\"listeners\":{}}",
         "description": "",
         "title": "Notices - Log Count (Builder)",
         "uiStateJSON": "{}",
@@ -336,7 +336,7 @@
       "type": "visualization",
       "version": 2,
       "attributes": {
-        "visState": "{\"title\":\"NIDS - Alert Count (Builder)\",\"type\":\"metrics\",\"params\":{\"id\":\"613db1b0-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"metric\",\"series\":[{\"id\":\"613db1b1-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"#68BC00\",\"split_mode\":\"filter\",\"metrics\":[{\"id\":\"613db1b2-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"count\",\"field\":null}],\"seperate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\",\"terms_field\":\"sensor_name.keyword\",\"terms_size\":\"1000\",\"terms_order_by\":null,\"filter\":\"type:snort\",\"label\":\"NIDS - Alert Count\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"*:logstash-*\",\"interval\":\"1y\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"show_legend\":1,\"background_color_rules\":[{\"value\":0,\"id\":\"631c5cc0-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"rgba(251,158,0,1)\",\"opperator\":\"gte\"}],\"drop_last_bucket\":0,\"filter\":\"\"},\"aggs\":[],\"listeners\":{}}",
+        "visState": "{\"title\":\"NIDS - Alert Count (Builder)\",\"type\":\"metrics\",\"params\":{\"id\":\"613db1b0-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"metric\",\"series\":[{\"id\":\"613db1b1-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"#68BC00\",\"split_mode\":\"filter\",\"metrics\":[{\"id\":\"613db1b2-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"count\",\"field\":null}],\"seperate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\",\"terms_field\":\"sensor_name.keyword\",\"terms_size\":\"1000\",\"terms_order_by\":null,\"filter\":\"event_type:snort\",\"label\":\"NIDS - Alert Count\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"*:logstash-*\",\"interval\":\"1y\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"show_legend\":1,\"background_color_rules\":[{\"value\":0,\"id\":\"631c5cc0-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"rgba(251,158,0,1)\",\"opperator\":\"gte\"}],\"drop_last_bucket\":0,\"filter\":\"\"},\"aggs\":[],\"listeners\":{}}",
         "description": "",
         "title": "NIDS - Alert Count (Builder)",
         "uiStateJSON": "{}",
@@ -356,7 +356,7 @@
       "type": "visualization",
       "version": 2,
       "attributes": {
-        "visState": "{\"title\":\"OSSEC Alerts - Log Count (Builder)\",\"type\":\"metrics\",\"params\":{\"id\":\"613db1b0-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"metric\",\"series\":[{\"id\":\"613db1b1-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"#68BC00\",\"split_mode\":\"filter\",\"metrics\":[{\"id\":\"613db1b2-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"count\",\"field\":null}],\"seperate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\",\"terms_field\":\"sensor_name.keyword\",\"terms_size\":\"1000\",\"terms_order_by\":null,\"filter\":\"type:ossec && tags:alert\",\"label\":\"OSSEC Alerts - Log Count\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"*:logstash-*\",\"interval\":\"1y\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"show_legend\":1,\"background_color_rules\":[{\"value\":0,\"id\":\"631c5cc0-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"rgba(251,158,0,1)\",\"opperator\":\"gte\"}],\"drop_last_bucket\":0,\"filter\":\"\"},\"aggs\":[],\"listeners\":{}}",
+        "visState": "{\"title\":\"OSSEC Alerts - Log Count (Builder)\",\"type\":\"metrics\",\"params\":{\"id\":\"613db1b0-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"metric\",\"series\":[{\"id\":\"613db1b1-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"#68BC00\",\"split_mode\":\"filter\",\"metrics\":[{\"id\":\"613db1b2-c578-11e7-89f7-f9b51b5d4b2f\",\"type\":\"count\",\"field\":null}],\"seperate_axis\":0,\"axis_position\":\"right\",\"formatter\":\"number\",\"chart_type\":\"line\",\"line_width\":1,\"point_size\":1,\"fill\":0.5,\"stacked\":\"none\",\"terms_field\":\"sensor_name.keyword\",\"terms_size\":\"1000\",\"terms_order_by\":null,\"filter\":\"event_type:ossec && tags:alert\",\"label\":\"OSSEC Alerts - Log Count\"}],\"time_field\":\"@timestamp\",\"index_pattern\":\"*:logstash-*\",\"interval\":\"1y\",\"axis_position\":\"left\",\"axis_formatter\":\"number\",\"show_legend\":1,\"background_color_rules\":[{\"value\":0,\"id\":\"631c5cc0-c578-11e7-89f7-f9b51b5d4b2f\",\"color\":\"rgba(251,158,0,1)\",\"opperator\":\"gte\"}],\"drop_last_bucket\":0,\"filter\":\"\"},\"aggs\":[],\"listeners\":{}}",
         "description": "",
         "title": "OSSEC Alerts - Log Count (Builder)",
         "uiStateJSON": "{}",
@@ -397,7 +397,7 @@
         "title": "NIDS - Alerts",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:snort\",\"analyze_wildcard\":true}}}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"event_type:snort\",\"analyze_wildcard\":true}}}"
         },
         "columns": [
           "source_ip",
@@ -422,7 +422,7 @@
         "title": "Notices - Logs",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:bro_notice\",\"analyze_wildcard\":true}}}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"event_type:bro_notice\",\"analyze_wildcard\":true}}}"
         },
         "columns": [
           "source_ip",
@@ -448,7 +448,7 @@
         "title": "OSSEC - Alerts",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[{\"meta\":{\"negate\":false,\"index\":\"*:logstash-*\",\"key\":\"tags\",\"value\":\"alert\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"tags\":{\"query\":\"alert\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}],\"query\":{\"query_string\":{\"query\":\"type:ossec\",\"analyze_wildcard\":true}}}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[{\"meta\":{\"negate\":false,\"index\":\"*:logstash-*\",\"key\":\"tags\",\"value\":\"alert\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"tags\":{\"query\":\"alert\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}],\"query\":{\"query_string\":{\"query\":\"event_type:ossec\",\"analyze_wildcard\":true}}}"
         },
         "columns": [
           "alert_level",
@@ -471,7 +471,7 @@
         "title": "Overview - Alert Summary",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"type:snort OR type:ossec OR type:bro_notice\",\"analyze_wildcard\":true}},\"filter\":[]}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"event_type:snort OR event_type:ossec OR event_type:bro_notice\",\"analyze_wildcard\":true}},\"filter\":[]}"
         },
         "columns": [
           "_source"
@@ -492,7 +492,7 @@
         "title": "Connections - Logs",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"highlightAll\": true,\n  \"version\": true,\n  \"filter\": [],\n  \"size\":10,\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"type:bro_conn\",\n      \"analyze_wildcard\": true\n    }\n  }\n}"
+          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"highlightAll\": true,\n  \"version\": true,\n  \"filter\": [],\n  \"size\":10,\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"event_type:bro_conn\",\n      \"analyze_wildcard\": true\n    }\n  }\n}"
         },
         "columns": [
           "source_ip",

@@ -223,7 +223,7 @@
         "title": "OSSEC - Alerts",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[{\"meta\":{\"negate\":false,\"index\":\"*:logstash-*\",\"key\":\"tags\",\"value\":\"alert\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"tags\":{\"query\":\"alert\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}],\"query\":{\"query_string\":{\"query\":\"type:ossec\",\"analyze_wildcard\":true}}}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[{\"meta\":{\"negate\":false,\"index\":\"*:logstash-*\",\"key\":\"tags\",\"value\":\"alert\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"tags\":{\"query\":\"alert\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}],\"query\":{\"query_string\":{\"query\":\"event_type:ossec\",\"analyze_wildcard\":true}}}"
         },
         "columns": [
           "alert_level",
@@ -357,7 +357,7 @@
         "title": "DNS - Logs",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:bro_dns\",\"analyze_wildcard\":true}}}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"event_type:bro_dns\",\"analyze_wildcard\":true}}}"
         },
         "columns": [
           "source_ip",
@@ -383,7 +383,7 @@
         "title": "HTTP - Logs",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"highlightAll\": true,\n  \"version\": true,\n  \"filter\": [],\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"type:bro_http\",\n      \"analyze_wildcard\": true\n    }\n  }\n}"
+          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"highlightAll\": true,\n  \"version\": true,\n  \"filter\": [],\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"event_type:bro_http\",\n      \"analyze_wildcard\": true\n    }\n  }\n}"
         },
         "columns": [
           "source_ip",
@@ -409,7 +409,7 @@
         "title": "Notices - Logs",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:bro_notice\",\"analyze_wildcard\":true}}}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"event_type:bro_notice\",\"analyze_wildcard\":true}}}"
         },
         "columns": [
           "source_ip",
@@ -435,7 +435,7 @@
         "title": "NIDS - Alerts",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"type:snort\",\"analyze_wildcard\":true}}}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"event_type:snort\",\"analyze_wildcard\":true}}}"
         },
         "columns": [
           "source_ip",

@@ -12,7 +12,7 @@
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_dns AND _exists_:highest_registered_domain_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"event_type:bro_dns AND _exists_:highest_registered_domain_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
         }
       },
       "col": 3,
@@ -32,7 +32,7 @@
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_http AND _exists_:virtual_host_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"event_type:bro_http AND _exists_:virtual_host_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
         }
       },
       "col": 1,
@@ -52,7 +52,7 @@
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_ssl AND _exists_:certificate_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"event_type:bro_ssl AND _exists_:certificate_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
         }
       },
       "col": 7,
@@ -72,7 +72,7 @@
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_ssl AND _exists_:issuer_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"event_type:bro_ssl AND _exists_:issuer_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
         }
       },
       "col": 1,
@@ -92,7 +92,7 @@
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_ssl AND _exists_:server_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"event_type:bro_ssl AND _exists_:server_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
         }
       },
       "col": 7,
@@ -112,7 +112,7 @@
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_x509 AND _exists_:certificate_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"event_type:bro_x509 AND _exists_:certificate_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
         }
       },
       "col": 1,
@@ -132,7 +132,7 @@
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_x509 AND _exists_:issuer_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"event_type:bro_x509 AND _exists_:issuer_common_name_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
         }
       },
       "col": 7,
@@ -152,7 +152,7 @@
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"type:bro_x509 AND _exists_:issuer_organization_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"query\":{\"query_string\":{\"query\":\"event_type:bro_x509 AND _exists_:issuer_organization_frequency_score\",\"analyze_wildcard\":true}},\"filter\":[]}"
         }
       },
       "col": 1,
@@ -235,7 +235,7 @@
         "uiStateJSON": "{\n  \"vis\": {\n    \"params\": {\n      \"sort\": {\n        \"columnIndex\": null,\n        \"direction\": null\n      }\n    }\n  }\n}",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"type:bro_dns AND _exists_:parent_domain_frequency_score\",\n      \"analyze_wildcard\": true\n    }\n  },\n  \"filter\": []\n}"
+          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"event_type:bro_dns AND _exists_:parent_domain_frequency_score\",\n      \"analyze_wildcard\": true\n    }\n  },\n  \"filter\": []\n}"
         }
       },
       "col": 3,
