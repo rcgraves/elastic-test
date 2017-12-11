@@ -78,7 +78,7 @@ $elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-
       \"must\": [
         {
           \"query_string\": {
-            \"query\": \"type:$type AND $bro_query\",
+            \"query\": \"event_type:$type AND $bro_query\",
             \"analyze_wildcard\": true
           }
         },
