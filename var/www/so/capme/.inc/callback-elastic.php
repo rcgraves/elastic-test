@@ -314,7 +314,7 @@ if ($sidsrc == "elastic") {
 				$errMsgElastic = "Second ES query couldn't find this ID.";
                         } else {
                                 // If we received a bro_files record back, we need to grab the CID and get ready to query ES again
-				if ( $elastic_response_object["hits"]["hits"][0]["_source"]["type"] == "bro_files" ) {
+				if ( $elastic_response_object["hits"]["hits"][0]["_source"]["event_type"] == "bro_files" ) {
 					$type = "bro_conn";
 					$bro_query = $elastic_response_object["hits"]["hits"][0]["_source"]["uid"];
 				}
