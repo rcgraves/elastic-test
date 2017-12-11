@@ -28,6 +28,7 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                 docker run --name=so-logstash \
                         --detach \
                         --env LS_JAVA_OPTS="-Xms$LOGSTASH_HEAP -Xmx$LOGSTASH_HEAP" \
+			--publish $LOGSTASH_PUBLISH_IP:5044:5044 \
 			--publish $LOGSTASH_PUBLISH_IP:6050:6050 \
                         --publish $LOGSTASH_PUBLISH_IP:6051:6051 \
                         --publish $LOGSTASH_PUBLISH_IP:6052:6052 \
