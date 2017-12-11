@@ -1046,7 +1046,7 @@ Would you like to enable the Elastic Stack?"
 		if [ $ADVANCED_SETUP -eq 1 ]; then
 			LOG_SIZE_LIMIT_CONFIRMED="no"
 			while [ $LOG_SIZE_LIMIT_CONFIRMED = "no" ]; do
-				LOG_SIZE_LIMIT_GB=`zenity --entry --title "$TITLE" --text="How much disk space (in GigaBytes) should be allocated for Elasticsearch to store logs?\n\nPlease enter an integer greater than 0.  The default is half your disk size.\n\nPlease make sure that the value you set here is less than the size of your disk!\n\nIf you need to adjust this later, you can modify log__size__limit in the /etc/elsa__node.conf file." --entry-text=$LOG_SIZE_LIMIT_GB`
+				LOG_SIZE_LIMIT_GB=`zenity --entry --title "$TITLE" --text="How much disk space (in GigaBytes) should be allocated for Elasticsearch to store logs?\n\nPlease enter an integer greater than 0.  The default is half your disk size.\n\nPlease make sure that the value you set here is less than the size of your disk!\n\nIf you need to adjust this later, you can modify the value for disk__space in /etc/curator/action/delete.yml." --entry-text=$LOG_SIZE_LIMIT_GB`
 				[ $? = 1 ] && exit
 				if [ x$LOG_SIZE_LIMIT_GB = "x" ]; then
 				zenity --error --title "$TITLE" --text "Invalid log size limit! Please use integers greater than 0 and less than your disk size."
