@@ -37,6 +37,7 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 			--volume /etc/logstash/log4j2.properties:/usr/share/logstash/config/log4j2.properties:ro \
                         --volume /etc/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:ro \
                         --volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
+			--volume /etc/logstash/beats-template.json:/beats-template.json:ro \
                         --volume /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro \
                         --volume /etc/nsm/rules:/etc/nsm/rules:ro \
                         --volume /lib/dictionaries:/lib/dictionaries:ro \
