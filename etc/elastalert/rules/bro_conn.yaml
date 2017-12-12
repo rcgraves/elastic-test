@@ -38,11 +38,11 @@ realert:
 # For more info: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl.html
 filter:
 - term:
-    type: 'bro_conn'
+    event_type: 'bro_conn'
 
 # Only count number of records, instead of bringing all data back
 use_count_query: true
-doc_type: 'bro_conn'
+doc_type: 'logs'
 
 # (Required)
 # The alert is use when a match is found

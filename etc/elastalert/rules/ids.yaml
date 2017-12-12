@@ -9,11 +9,11 @@ timeframe:
     minutes: 1
 filter:
 - term:
-    type: "snort"
+    event_type: "snort"
 
 # Only count number of records, instead of bringing all data back
 use_count_query: true
-doc_type: 'snort'
+doc_type: 'logs'
 
 alert:
 - "debug"
