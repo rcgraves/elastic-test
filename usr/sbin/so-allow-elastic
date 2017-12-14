@@ -169,7 +169,7 @@ $rule
 
 if [[ "$category" == "elastic" ]]; then
 	# Add rule to /etc/ufw/after.rules
-	sed -i "/-N DOCKER-USER/a $ufw_after_rules" /etc/ufw/after.rules
+	sed -i "/so-allow/a $ufw_after_rules" /etc/ufw/after.rules
 fi
 
 echo "Rule has been added."
