@@ -1,5 +1,5 @@
 {
-  "template" : "beats-*",
+  "index_patterns" : "beats-*",
   "version" : 50001,
   "settings" : {
     "number_of_replicas": 0,
@@ -7,7 +7,7 @@
     "index.refresh_interval" : "5s"
   },
   "mappings": {
-    "_default_": {
+    "doc": {
       "_meta": {
         "version": "5.6.4"
       },

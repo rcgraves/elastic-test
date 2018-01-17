@@ -1,9 +1,6 @@
 {
-  "template" : "om-iu-ids",
+  "index-patterns" : "om-*",
   "version" : 50004,
-  "index_patterns" : [
-    "om-*"
-  ],
   "settings" : {
     "number_of_replicas": 0,
     "number_of_shards": 1,
