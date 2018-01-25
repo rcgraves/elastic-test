@@ -1,6 +1,6 @@
 {
-  "index-patterns" : "om-*",
-  "version" : 50004,
+  "index-patterns" : "om-iu-ids-*",
+  "version" : 50006,
   "settings" : {
     "number_of_replicas": 0,
     "number_of_shards": 1,
@@ -8,8 +8,16 @@
   },
   "mappings" : {
     "doc" : {
-      "dynamic_templates" : [ {
-        "message_field" : {
+      "dynamic_templates" : [
+        { "ip_address_fields": {
+          "match": "*_ip",
+          "mapping": { "type": "ip"}
+        }},
+        { "ip_addresses_fields": {
+          "match": "*_ips",
+          "mapping": { "type": "ip"}
+        }},
+        { "message_field" : {
           "path_match" : "message",
           "match_mapping_type" : "string",
           "mapping" : {
@@ -32,21 +40,12 @@
       "properties" : {
         "@timestamp": { "type": "date" },
         "@version": { "type": "keyword" },
-	"destination_ip" : { "type": "ip" },
-	"source_ip" : { "type": "ip" },
-        "geoip"  : {
-          "dynamic": true,
-          "properties" : {
-            "ip": { "type": "ip" },
-            "location" : { "type" : "geo_point" },
-            "latitude" : { "type" : "half_float" },
-            "longitude" : { "type" : "half_float" }
-          }
-        },
+        "destination_port": { "type": "integer" }
+        "source_port": { "type": ïnteger" }
         "destination_geo"  : {
           "dynamic": true,
           "properties" : {
-            "ip": { "type": "ip" },
+            "asn": { "type": "integer" },
             "location" : { "type" : "geo_point" },
             "latitude" : { "type" : "half_float" },
             "longitude" : { "type" : "half_float" }
@@ -55,7 +54,7 @@
         "source_geo"  : {
           "dynamic": true,
           "properties" : {
-            "ip": { "type": "ip" },
+            "asn": { "type": "integer" },
             "location" : { "type" : "geo_point" },
             "latitude" : { "type" : "half_float" },
             "longitude" : { "type" : "half_float" }
